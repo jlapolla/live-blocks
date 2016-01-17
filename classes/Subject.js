@@ -1,0 +1,62 @@
+this.Subject = (function(){
+  function Subject(){
+    this._observers = {};
+  };
+  var P = {};
+  Subject.prototype = P;
+  P.attach = function(observer, prop){
+
+    // Look up observers
+    var observers = this._observers[prop];
+    if (observers === undefined)
+      observers = [];
+
+    // Iterate over observers and copy to newObservers
+    var newObservers = [], observerExists;
+    for (var i = 0; i < observers.length; i++){
+      newObservers.push(observers[i]);
+      if (observers[i] === observer)
+        observerExists = true;
+    }
+
+    // Add the new observer if not exists
+    if (observerExists !== true)
+      newObservers.push(observer);
+
+    // Replace observers
+    this._observers[prop] = newObservers;
+  };
+  P.detach = function(observer, prop){
+
+    // Look up observers
+    var observers = this._observers[prop];
+    if (observers === undefined)
+      return; // Nothing left to do
+
+    // Iterate over observers and copy to newObservers
+    var newObservers = [];
+    for (var i = 0; i < observers.length; i++){
+      if (observers[i] !== observer)
+        newObservers.push(observers[i]);
+    }
+
+    // Replace observers
+    if (newObservers.length !== 0)
+      this._observers[prop] = newObservers;
+    else
+      delete this._observers[prop];
+  };
+  P.notify = function(prop){
+
+    // Look up observers
+    var observers = this._observers[prop];
+    if (observers === undefined)
+      return; // Nothing left to do
+
+    // Call .update() on each observer
+    for (var i = 0; i < observers.length; i++)
+      observers[i].update();
+  }
+  return Subject;
+}());
+
