@@ -2,7 +2,10 @@ define $(d)template
 $(eval include helpdoc.mk)
 $(eval include watch.mk)
 $(eval $(d)cat_order := $(d)iife/header.js)
+$(eval $(d)cat_order += $(d)classes/extendClass.js)
+$(eval $(d)cat_order += $(d)classes/hasOwnProperty.js)
 $(eval $(d)cat_order += $(d)classes/Subject.js)
+$(eval $(d)cat_order += $(d)classes/Block.js)
 $(eval $(d)cat_order += $(d)iife/footer.js)
 
 $(d)live-blocks.js: $(wildcard $(d)classes/*) $(wildcard $(d)iife/*)

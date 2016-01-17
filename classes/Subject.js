@@ -2,8 +2,8 @@ this.Subject = (function(){
   function Subject(){
     this._observers = {};
   };
-  var P = {};
-  Subject.prototype = P;
+  Subject.prototype = {};
+  var P = Subject.prototype;
   P.attach = function(observer, prop){
 
     // Look up observers
@@ -20,7 +20,7 @@ this.Subject = (function(){
     }
 
     // Add the new observer if not exists
-    if (observerExists !== true)
+    if (!observerExists)
       newObservers.push(observer);
 
     // Replace observers
@@ -41,7 +41,7 @@ this.Subject = (function(){
     }
 
     // Replace observers
-    if (newObservers.length !== 0)
+    if (newObservers.length)
       this._observers[prop] = newObservers;
     else
       delete this._observers[prop];
