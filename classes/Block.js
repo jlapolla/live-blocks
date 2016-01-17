@@ -94,6 +94,69 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
       return;
     }
   };
+  P.prop = function(arg1, arg2, arg3){
+    if (typeof arg1 !== "undefined"){
+
+      // Get the property object
+      var prop = this._properties[arg1];
+
+      if (typeof arg2 !== "undefined"){
+
+        // We are setting a property to a source or value
+
+        // Create the property if it does not exist
+        if (!hasOwnProperty(this._properties, arg1)){
+          prop = {};
+          this._properties[arg1] = prop;
+        }
+
+        // Clear the old property
+        if (hasOwnProperty(prop, "source")){
+
+          // Detach from source
+          prop.source.object.detach(this, prop.source.propName);
+
+          // Delete source
+          delete prop.source;
+        }
+        else if (hasOwnProperty(prop, "value")){
+
+          // Delete value
+          delete prop.value;
+        }
+
+        // Set new source or value
+        if (typeof arg3 !== "undefined"){
+
+          // We are setting a property to a source
+
+          // Record the source
+          prop.source = {object: arg2, propName: arg3};
+
+          // Attach to the source
+          arg2.attach(this, arg3);
+        }
+        else {
+
+          // We are setting a property to a value
+
+          // Record the value
+          prop.value = arg2;
+        }
+
+        // Call update
+        this.update();
+      }
+      else {
+
+        // We are getting a property
+
+        // Return cached value if property exists
+        if (hasOwnProperty(this._properties, arg1))
+          return prop.cached;
+      }
+    }
+  };
   return Block;
 }(this.Subject, this.extendClass, this.hasOwnProperty));
 
