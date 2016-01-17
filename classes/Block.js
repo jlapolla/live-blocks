@@ -3,7 +3,6 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     Subject.call(this);
     this._properties = {};
     this._pendingNotifications = {};
-    this._pendingChanges = {};
     this._updating = false;
   }
   extendClass(Subject, Block);
@@ -19,37 +18,46 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     // Main update loop
     while (true){
 
-      // Handle pending changes
+      // Check for changes
       var changes;
-      for (var propName in this._pendingChanges){
+      for (var propName in this._properties){
 
-        if (hasOwnProperty(this._pendingChanges, propName)){
-
-          // Set changes flag
-          changes = true;
-
-          // Set pending notification
-          this._pendingNotifications[propName] = this._pendingNotifications;
+        if (hasOwnProperty(this._properties, propName)){
 
           // Get the property
           var prop = this._properties[propName];
 
-          // Cache new property value
+          // Get property value
+          var value, propDeleted;
           if (hasOwnProperty(prop, "value"))
-            prop.cached = prop.value;
+            value = prop.value;
           else if (hasOwnProperty(prop, "source"))
-            prop.cached = prop.source.object.prop(prop.source.propName);
-          // Else assume the property was deleted
+            value = prop.source.object.prop(prop.source.propName);
+          else
+            propDeleted = true;
+
+          if (value !== prop.cached){
+
+            // Set changes flag
+            changes = true;
+
+            // Set pending notification
+            this._pendingNotifications[propName] = this._pendingNotifications;
+
+            // Cache new value
+            prop.cached = value;
+          }
+
+          // Delete the property completely
+          if (propDeleted)
+            delete this._properties[propName];
         }
       }
 
       // Handle changes
       if (changes){
 
-        // Clear pending changes
-        this._pendingChanges = {};
-
-        // Execute.run() if there were property changes since the last run
+        // Execute.run() if it is a function
         if (typeof this.run === "function")
           this.run();
 
