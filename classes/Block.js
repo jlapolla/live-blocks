@@ -1,4 +1,20 @@
 this.Block = (function(Subject, extendClass, hasOwnProperty){
+  var clear = function(prop){
+
+    if (hasOwnProperty(prop, "source")){
+
+      // Detach from source
+      prop.source.object.detach(this, prop.source.propName);
+
+      // Delete source
+      delete prop.source;
+    }
+    else if (hasOwnProperty(prop, "value")){
+
+      // Delete value
+      delete prop.value;
+    }
+  };
   function Block(){
     Subject.call(this);
     this._properties = {};
@@ -95,6 +111,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     }
   };
   P.prop = function(arg1, arg2, arg3){
+
     if (typeof arg1 !== "undefined"){
 
       // Get the property object
@@ -111,19 +128,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
         }
 
         // Clear the old property
-        if (hasOwnProperty(prop, "source")){
-
-          // Detach from source
-          prop.source.object.detach(this, prop.source.propName);
-
-          // Delete source
-          delete prop.source;
-        }
-        else if (hasOwnProperty(prop, "value")){
-
-          // Delete value
-          delete prop.value;
-        }
+        clear.call(this, prop);
 
         // Set new source or value
         if (typeof arg3 !== "undefined"){
@@ -155,6 +160,17 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
         if (hasOwnProperty(this._properties, arg1))
           return prop.cached;
       }
+    }
+  };
+  P.del = function(propName){
+
+    if (hasOwnProperty(this._properties, propName)){
+
+      // Clear property source or value
+      clear.call(this, this._properties[propName]);
+
+      // Call .update() to delete the property
+      this.update();
     }
   };
   return Block;
