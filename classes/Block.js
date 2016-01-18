@@ -35,7 +35,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     while (true){
 
       // Check for changes
-      var changes;
+      var changes = false;
       for (var propName in this._properties){
 
         if (hasOwnProperty(this._properties, propName)){
@@ -82,7 +82,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
       }
 
       // Handle pending notifications
-      var notifications;
+      var notifications = false;
       for (var propName in this._pendingNotifications){
 
         if (hasOwnProperty(this._pendingNotifications, propName)){
