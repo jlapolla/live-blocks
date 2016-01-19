@@ -4,3 +4,4 @@ this.hasOwnProperty = (function(){
     return fn.call(object, property);
   };
 }());
+
