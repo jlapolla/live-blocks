@@ -134,6 +134,20 @@ describe("Block class", function(){
     expect(block.prop("output")).toBe(true);
   });
 
+  it("automatically re-makes deleted outputs", function(){
+
+    // Create a static output block
+    var block = new LiveBlocks.Block();
+    block.run = function(){
+      this.prop("output", true);
+    };
+    block.run();
+
+    // Try deleting the output
+    block.del("output");
+    expect(block.prop("output")).toBe(true);
+  });
+
   it("detaches from old sources", function(){
 
     // Create some inverter blocks which log their calls
@@ -173,7 +187,61 @@ describe("Block class", function(){
     expect(runLog[1]).toBe(blocks[0]);
   });
 
-  it("can delete properties", function(){});
+  it("can delete properties", function(){
 
-  it("does not hang when .run() is undefined", function(){});
+    // Create an inverter block
+    var runLog = [];
+    var block = new LiveBlocks.Block();
+    block.run = function(){
+      runLog.push(this);
+      this.prop("output", !this.prop("input"));
+    };
+
+    // Set "input" property
+    block.prop("input", true);
+    expect(runLog.length).toBe(2);
+    expect(block.prop("output")).toBe(false);
+
+    // Clear runLog
+    runLog.length = 0;
+
+    // Delete "input" property
+    block.del("input");
+    expect(runLog.length).toBe(2);
+    expect(block.prop("output")).toBe(true);
+    expect(block._properties).toEqual({"output": {cached: true, value: true}});
+  });
+
+  it("does nothing when .del() is called on a non-existent property", function(){
+
+    // Create a block
+    var block = new LiveBlocks.Block();
+    var input = {};
+
+    // Set "input" property
+    block.prop("input", input);
+    expect(block.prop("input")).toBe(input);
+
+    // Delete non-existent property
+    block.del("noexist");
+    expect(block.prop("input")).toBe(input);
+  });
+
+  it("works when .run() is undefined", function(){
+
+    // Create a block
+    var block = new LiveBlocks.Block();
+    var input = {};
+
+    // Set "input" property
+    block.prop("input", input);
+    expect(block.prop("input")).toBe(input);
+  });
+
+  it("returns \"undefined\" for non-existent properties", function(){
+
+    // Create a block with no properties
+    var block = new LiveBlocks.Block();
+    expect(block.prop("noexist")).toBeUndefined();
+  });
 });

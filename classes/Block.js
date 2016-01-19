@@ -1,4 +1,4 @@
-this.Block = (function(Subject, extendClass, hasOwnProperty){
+this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
   var clear = function(prop){
 
     if (hasOwnProperty(prop, "source")){
@@ -35,7 +35,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     while (true){
 
       // Check for changes
-      var changes = false;
+      var changes = getUndefined();
       for (var propName in this._properties){
 
         if (hasOwnProperty(this._properties, propName)){
@@ -44,7 +44,8 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
           var prop = this._properties[propName];
 
           // Get property value
-          var value, propDeleted;
+          var value = getUndefined();
+          var propDeleted = getUndefined();
           if (hasOwnProperty(prop, "value"))
             value = prop.value;
           else if (hasOwnProperty(prop, "source"))
@@ -82,7 +83,7 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
       }
 
       // Handle pending notifications
-      var notifications = false;
+      var notifications = getUndefined();
       for (var propName in this._pendingNotifications){
 
         if (hasOwnProperty(this._pendingNotifications, propName)){
@@ -171,5 +172,5 @@ this.Block = (function(Subject, extendClass, hasOwnProperty){
     }
   };
   return Block;
-}(this.Subject, this.extendClass, this.hasOwnProperty));
+}(this.Subject, this.extendClass, this.hasOwnProperty, this.getUndefined));
 
