@@ -38,37 +38,34 @@ this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
       var changes = getUndefined();
       for (var propName in this._properties){
 
-        if (hasOwnProperty(this._properties, propName)){
+        // Get the property
+        var prop = this._properties[propName];
 
-          // Get the property
-          var prop = this._properties[propName];
+        // Get property value
+        var value = getUndefined();
+        var propDeleted = getUndefined();
+        if (hasOwnProperty(prop, "value"))
+          value = prop.value;
+        else if (hasOwnProperty(prop, "source"))
+          value = prop.source.object.prop(prop.source.propName);
+        else
+          propDeleted = true;
 
-          // Get property value
-          var value = getUndefined();
-          var propDeleted = getUndefined();
-          if (hasOwnProperty(prop, "value"))
-            value = prop.value;
-          else if (hasOwnProperty(prop, "source"))
-            value = prop.source.object.prop(prop.source.propName);
-          else
-            propDeleted = true;
+        if (value !== prop.cached){
 
-          if (value !== prop.cached){
+          // Set changes flag
+          changes = true;
 
-            // Set changes flag
-            changes = true;
+          // Set pending notification
+          this._pendingNotifications[propName] = this._pendingNotifications;
 
-            // Set pending notification
-            this._pendingNotifications[propName] = this._pendingNotifications;
-
-            // Cache new value
-            prop.cached = value;
-          }
-
-          // Delete the property completely
-          if (propDeleted)
-            delete this._properties[propName];
+          // Cache new value
+          prop.cached = value;
         }
+
+        // Delete the property completely
+        if (propDeleted)
+          delete this._properties[propName];
       }
 
       // Handle changes
@@ -86,14 +83,11 @@ this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
       var notifications = getUndefined();
       for (var propName in this._pendingNotifications){
 
-        if (hasOwnProperty(this._pendingNotifications, propName)){
+        // Set notifications flag
+        notifications = true;
 
-          // Set notifications flag
-          notifications = true;
-
-          // Call .notify()
-          this.notify(propName);
-        }
+        // Call .notify()
+        this.notify(propName);
       }
 
       // Handle notifications
