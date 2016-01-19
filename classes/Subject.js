@@ -1,4 +1,4 @@
-this.Subject = (function(){
+this.Subject = (function(hasOwnProperty){
   function Subject(){
     this._observers = {};
   };
@@ -8,7 +8,7 @@ this.Subject = (function(){
 
     // Look up observers
     var observers = this._observers[prop];
-    if (observers === undefined)
+    if (!hasOwnProperty(this._observers, prop))
       observers = [];
 
     // Iterate over observers and copy to newObservers
@@ -30,7 +30,7 @@ this.Subject = (function(){
 
     // Look up observers
     var observers = this._observers[prop];
-    if (observers === undefined)
+    if (!hasOwnProperty(this._observers, prop))
       return; // Nothing left to do
 
     // Iterate over observers and copy to newObservers
@@ -50,7 +50,7 @@ this.Subject = (function(){
 
     // Look up observers
     var observers = this._observers[prop];
-    if (observers === undefined)
+    if (!hasOwnProperty(this._observers, prop))
       return; // Nothing left to do
 
     // Call .update() on each observer
@@ -58,5 +58,5 @@ this.Subject = (function(){
       observers[i].update();
   }
   return Subject;
-}());
+}(this.hasOwnProperty));
 
