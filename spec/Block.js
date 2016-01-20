@@ -245,3 +245,4 @@ describe("Block class", function(){
     expect(block.prop("noexist")).toBeUndefined();
   });
 });
+

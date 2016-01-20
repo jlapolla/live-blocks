@@ -239,3 +239,4 @@ describe("Subject class", function(){
     expect(subject._observers["x"].length).toBe(3);
   });
 });
+
