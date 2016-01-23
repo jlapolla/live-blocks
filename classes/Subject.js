@@ -7,8 +7,10 @@ this.Subject = (function(hasOwnProperty){
   P.attach = function(observer, prop){
 
     // Look up observers
-    var observers = this._observers[prop];
-    if (!hasOwnProperty(this._observers, prop))
+    var observers;
+    if (hasOwnProperty(this._observers, prop))
+      observers = this._observers[prop];
+    else
       observers = [];
 
     // Iterate over observers and copy to newObservers
@@ -29,8 +31,10 @@ this.Subject = (function(hasOwnProperty){
   P.detach = function(observer, prop){
 
     // Look up observers
-    var observers = this._observers[prop];
-    if (!hasOwnProperty(this._observers, prop))
+    var observers;
+    if (hasOwnProperty(this._observers, prop))
+      observers = this._observers[prop];
+    else
       return; // Nothing left to do
 
     // Iterate over observers and copy to newObservers
@@ -49,8 +53,10 @@ this.Subject = (function(hasOwnProperty){
   P.notify = function(prop){
 
     // Look up observers
-    var observers = this._observers[prop];
-    if (!hasOwnProperty(this._observers, prop))
+    var observers;
+    if (hasOwnProperty(this._observers, prop))
+      observers = this._observers[prop];
+    else
       return; // Nothing left to do
 
     // Call .update() on each observer
