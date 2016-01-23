@@ -1,4 +1,4 @@
-this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
+this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, hasOwnProperty, getUndefined){
   var clear = function(prop){
 
     if (hasOwnProperty(prop, "source")){
@@ -17,11 +17,13 @@ this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
   };
   function Block(){
     Subject.call(this);
+    EventEmitter.call(this);
     this._properties = {};
     this._pendingNotifications = {};
     this._updating = false;
   }
   extendClass(Subject, Block);
+  multiInheritClass(EventEmitter, Block);
   var P = Block.prototype;
   P.update = function(){
 
@@ -166,5 +168,5 @@ this.Block = (function(Subject, extendClass, hasOwnProperty, getUndefined){
     }
   };
   return Block;
-}(this.Subject, this.extendClass, this.hasOwnProperty, this.getUndefined));
+}(this.Subject, this.EventEmitter, this.extendClass, this.multiInheritClass, this.hasOwnProperty, this.getUndefined));
 
