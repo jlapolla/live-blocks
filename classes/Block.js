@@ -15,12 +15,16 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
       delete prop.value;
     }
   };
-  function Block(){
+  function Block(run){
     Subject.call(this);
     EventEmitter.call(this);
     this._properties = {};
     this._pendingNotifications = {};
     this._updating = false;
+
+    // Add run function if supplied
+    if (typeof run !== "undefined")
+      this.run = run;
   }
   extendClass(Subject, Block);
   multiInheritClass(EventEmitter, Block);
