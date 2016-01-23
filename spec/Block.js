@@ -244,5 +244,22 @@ describe("Block class", function(){
     var block = new LiveBlocks.Block();
     expect(block.prop("noexist")).toBeUndefined();
   });
+
+  it("handles \"NaN\" values", function(){
+
+    // Create a division block
+    var block = new LiveBlocks.Block(function(){
+
+      this.prop("quotient", this.prop("numerator") / this.prop("denominator"));
+    });
+
+    // Produce "NaN" value
+    block.prop("numerator", 12);
+    expect(block.prop("quotient")).not.toBe(block.prop("quotient")); // "quotient" is "NaN"
+    // This is a valid test for "NaN"
+    // See this link:
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isNaN#Confusing_special-case_behavior
+
+  });
 });
 

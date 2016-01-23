@@ -57,7 +57,9 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
         else
           propDeleted = true;
 
-        if (value !== prop.cached){
+        // Compare value to cached value
+        // Do not run if both value and cached are "NaN"
+        if (value !== prop.cached && !(value !== value && prop.cached !== prop.cached)){
 
           // Set changes flag
           changes = true;
