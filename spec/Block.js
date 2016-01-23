@@ -305,5 +305,37 @@ describe("Block class", function(){
     expect(eventLog[0]).toBe("run");
     expect(eventLog[1]).toBe("success");
   });
+
+  it("prevents infinite .update() loops by throwing an exception", function(){
+
+    // Create a block that will update forever
+    var block = new LiveBlocks.Block(function(){
+
+      this.prop("output", !this.prop("output"));
+    });
+
+    // Count the number of "run" events
+    var runCount = 0;
+    block.on("run", function(){
+      runCount++;
+    });
+
+    // Trigger infinite update loop
+    var triggerUpdate = function(){
+      block.prop("output", !block.prop("output"));
+    };
+    expect(triggerUpdate).toThrowError("Infinite update loop detected: reached 1000 iterations");
+    expect(runCount).toBe(1000);
+
+    // Set new maxUpdateIterations
+    LiveBlocks.Block.setMaxUpdateIterations(100);
+
+    // Reset runCount
+    runCount = 0;
+
+    // Trigger infinite update loop
+    expect(triggerUpdate).toThrowError("Infinite update loop detected: reached 100 iterations");
+    expect(runCount).toBe(100);
+  });
 });
 

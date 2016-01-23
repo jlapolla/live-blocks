@@ -1,4 +1,4 @@
-this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, hasOwnProperty, getUndefined){
+this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritClass, hasOwnProperty, getUndefined){
   var clear = function(prop){
 
     if (hasOwnProperty(prop, "source")){
@@ -15,6 +15,7 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
       delete prop.value;
     }
   };
+  var maxUpdateIterations = 1000;
   function Block(run){
     Subject.call(this);
     EventEmitter.call(this);
@@ -41,7 +42,15 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
       this._updating = true; // Set updating flag immediately
 
     // Main update loop
+    var iterations = 1;
     while (true){
+
+      // Check for infinite update loop
+      if (iterations++ > maxUpdateIterations) {
+
+        this._updating = false;
+        throw new Error("Infinite update loop detected: reached " + maxUpdateIterations + " iterations");
+      }
 
       // Check for changes
       var changes = getUndefined();
@@ -195,6 +204,10 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
       this.update();
     }
   };
+  Block.setMaxUpdateIterations = function(iterations) {
+
+    maxUpdateIterations = iterations;
+  };
   return Block;
-}(this.Subject, this.EventEmitter, this.extendClass, this.multiInheritClass, this.hasOwnProperty, this.getUndefined));
+}(this.Subject, this.EventEmitter, host.Error, this.extendClass, this.multiInheritClass, this.hasOwnProperty, this.getUndefined));
 

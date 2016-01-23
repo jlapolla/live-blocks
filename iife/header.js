@@ -1,5 +1,5 @@
 "use strict";
 
 this.LiveBlocks = {};
-(function(){
+(function(host){
 
