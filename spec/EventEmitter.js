@@ -148,84 +148,110 @@ describe("EventEmitter class", function(){
     expect(callbackLog[1]).toEqual({callback: listeners[2]});
   });
 
-  xit(".notify() does nothing when called on a non-observed property", function(){
+  it(".fire() does nothing when called on an unwatched event", function(){
 
-    // Create a emitter
+    // Create an emitter
     var emitter = new LiveBlocks.EventEmitter();
 
-    // Set up observers
-    var updateRecord = [];
-    var updateFn = function(){
-      updateRecord.push(this);
-    };
-    var observers = [{}, {}, {}];
-    for (var i = 0; i < observers.length; i++)
-      observers[i].update = updateFn;
+    // Set up listeners
+    var listeners = [], callbackLog = [];
+    for (var i = 0; i < 3; i++){
 
-    // Attach observers
-    emitter.on("x", observers[0]);
-    emitter.on("x", observers[1]);
-    emitter.on("y", observers[0]);
-    emitter.on("y", observers[2]);
+      listeners.push((function(listeners, i){
 
-    // Run .notify("z")
+        return function(arg){
+
+          if (typeof arg !== "undefined")
+            callbackLog.push({callback: listeners[i], arg: arg});
+          else
+            callbackLog.push({callback: listeners[i]});
+        };
+      }(listeners, i)));
+    }
+
+    // Attach listeners
+    emitter.on("x", listeners[0]);
+    emitter.on("x", listeners[1]);
+    emitter.on("y", listeners[0]);
+    emitter.on("y", listeners[2]);
+
+    // Run .fire("z")
     emitter.fire("z");
-    expect(updateRecord.length).toBe(0);
+    expect(callbackLog.length).toBe(0);
   });
 
-  xit(".notify() calls update once on each observer, even if observers are detached during .notify()", function(){
+  it(".fire() calls each listener once, even if listeners are deregistered during .fire()", function(){
 
-    // Create a emitter
+    // Create an emitter
     var emitter = new LiveBlocks.EventEmitter();
 
-    // Set up observers
-    var observers = [{}, {}, {}];
-    var updateRecord = [];
-    var updateFn = function(){
-      updateRecord.push(this);
-      emitter.off("x", observers[1]);
-    };
-    for (var i = 0; i < observers.length; i++)
-      observers[i].update = updateFn;
+    // Set up listeners
+    var listeners = [], callbackLog = [];
+    for (var i = 0; i < 3; i++){
 
-    // Attach observers
-    emitter.on("x", observers[0]);
-    emitter.on("x", observers[1]);
-    emitter.on("x", observers[2]);
+      listeners.push((function(listeners, i){
 
-    // Run .notify("x")
-    emitter.fire("x");
-    expect(updateRecord.length).toBe(3);
-    expect(updateRecord[0]).toBe(observers[0]);
-    expect(updateRecord[1]).toBe(observers[1]);
-    expect(updateRecord[2]).toBe(observers[2]);
+        return function(arg){
+
+          if (typeof arg !== "undefined")
+            callbackLog.push({callback: listeners[i], arg: arg});
+          else
+            callbackLog.push({callback: listeners[i]});
+
+          // Deregister listeners[1]
+          emitter.off("x", listeners[1]);
+        };
+      }(listeners, i)));
+    }
+
+    // Attach listeners
+    emitter.on("x", listeners[0]);
+    emitter.on("x", listeners[1]);
+    emitter.on("x", listeners[2]);
+
+    // Run .fire("x", a)
+    var a = function(){};
+    emitter.fire("x", a);
+    expect(callbackLog.length).toBe(3);
+    expect(callbackLog[0]).toEqual({callback: listeners[0], arg: a});
+    expect(callbackLog[1]).toEqual({callback: listeners[1], arg: a});
+    expect(callbackLog[2]).toEqual({callback: listeners[2], arg: a});
     expect(emitter._listeners["x"].length).toBe(2);
   });
 
-  xit(".notify() ignores observers attached during .notify()", function(){
+  it(".fire() ignores listeners registered during .fire()", function(){
 
-    // Create a emitter
+    // Create an emitter
     var emitter = new LiveBlocks.EventEmitter();
 
-    // Set up observers
-    var observers = [{}, {}, {}];
-    var updateRecord = [];
-    var updateFn = function(){
-      updateRecord.push(this);
-      emitter.on("x", observers[2]);
-    };
-    for (var i = 0; i < observers.length; i++)
-      observers[i].update = updateFn;
+    // Set up listeners
+    var listeners = [], callbackLog = [];
+    for (var i = 0; i < 3; i++){
 
-    // Attach observers
-    emitter.on("x", observers[0]);
-    emitter.on("x", observers[1]);
+      listeners.push((function(listeners, i){
+
+        return function(arg){
+
+          if (typeof arg !== "undefined")
+            callbackLog.push({callback: listeners[i], arg: arg});
+          else
+            callbackLog.push({callback: listeners[i]});
+
+          // Register listeners[2]
+          emitter.on("x", listeners[2]);
+        };
+      }(listeners, i)));
+    }
+
+    // Attach listeners
+    emitter.on("x", listeners[0]);
+    emitter.on("x", listeners[1]);
 
     // Run .notify("x")
     emitter.fire("x");
-    expect(updateRecord.length).toBe(2);
-    expect(updateRecord[0]).toBe(observers[0]);
-    expect(updateRecord[1]).toBe(observers[1]);
+    expect(callbackLog.length).toBe(2);
+    expect(callbackLog[0]).toEqual({callback: listeners[0]});
+    expect(callbackLog[1]).toEqual({callback: listeners[1]});
     expect(emitter._listeners["x"].length).toBe(3);
   });
 });
