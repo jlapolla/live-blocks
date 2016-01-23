@@ -29,6 +29,9 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
   extendClass(Subject, Block);
   multiInheritClass(EventEmitter, Block);
   var P = Block.prototype;
+  P.error = function(){
+    return this._lastError;
+  };
   P.update = function(){
 
     // Check updating flag
@@ -79,9 +82,28 @@ this.Block = (function(Subject, EventEmitter, extendClass, multiInheritClass, ha
       // Handle changes
       if (changes){
 
-        // Execute.run() if it is a function
-        if (typeof this.run === "function")
-          this.run();
+        // Execute .run() if it is a function
+        if (typeof this.run === "function") {
+
+          // Fire "run" event
+          this.fire("run");
+
+          // Execute .run() in a try block
+          try {
+
+            this.run();
+            delete this._lastError;
+          }
+          catch (e) {
+
+            this._lastError = e;
+            this.fire("error", e);
+          }
+
+          // Handle successful run
+          if (!hasOwnProperty(this, "_lastError"))
+            this.fire("success");
+        }
 
         // Restart loop to check for new changes
         continue;

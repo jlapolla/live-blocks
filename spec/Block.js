@@ -261,5 +261,49 @@ describe("Block class", function(){
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isNaN#Confusing_special-case_behavior
 
   });
+
+  it("handles errors and fires events", function(){
+
+    // Set up event listeners
+    var eventLog = [];
+    var onRun = function(){
+      eventLog.push("run");
+    };
+    var onSuccess = function(){
+      eventLog.push("success");
+    };
+    var onError = function(){
+      eventLog.push("error");
+    };
+
+    // Create a callback block
+    var block = new LiveBlocks.Block(function(){
+
+      this.prop("callback")();
+    });
+
+    // Register event listeners
+    block.on("run", onRun);
+    block.on("success", onSuccess);
+    block.on("error", onError);
+
+    // Produce an exception
+    block.prop("callback", null);
+    expect(block.error()).not.toBeUndefined();
+    expect(eventLog.length).toBe(2);
+    expect(eventLog[0]).toBe("run");
+    expect(eventLog[1]).toBe("error");
+
+    // Clear eventLog
+    eventLog.length = 0;
+
+    // Clear the exception
+    block.prop("callback", function(){});
+    expect(block.error()).toBeUndefined();
+    expect(LiveBlocks.hasOwnProperty(block, "_lastError")).toBe(false);
+    expect(eventLog.length).toBe(2);
+    expect(eventLog[0]).toBe("run");
+    expect(eventLog[1]).toBe("success");
+  });
 });
 
