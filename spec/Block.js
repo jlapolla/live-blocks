@@ -4,6 +4,38 @@ describe("Block class", function(){
 
   var LiveBlocks = window.LiveBlocks;
 
+  it("duplicates itself", function(){
+
+    // Create some blocks
+    var blocks = {
+
+      empty: new LiveBlocks.Block(),
+
+      inverter: new LiveBlocks.Block(function(){
+
+        this.prop("output", !this.prop("input"));
+      }),
+    };
+
+    // Set properties on original blocks
+    blocks.inverter.prop("input", true);
+    expect(blocks.inverter.prop("output")).toBe(false);
+
+    // Duplicate blocks
+    blocks.empty2 = blocks.empty.duplicate();
+    blocks.inverter2 = blocks.inverter.duplicate();
+    expect(LiveBlocks.hasOwnProperty(blocks.empty2, "run")).toBe(false);
+    expect(LiveBlocks.hasOwnProperty(blocks.inverter2, "run")).toBe(true);
+    expect(blocks.inverter2.prop("output")).toBeUndefined();
+
+    // Set properties on duplicated blocks
+    blocks.inverter2.prop("input", false);
+    expect(blocks.inverter2.prop("output")).toBe(true);
+
+    // Re-check original blocks
+    expect(blocks.inverter.prop("output")).toBe(false);
+  });
+
   it("can chain and produce results synchronously", function(){
 
     // Create some inverter blocks

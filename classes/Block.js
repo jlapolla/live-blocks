@@ -33,6 +33,13 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
   P.error = function(){
     return this._lastError;
   };
+  P.duplicate = function(){
+
+    if (typeof this.run === "function")
+      return new Block(this.run);
+    else
+      return new Block();
+  };
   P.update = function(){
 
     // Check updating flag
