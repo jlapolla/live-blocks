@@ -292,6 +292,9 @@ describe("Block class", function(){
     // See this link:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isNaN#Confusing_special-case_behavior
 
+    // Produce a real value
+    block.prop("denominator", 3);
+    expect(block.prop("quotient")).toBe(4);
   });
 
   it("handles errors and fires events", function(){

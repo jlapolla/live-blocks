@@ -78,7 +78,7 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
 
         // Compare value to cached value
         // Do not run if both value and cached are "NaN"
-        if (value !== prop.cached && !(value !== value && prop.cached !== prop.cached)){
+        if (value !== prop.cached && (value === value || prop.cached === prop.cached)){
 
           // Set changes flag
           changes = true;
