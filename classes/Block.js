@@ -22,6 +22,7 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
     this._properties = {};
     this._pendingNotifications = {};
     this._updating = false;
+    this._running = false;
 
     // Add run function if supplied
     if (typeof run !== "undefined")
@@ -56,6 +57,7 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
       if (iterations++ > maxUpdateIterations) {
 
         this._updating = false;
+        this._running = false;
         throw new Error("Infinite update loop detected: reached " + maxUpdateIterations + " iterations");
       }
 
@@ -96,7 +98,7 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
       }
 
       // Handle changes
-      if (changes){
+      if (changes && !this._running){
 
         // Execute .run() if it is a function
         if (typeof this.run === "function") {
@@ -107,6 +109,7 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
           // Execute .run() in a try block
           try {
 
+            this._running = true;
             this.run();
             delete this._lastError;
           }
@@ -124,6 +127,9 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
         // Restart loop to check for new changes
         continue;
       }
+
+      // Unset running flag
+      this._running = false;
 
       // Handle pending notifications
       var notifications = getUndefined();
