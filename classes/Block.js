@@ -83,7 +83,15 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
         if (value !== prop.cached && (value === value || prop.cached === prop.cached)){
 
           // Set changes flag
-          changes = true;
+          if (this._running)
+            changes = true;
+          else {
+            
+            if (changes !== getUndefined())
+              throw new Error("System logic bug detected! This is an issue within LiveBlocks itself. Please file a bug report with the developer!");
+            else
+              changes =  propName;
+          }
 
           // Set pending notification
           this._pendingNotifications[propName] = this._pendingNotifications;
@@ -100,17 +108,24 @@ this.Block = (function(Subject, EventEmitter, Error, extendClass, multiInheritCl
       // Handle changes
       if (changes && !this._running){
 
-        // Execute .run() if it is a function
-        if (typeof this.run === "function") {
+        // Look up run function
+        var run;
+        if (typeof this.run === "function")
+          run = this.run;
+        else if (typeof this.run !== "undefined" && typeof this.run[changes] === "function")
+          run = this.run[changes];
+
+        // Execute run() if it is a function
+        if (typeof run === "function") {
 
           // Fire "run" event
-          this.fire("run");
+          this.fire("run", changes);
 
-          // Execute .run() in a try block
+          // Execute run() in a try block
           try {
 
             this._running = true;
-            this.run();
+            run.call(this);
             delete this._lastError;
           }
           catch (e) {
