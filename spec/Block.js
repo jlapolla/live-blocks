@@ -93,20 +93,26 @@ describe("Block class", function(){
 
     // Test stimulus
     blocks[0].prop("input", true);
-    expect(runLog.length).toBe(3);
+    expect(runLog.length).toBe(6);
     expect(runLog[0]).toBe(blocks[0]);
-    expect(runLog[1]).toBe(blocks[1]);
-    expect(runLog[2]).toBe(blocks[2]);
+    expect(runLog[1]).toBe(blocks[0]);
+    expect(runLog[2]).toBe(blocks[1]);
+    expect(runLog[3]).toBe(blocks[1]);
+    expect(runLog[4]).toBe(blocks[2]);
+    expect(runLog[5]).toBe(blocks[2]);
 
     // Clear runLog
     runLog.length = 0;
 
     // Switch test stimulus
     blocks[0].prop("input", false);
-    expect(runLog.length).toBe(3);
+    expect(runLog.length).toBe(6);
     expect(runLog[0]).toBe(blocks[0]);
-    expect(runLog[1]).toBe(blocks[1]);
-    expect(runLog[2]).toBe(blocks[2]);
+    expect(runLog[1]).toBe(blocks[0]);
+    expect(runLog[2]).toBe(blocks[1]);
+    expect(runLog[3]).toBe(blocks[1]);
+    expect(runLog[4]).toBe(blocks[2]);
+    expect(runLog[5]).toBe(blocks[2]);
   });
 
   it("handles block feedback efficiently", function(){
@@ -132,11 +138,15 @@ describe("Block class", function(){
 
     // Test stimulus
     blocks[0].prop("a", true);
-    expect(runLog.length).toBe(4);
+    expect(runLog.length).toBe(8);
     expect(runLog[0]).toBe(blocks[0]);
-    expect(runLog[1]).toBe(blocks[1]);
-    expect(runLog[2]).toBe(blocks[0]);
+    expect(runLog[1]).toBe(blocks[0]);
+    expect(runLog[2]).toBe(blocks[1]);
     expect(runLog[3]).toBe(blocks[1]);
+    expect(runLog[4]).toBe(blocks[0]);
+    expect(runLog[5]).toBe(blocks[0]);
+    expect(runLog[6]).toBe(blocks[1]);
+    expect(runLog[7]).toBe(blocks[1]);
   });
 
   it("automatically overwrites sourced outputs with a value", function(){
@@ -190,9 +200,11 @@ describe("Block class", function(){
 
     // Test stimulus
     blocks[0].prop("input", true);
-    expect(runLog.length).toBe(2);
+    expect(runLog.length).toBe(4);
     expect(runLog[0]).toBe(blocks[0]);
-    expect(runLog[1]).toBe(blocks[2]);
+    expect(runLog[1]).toBe(blocks[0]);
+    expect(runLog[2]).toBe(blocks[2]);
+    expect(runLog[3]).toBe(blocks[2]);
 
     // Connect blocks in second configuration
     blocks[2].prop("input", blocks[1], "output");
@@ -202,8 +214,9 @@ describe("Block class", function(){
 
     // Test stimulus
     blocks[0].prop("input", false);
-    expect(runLog.length).toBe(1);
+    expect(runLog.length).toBe(2);
     expect(runLog[0]).toBe(blocks[0]);
+    expect(runLog[1]).toBe(blocks[0]);
   });
 
   it("can delete properties", function(){
@@ -218,7 +231,7 @@ describe("Block class", function(){
 
     // Set "input" property
     block.prop("input", true);
-    expect(runLog.length).toBe(1);
+    expect(runLog.length).toBe(2);
     expect(block.prop("output")).toBe(false);
 
     // Clear runLog
@@ -226,7 +239,7 @@ describe("Block class", function(){
 
     // Delete "input" property
     block.del("input");
-    expect(runLog.length).toBe(1);
+    expect(runLog.length).toBe(2);
     expect(block.prop("output")).toBe(true);
     expect(block._properties).toEqual({"output": {cached: true, value: true}});
   });
@@ -330,10 +343,10 @@ describe("Block class", function(){
 
   it("prevents infinite .update() loops by throwing an exception", function(){
 
-    // Create an inverter block
+    // Create a block that will update forever
     var block = new LiveBlocks.Block(function(){
 
-      this.prop("output", !this.prop("input"));
+      this.prop("output", !this.prop("output"));
     });
 
     // Count the number of "run" events
@@ -344,13 +357,10 @@ describe("Block class", function(){
 
     // Trigger infinite update loop
     var triggerUpdate = function(){
-
-      // Wire inverter input to inverter output to create an infinite loop
-      block.prop("input", true);
-      block.prop("input", block, "output");
+      block.prop("output", !block.prop("output"));
     };
     expect(triggerUpdate).toThrowError("Infinite update loop detected: reached 1000 iterations");
-    expect(runCount).toBe(501);
+    expect(runCount).toBe(1000);
 
     // Set new maxUpdateIterations
     LiveBlocks.Block.setMaxUpdateIterations(100);
@@ -360,7 +370,7 @@ describe("Block class", function(){
 
     // Trigger infinite update loop
     expect(triggerUpdate).toThrowError("Infinite update loop detected: reached 100 iterations");
-    expect(runCount).toBe(50);
+    expect(runCount).toBe(100);
   });
 });
 
