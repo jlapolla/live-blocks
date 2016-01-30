@@ -6,6 +6,10 @@ this.Queue = (function(getUndefined){
   }
   Queue.prototype = {};
   var P = Queue.prototype;
+  P.duplicate = function(){
+
+    return new Queue();
+  };
   P.push = function(item){
 
     // Push item onto queue
@@ -20,36 +24,45 @@ this.Queue = (function(getUndefined){
     else {
 
       // Create items if nothing is in the queue
-      this._queueCurrent = {next: next};
+      this._queueCurrent = next;
       this._queueTip = next;
       return;
     }
   };
   P.next = function(){
 
-    // Increment queue and get next item
-    if (this._queueCurrent !== this._queueTip){
+    if (this._queueCurrent){
 
-      // We are not at the end of the queue
-      this._queueCurrent = this._queueCurrent.next;
-      return this._queueCurrent.item;
-    }
-    else {
+      // Get current item
+      var item = this._queueCurrent.item;
 
-      // We are at the end of the queue
-      this._queueCurrent = getUndefined();
-      this._queueTip = getUndefined();
-      return;
+      if (this._queueCurrent === this._queueTip){
+
+        // We reached the end of the queue
+        this._queueCurrent = getUndefined();
+        this._queueTip = getUndefined();
+      }
+      else
+        this._queueCurrent = this._queueCurrent.next; // Increment queue pointer
+
+      // Return item
+      return item;
     }
+    else
+      return; // Return undefined
   };
   P.peek = function(){
 
     // Get next item without incrementing
-    if (this._queueCurrent !== this._queueTip)
-      return this._queueCurrent.next.item; // We are not at the end of the queue
+    if (this._queueCurrent)
+      return this._queueCurrent.item; // We are not at the end of the queue
     else
       return; // We are at the end of the queue
   }
+  P.isEmpty = function(){
+
+    return !this._queueCurrent;
+  };
   return Queue;
 }(this.getUndefined));
 
