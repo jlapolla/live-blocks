@@ -10,6 +10,7 @@ $(eval $(d)cat_order += $(d)classes/Queue.js)
 $(eval $(d)cat_order += $(d)classes/Subject.js)
 $(eval $(d)cat_order += $(d)classes/EventEmitter.js)
 $(eval $(d)cat_order += $(d)classes/Block.js)
+$(eval $(d)cat_order += $(d)classes/Wire.js)
 $(eval $(d)cat_order += $(d)iife/footer.js)
 
 $(d)live-blocks.js: $(wildcard $(d)classes/*) $(wildcard $(d)iife/*)
