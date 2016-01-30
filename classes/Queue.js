@@ -1,5 +1,6 @@
 this.Queue = (function(getUndefined){
   function Queue(){
+
     this._queueTip = getUndefined();
     this._queueCurrent = getUndefined();
   }
@@ -14,13 +15,14 @@ this.Queue = (function(getUndefined){
       // Update tip if something is in the queue
       this._queueTip.next = next;
       this._queueTip = next;
+      return;
     }
     else {
 
       // Create items if nothing is in the queue
-      var dummy = {next: next};
-      this._queueCurrent = dummy;
+      this._queueCurrent = {next: next};
       this._queueTip = next;
+      return;
     }
   };
   P.next = function(){
@@ -37,7 +39,7 @@ this.Queue = (function(getUndefined){
       // We are at the end of the queue
       this._queueCurrent = getUndefined();
       this._queueTip = getUndefined();
-      return this._queueCurrent;
+      return;
     }
   };
   P.peek = function(){
@@ -45,9 +47,8 @@ this.Queue = (function(getUndefined){
     // Get next item without incrementing
     if (this._queueCurrent !== this._queueTip)
       return this._queueCurrent.next.item; // We are not at the end of the queue
-
-    // We are at the end of the queue
-    // return undefined
+    else
+      return; // We are at the end of the queue
   }
   return Queue;
 }(this.getUndefined));
