@@ -103,7 +103,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
         return;
       }
       else
-        this._updating = true;
+        this._updating = true; // Set updating flag
 
       // Main loop
       var iterations = 1;
