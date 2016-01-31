@@ -8,11 +8,11 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     if (typeof hash !== "undefined"){
 
       // Add equalTo function if supplied
-      if (typeof hash.equalTo !== "undefined")
+      if (hasOwnProperty(hash, "equalTo"))
         this.equalTo = hash.equalTo;
 
       // Add queue if supplied
-      if (typeof hash.queue !== "undefined")
+      if (hasOwnProperty(hash, "queue"))
         this._valueQueue = hash.queue;
     }
 
@@ -30,10 +30,10 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
   P.duplicate = function(){
 
     var hash = {
-      _valueQueue: this._valueQueue.duplicate()
+      queue: this._valueQueue.duplicate()
     };
 
-    if (hasOwnProperty(this, equalTo))
+    if (hasOwnProperty(this, "equalTo"))
       hash.equalTo = this.equalTo;
 
     return new Wire(hash);

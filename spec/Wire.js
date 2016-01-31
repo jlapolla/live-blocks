@@ -4,7 +4,34 @@ describe("Wire class", function(){
 
   var LiveBlocks = window.LiveBlocks;
 
-  xit("duplicates itself");
+  it("duplicates itself with custom equalTo() function", function(){
+
+    // Create equalTo function
+    var neverEqual = function(){return false;};
+
+    // Create a wire
+    var wire = new LiveBlocks.Wire({equalTo: neverEqual});
+
+    // Duplicate wire
+    var duplicate = wire.duplicate();
+    duplicate.value(false);
+    expect(duplicate.equalTo).toBe(neverEqual);
+  });
+
+  it("duplicates itself with custom queue object", function(){
+
+    // Create fake queue
+    var duplicateQueue = {};
+    var queue = {duplicate: function(){return duplicateQueue;}};
+
+    // Create a wire
+    var wire = new LiveBlocks.Wire({queue: queue});
+
+    // Duplicate wire
+    var duplicate = wire.duplicate();
+    expect(duplicate._valueQueue).toBe(duplicateQueue);
+    expect(LiveBlocks.hasOwnProperty(duplicate, "equalTo")).toBe(false);
+  });
 
   it("does not bind duplicate block properties", function(){
 
@@ -228,8 +255,26 @@ describe("Wire class", function(){
     expect(nan).not.toBe(nan); // Just to make sure we have a true NaN value
   });
 
-  xit("detects infinite loops");
+  it("detects infinite loops", function(){
 
-  xit("uses injected dependencies");
+    // Create a wire
+    var wire = new LiveBlocks.Wire();
+
+    // Create a block that will cause an infinite loop
+    var block = {update: function(){wire.value(!wire.value());}};
+
+    // Bind block properties
+    wire.bind(block, "x");
+
+    // Create infinite loop
+    var triggerLoop = function(){
+      wire.value(!wire.value());
+    };
+    expect(triggerLoop).toThrowError("Infinite loop detected: reached 1000 iterations");
+
+    // Set new maxIterations
+    LiveBlocks.Wire.setMaxIterations(100);
+    expect(triggerLoop).toThrowError("Infinite loop detected: reached 100 iterations");
+  });
 });
 
