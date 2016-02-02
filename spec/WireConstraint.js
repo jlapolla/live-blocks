@@ -4,7 +4,7 @@ describe("WireConstraint class", function(){
 
   var LiveBlocks = window.LiveBlocks;
 
-  it("demonstration", function(){
+  it("integration test", function(){
 
     // Update log
     var updateLog = [];
@@ -110,6 +110,216 @@ describe("WireConstraint class", function(){
     expect(updateLog).toEqual(["half2double", "double2half", "half2double"]);
   });
 
-  xit("catches exceptions in constraint functions");
+  it("duplicates injected queue dependencies", function(){
+
+    // Create a fake queue
+    var queue2 = {};
+    var queue = {duplicate: function(){return queue2;}};
+
+    // Create a wire constraint
+    var wc = new LiveBlocks.WireConstraint({queue: queue});
+    expect(wc._updateQueue).toBe(queue);
+
+    // Duplicate wire constraint
+    var duplicate = wc.duplicate();
+    expect(duplicate._updateQueue).toBe(queue2);
+  });
+
+  it("duplicates injected function dependencies", function(){
+
+    // Create function hash
+    var fnHash = {
+      a: function(){},
+      b: function(){}
+    };
+
+    // Create a wire constraint
+    var wc = new LiveBlocks.WireConstraint({functions: fnHash});
+    expect(wc._functions).not.toBe(fnHash);
+    expect(wc._functions).toEqual(fnHash);
+
+    // Duplicate wire constraint
+    var duplicate = wc.duplicate();
+    expect(duplicate._functions).not.toBe(wc._functions);
+    expect(duplicate._functions).toEqual(fnHash);
+  });
+
+  it("creates a default queue when no queue is injected", function(){
+
+    // Create a wire constraint
+    var wc = new LiveBlocks.WireConstraint();
+    expect(wc._updateQueue).not.toBeUndefined();
+  });
+
+  it("disconnects pin from wire before connecting to a new wire", function(){
+
+    // Create a block
+    var block = new LiveBlocks.WireConstraint({functions: {x: function(){}}});
+
+    // Create wires which log their binding events
+    var log = [];
+    var bindFn = (function(bind){
+
+      return function(block, prop){
+
+        // Log bind call
+        log.push({function: "bind", block: block, prop: prop});
+
+        // Call through
+        return bind.call(this, block, prop);
+      };
+    }(LiveBlocks.Wire.prototype.bind));
+    var unbindFn = (function(unbind){
+
+      return function(block, prop){
+
+        // Log unbind call
+        log.push({function: "unbind", block: block, prop: prop});
+
+        // Call through
+        return unbind.call(this, block, prop);
+      };
+    }(LiveBlocks.Wire.prototype.unbind));
+    var wires = [];
+    for (var i = 0; i < 2; i++) {
+
+      // Create wire
+      var wire = new LiveBlocks.Wire();
+
+      // Add logging bind and unbind functions
+      wire.bind = bindFn;
+      wire.unbind = unbindFn;
+
+      // Add wire to wires list
+      wires.push(wire);
+    }
+
+    // Connect block to wire 0
+    block.connect("x", wires[0]);
+    expect(log.length).toBe(1);
+    expect(log[0].function).toBe("bind");
+    expect(log[0].block).toBe(block);
+    expect(log[0].prop).toBe("x");
+
+    // Clear log
+    log.length = 0;
+
+    // Connect block to wire 1
+    block.connect("x", wires[1]);
+    expect(log.length).toBe(2);
+    expect(log[0].function).toBe("unbind");
+    expect(log[0].block).toBe(block);
+    expect(log[0].prop).toBe("x");
+    expect(log[1].function).toBe("bind");
+    expect(log[1].block).toBe(block);
+    expect(log[1].prop).toBe("x");
+  });
+
+  it("throws error when connecting to non-existent pin", function(){
+
+    // Create a block with no pins
+    var block = new LiveBlocks.WireConstraint();
+
+    // Create a wire
+    var wire = new LiveBlocks.Wire();
+
+    // Connect to non-existent pin
+    expect(function(){
+      block.connect("x", wire);
+    }).toThrowError("Pin \"x\" not found");
+  });
+
+  it("catches exceptions in pin functions", function(){
+
+    // Create a block that throws error
+    var block = new LiveBlocks.WireConstraint({
+      functions: {
+        a: function(){
+
+          // Throw error if "a" is not a number
+          if (typeof this.a !== "number")
+            throw new TypeError("Pin \"a\" must be a number");
+
+          // Copy "a" to "b"
+          this.b = this.a;
+        },
+        b: function(){
+
+          // Throw error if "b" is not a number
+          if (typeof this.b !== "number")
+            throw new TypeError("Pin \"b\" must be a number");
+
+          // Copy "b" to "a"
+          this.a = this.b;
+        }
+      }
+    });
+
+    // Create wires
+    var wireA = new LiveBlocks.Wire();
+    var wireB = new LiveBlocks.Wire();
+
+    // Connect wires to block
+    block.connect("a", wireA);
+    block.connect("b", wireB);
+    expect(block.error().message).toBe("Pin \"b\" must be a number");
+
+    // Clear error
+    wireA.value(1);
+    expect(block.error()).toBeUndefined();
+    expect(wireB.value()).toBe(1);
+  });
+
+  describe("pin iterator", function(){
+
+    it("iterates over block pins", function(){
+
+      // Create a block that throws error
+      var block = new LiveBlocks.WireConstraint((function(){
+        var noop = function(){};
+        var functions = {a: noop, b: noop};
+        return {functions: functions};
+      }()));
+
+      // Create wires
+      var wireA = new LiveBlocks.Wire();
+
+      // Get pin iterator
+      var it = block.pins();
+
+      // Connect wires to block
+      block.connect("a", wireA);
+
+      // Peek at next pin
+      expect(it.peek().name).toBe("a");
+      expect(it.peek().wire).toBe(wireA);
+
+      // Get next pin
+      var pin = it.next();
+      expect(pin.name).toBe("a");
+      expect(pin.wire).toBe(wireA);
+
+      // Check has() function
+      expect(it.has("a")).toBe(true);
+      expect(it.has("b")).toBe(true);
+      expect(it.has("c")).toBe(false);
+
+      // Get next pin
+      pin = it.next();
+      expect(pin.name).toBe("b");
+      expect(pin.wire).toBeUndefined();
+
+      // We are at the end of the iterator
+      expect(it.peek()).toBeUndefined();
+      expect(it.next()).toBeUndefined();
+
+      // Reset iterator
+      it.reset();
+
+      // Peek at next pin
+      expect(it.peek().name).toBe("a");
+      expect(it.peek().wire).toBe(wireA);
+    });
+  });
 });
 
