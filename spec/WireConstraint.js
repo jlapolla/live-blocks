@@ -99,9 +99,16 @@ describe("WireConstraint class", function(){
     // Clear update log
     updateLog.length = 0;
 
-    // Re-wire blocks
+    // Disconnect pins
     timesTwo.disconnect("half");
+    expect(updateLog).toEqual(["half2double", "double2half"]);
     timesTwo.disconnect("double");
+    expect(updateLog).toEqual(["half2double", "double2half", "double2half"]);
+
+    // Clear update log
+    updateLog.length = 0;
+
+    // Rewire blocks
     timesTwo.connect("half", wires[2]);
     timesTwo.connect("double", wires[1]);
     expect(wires[0].value()).toBe(3);
@@ -213,6 +220,60 @@ describe("WireConstraint class", function(){
     expect(log[1].function).toBe("bind");
     expect(log[1].block).toBe(block);
     expect(log[1].prop).toBe("x");
+  });
+
+  it("treats disconnected pin as undefined", function(){
+
+
+    // Create a passthrough block
+    var block = new LiveBlocks.WireConstraint({
+      functions: {
+        a: function(){
+
+          // Copy "a" to "b"
+          this.b = this.a;
+        },
+        b: function(){
+
+          // Copy "b" to "a"
+          this.a = this.b;
+        }
+      }
+    });
+
+    // Create wires
+    var wireA = new LiveBlocks.Wire();
+    var wireB = new LiveBlocks.Wire();
+
+    // Set values on wires
+    wireA.value("a");
+    wireB.value("b");
+
+    // Connect wires to block
+    block.connect("a", wireA);
+    block.connect("b", wireB);
+    expect(wireA.value()).toBe("b");
+    expect(wireB.value()).toBe("b");
+
+    // Test stimulus
+    wireA.value(undefined);
+    expect(wireA.value()).toBeUndefined();
+    expect(wireB.value()).toBeUndefined();
+
+    // Test stimulus
+    wireA.value("a");
+    expect(wireA.value()).toBe("a");
+    expect(wireB.value()).toBe("a");
+
+    // Disconnect pin "b"
+    block.disconnect("a");
+    expect(wireA.value()).toBe("a");
+    expect(wireB.value()).toBeUndefined();
+
+    // Test stimulus
+    wireA.value("b");
+    expect(wireA.value()).toBe("b");
+    expect(wireB.value()).toBeUndefined();
   });
 
   it("throws error when connecting to non-existent pin", function(){

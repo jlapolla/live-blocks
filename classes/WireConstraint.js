@@ -58,6 +58,15 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     };
     return WireConstraintPinIterator;
   }());
+  var _disconnect = function(pin){
+
+    // Disconnect from wire, if any
+    if (hasOwnProperty(this._wires, pin)){
+
+      this._wires[pin].unbind(this, pin);
+      delete this._wires[pin];
+    }
+  };
   function WireConstraint(hash){
 
     EventEmitter.call(this);
@@ -101,7 +110,7 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
       throw new Error("Pin \"" + pin + "\" not found");
 
     // Disconnect from old wire, if any
-    this.disconnect(pin);
+    _disconnect.call(this, pin);
 
     // Record new wire
     this._wires[pin] = wire;
@@ -115,11 +124,10 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
   P.disconnect = function(pin){
 
     // Disconnect from wire, if any
-    if (hasOwnProperty(this._wires, pin)){
+    _disconnect.call(this, pin);
 
-      this._wires[pin].unbind(this, pin);
-      delete this._wires[pin];
-    }
+    // Process wire value
+    this.update(pin);
   };
   P.update = function(pin){
 
