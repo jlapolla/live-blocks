@@ -94,34 +94,34 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
 
     return this._lastError;
   };
-  P.connect = function(prop, wire){
+  P.connect = function(pin, wire){
 
     // Throw error if pin does not exist
-    if (!hasOwnProperty(this._functions, prop))
-      throw new Error("Pin \"" + prop + "\" not found");
+    if (!hasOwnProperty(this._functions, pin))
+      throw new Error("Pin \"" + pin + "\" not found");
 
     // Disconnect from old wire, if any
-    this.disconnect(prop);
+    this.disconnect(pin);
 
     // Record new wire
-    this._wires[prop] = wire;
+    this._wires[pin] = wire;
 
-    // Bind property to wire
-    wire.bind(this, prop);
+    // Bind pin to wire
+    wire.bind(this, pin);
 
     // Process wire value
-    this.update(prop);
+    this.update(pin);
   };
-  P.disconnect = function(prop){
+  P.disconnect = function(pin){
 
     // Disconnect from wire, if any
-    if (hasOwnProperty(this._wires, prop)){
+    if (hasOwnProperty(this._wires, pin)){
 
-      this._wires[prop].unbind(this, prop);
-      delete this._wires[prop];
+      this._wires[pin].unbind(this, pin);
+      delete this._wires[pin];
     }
   };
-  P.update = function(prop){
+  P.update = function(pin){
 
     // A connected wire value changed
 
@@ -129,7 +129,7 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     if (this._updating){
 
       // Add update to queue and return
-      this._updateQueue.push(prop);
+      this._updateQueue.push(pin);
       return;
     }
     else
@@ -147,13 +147,13 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
       }
 
       // Fire update event
-      this.fire("update", {pin: prop, value: wireValues[prop]});
+      this.fire("update", {pin: pin, value: wireValues[pin]});
 
       // Execute function in a try block
       try {
 
         // Call function on wire values hash
-        this._functions[prop].call(wireValues);
+        this._functions[pin].call(wireValues);
         delete this._lastError;
         this.fire("success");
       }
@@ -179,7 +179,7 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
         return;
       }
       else
-        prop = this._updateQueue.next(); // Get next updated property from queue
+        pin = this._updateQueue.next(); // Get next updated pin from queue
 
       // Restart loop
     }
