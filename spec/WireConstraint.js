@@ -270,6 +270,99 @@ describe("WireConstraint class", function(){
     expect(wireB.value()).toBe(1);
   });
 
+  it("fires events on update, success, and error", function(){
+
+    // Create a block that throws error
+    var block = new LiveBlocks.WireConstraint({
+      functions: {
+        a: function(){
+
+          // Throw error if "a" is not a number
+          if (typeof this.a !== "number")
+            throw new TypeError("Pin \"a\" must be a number");
+
+          // Copy "a" to "b"
+          this.b = this.a;
+        },
+        b: function(){
+
+          // Throw error if "b" is not a number
+          if (typeof this.b !== "number")
+            throw new TypeError("Pin \"b\" must be a number");
+
+          // Copy "b" to "a"
+          this.a = this.b;
+        }
+      }
+    });
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list){
+
+      for (var i = 0; i < list.length; i++){
+
+        listeners[list[i]] = (function(eventName){
+
+          return function(arg){
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== "undefined")
+              obj.arg = arg;
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+      }
+    }(["update", "success", "error"]));
+
+    // Attach event listeners
+    block.on("update", listeners.update);
+    block.on("success", listeners.success);
+    block.on("error", listeners.error);
+
+    // Create wires
+    var wireA = new LiveBlocks.Wire();
+    var wireB = new LiveBlocks.Wire();
+
+    // Connect wireA to block
+    block.connect("a", wireA);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "a", value: undefined});
+    expect(log[1].event).toBe("error");
+    expect(log[1].arg.message).toBe("Pin \"a\" must be a number");
+    expect(log.length).toBe(2);
+
+    // Clear log
+    log.length = 0;
+
+    // Connect wireB to block
+    block.connect("b", wireB);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "b", value: undefined});
+    expect(log[1].event).toBe("error");
+    expect(log[1].arg.message).toBe("Pin \"b\" must be a number");
+    expect(log.length).toBe(2);
+
+    // Clear log
+    log.length = 0;
+
+    // Clear error
+    wireA.value(1);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "a", value: 1});
+    expect(log[1].event).toBe("success");
+    expect(log[1].arg).toBeUndefined();
+    expect(log[2].event).toBe("update");
+    expect(log[2].arg).toEqual({pin: "b", value: 1});
+    expect(log[3].event).toBe("success");
+    expect(log[3].arg).toBeUndefined();
+    expect(log.length).toBe(4);
+  });
+
   describe("pin iterator", function(){
 
     it("iterates over block pins", function(){

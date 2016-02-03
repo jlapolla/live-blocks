@@ -263,5 +263,5 @@
       });
     }(classNames[i]));
   }
-}(["EventEmitter", "Block"]));
+}(["EventEmitter", "Block", "WireConstraint"]));
 

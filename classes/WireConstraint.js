@@ -1,4 +1,4 @@
-this.WireConstraint = (function(hasOwnProperty, Queue, Error){
+this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, EventEmitter){
   var WireConstraintPinIterator = (function(){
     var refresh = function(){
 
@@ -60,6 +60,8 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error){
   }());
   function WireConstraint(hash){
 
+    EventEmitter.call(this);
+
     this._functions = {};
     this._wires = {};
     this._updating = false;
@@ -82,7 +84,7 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error){
     if (!hasOwnProperty(this, "_updateQueue"))
       this._updateQueue = new Queue();
   }
-  WireConstraint.prototype = {};
+  extendClass(EventEmitter, WireConstraint);
   var P = WireConstraint.prototype;
   P.duplicate = function(){
 
@@ -144,16 +146,21 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error){
         wireValues[name] = wires[name].value();
       }
 
+      // Fire update event
+      this.fire("update", {pin: prop, value: wireValues[prop]});
+
       // Execute function in a try block
       try {
 
         // Call function on wire values hash
         this._functions[prop].call(wireValues);
         delete this._lastError;
+        this.fire("success");
       }
       catch (e){
 
         this._lastError = e;
+        this.fire("error", e);
       }
 
       // Handle successful run
@@ -182,5 +189,5 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error){
     return new WireConstraintPinIterator(this);
   };
   return WireConstraint;
-}(this.hasOwnProperty, this.Queue, host.Error));
+}(this.hasOwnProperty, this.Queue, host.Error, this.extendClass, this.EventEmitter));
 
