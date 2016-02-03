@@ -276,5 +276,23 @@ describe("Wire class", function(){
     LiveBlocks.Wire.setMaxIterations(100);
     expect(triggerLoop).toThrowError("Infinite loop detected: reached 100 iterations");
   });
+
+  it("can take undefined as a value", function(){
+
+    // Create a wire
+    var wire = new LiveBlocks.Wire();
+
+    // Set defined value
+    wire.value(1);
+    expect(wire.value()).toBe(1);
+
+    // Set undefined value
+    wire.value(undefined);
+    expect(wire.value()).toBeUndefined();
+
+    // Set defined value
+    wire.value(1);
+    expect(wire.value()).toBe(1);
+  });
 });
 

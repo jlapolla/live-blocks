@@ -89,7 +89,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
   };
   P.value = function(newValue){
 
-    if (typeof newValue === "undefined")
+    if (!arguments.length)
       return this._value; // We are getting the value
     else {
 
