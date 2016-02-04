@@ -1,4 +1,71 @@
 this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
+  var WireConnectionIterator = (function(){
+    var refresh = function(){
+
+      this._connections = this._wire._bindings;
+    };
+    function WireConnectionIterator(wire){
+
+      this._wire = wire;
+      this._index = 0;
+      refresh.call(this);
+    }
+    WireConnectionIterator.prototype = {};
+    var P = WireConnectionIterator.prototype;
+    P.reset = function(){
+
+      // Reset iterator index
+      this._index = 0;
+    };
+    P.next = function(){
+
+      // Check if we are at the last connection
+      if (this._index < this._connections.length){
+
+        // Get current connection
+        var connection = this._connections[this._index];
+
+        // Increment index and return connection
+        this._index = this._index + 1;
+        return {block: connection.block, pin: connection.pin};
+      }
+      else
+        return; // Return undefined
+    };
+    P.peek = function(){
+
+      // Check if we are at the last connection
+      if (this._index < this._connections.length){
+
+        // Get current connection
+        var connection = this._connections[this._index];
+
+        // Return connection
+        return {block: connection.block, pin: connection.pin};
+      }
+      else
+        return; // Return undefined
+    };
+    P.has = function(connection){
+
+      // Create new iterator
+      var it = this._wire.connections();
+
+      // Run through iterator and check for equivalent connection
+      var con = it.peek();
+      while (con){
+
+        if (con.block === connection.block && con.pin === connection.pin)
+          return true;
+
+        con = it.next();
+      }
+
+      // Match not found
+      return false;
+    };
+    return WireConnectionIterator;
+  }());
   function Wire(hash){
 
     this._bindings = [];
@@ -139,6 +206,10 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
         // Restart loop
       }
     }
+  };
+  P.connections = function(){
+
+    return new WireConnectionIterator(this);
   };
   return Wire;
 }(this.getUndefined, this.hasOwnProperty, this.Queue, host.Error));
