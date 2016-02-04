@@ -48,17 +48,12 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     };
     P.has = function(connection){
 
-      // Create new iterator
-      var it = this._wire.connections();
-
       // Run through iterator and check for equivalent connection
-      var con = it.peek();
-      while (con){
+      for (var i = 0; i < this._connections.length; i++){
 
+        var con = this._connections[i];
         if (con.block === connection.block && con.pin === connection.pin)
           return true;
-
-        con = it.next();
       }
 
       // Match not found

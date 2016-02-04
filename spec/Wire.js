@@ -294,5 +294,106 @@ describe("Wire class", function(){
     wire.value(1);
     expect(wire.value()).toBe(1);
   });
+
+  describe("connection iterator", function(){
+
+    it("iterates over wire connections", function(){
+
+      // Create a few blocks
+      var blocks = [];
+      var noop = function(){};
+      for (var i = 0; i < 3; i++)
+        blocks.push(new LiveBlocks.WireConstraint({functions: {a: noop}}));
+
+      // Create a wire
+      var wire = new LiveBlocks.Wire();
+
+      // Connect blocks 0 and 1 to wire
+      blocks[0].connect("a", wire);
+      blocks[1].connect("a", wire);
+
+      // Get connection iterator
+      var it = wire.connections();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
+      expect(it.peek().pin).toBe("a");
+      expect(it.peek().block).toBe(blocks[0]);
+
+      // Move to next connection
+      var connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[0]);
+      expect(it.peek().pin).toBe("a");
+      expect(it.peek().block).toBe(blocks[1]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[1]);
+      expect(it.peek()).toBeUndefined();
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection).toBeUndefined();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
+
+      // Add a new connection
+      blocks[2].connect("a", wire);
+
+      // Reset iterator
+      it.reset();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[0]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[1]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection).toBeUndefined();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
+
+      // Get new iterator
+      it = wire.connections();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(true);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[0]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[1]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection.pin).toBe("a");
+      expect(connection.block).toBe(blocks[2]);
+
+      // Move to next connection
+      connection = it.next();
+      expect(connection).toBeUndefined();
+      expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
+      expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
+      expect(it.has({block: blocks[2], pin: "a"})).toBe(true);
+    });
+  });
 });
 
