@@ -424,6 +424,86 @@ describe("WireConstraint class", function(){
     expect(log.length).toBe(4);
   });
 
+  it("fires events on pin connect and disconnect", function(){
+
+    // Create a block
+    var noop = function(){};
+    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list){
+
+      for (var i = 0; i < list.length; i++){
+
+        listeners[list[i]] = (function(eventName){
+
+          return function(arg){
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== "undefined")
+              obj.arg = arg;
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+      }
+    }(["connect", "disconnect"]));
+
+    // Create wires
+    var wires = [];
+    for (var i = 0; i < 2; i++)
+      wires.push(new LiveBlocks.Wire());
+
+    // Register event listeners
+    block.on("connect", listeners.connect);
+    block.on("disconnect", listeners.disconnect);
+    expect(log.length).toBe(0);
+
+    // Connect pin "a"
+    block.connect("a", wires[0]);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.wire).toBe(wires[0]);
+
+    // Clear log
+    log.length = 0;
+
+    // Connect pin "b"
+    block.connect("b", wires[1]);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].arg.wire).toBe(wires[1]);
+
+    // Clear log
+    log.length = 0;
+
+    // Reconnect pin "a"
+    block.connect("a", wires[1]);
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe("disconnect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.wire).toBe(wires[0]);
+    expect(log[1].event).toBe("connect");
+    expect(log[1].arg.pin).toBe("a");
+    expect(log[1].arg.wire).toBe(wires[1]);
+
+    // Clear log
+    log.length = 0;
+
+    // Disconnect pin "b"
+    block.disconnect("b");
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("disconnect");
+    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].arg.wire).toBe(wires[1]);
+  });
+
   describe("pin iterator", function(){
 
     it("iterates over block pins", function(){

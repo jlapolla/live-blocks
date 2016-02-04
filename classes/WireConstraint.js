@@ -71,8 +71,12 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     // Disconnect from wire, if any
     if (hasOwnProperty(this._wires, pin)){
 
-      this._wires[pin].unbind(this, pin);
+      var wire = this._wires[pin];
+      wire.unbind(this, pin);
       delete this._wires[pin];
+
+      // Fire disconnect event
+      this.fire("disconnect", {pin: pin, wire: wire});
     }
   };
   function WireConstraint(hash){
@@ -125,6 +129,9 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
 
     // Bind pin to wire
     wire.bind(this, pin);
+
+    // Fire connect event
+    this.fire("connect", {pin: pin, wire: wire});
 
     // Process wire value
     this.update(pin);
