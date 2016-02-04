@@ -438,19 +438,19 @@ describe("WireConstraint class", function(){
       // Create wires
       var wireA = new LiveBlocks.Wire();
 
-      // Get pin iterator
-      var it = block.pins();
-
       // Connect wires to block
       block.connect("a", wireA);
 
+      // Get pin iterator
+      var it = block.pins();
+
       // Peek at next pin
-      expect(it.peek().name).toBe("a");
+      expect(it.peek().pin).toBe("a");
       expect(it.peek().wire).toBe(wireA);
 
       // Get next pin
       var pin = it.next();
-      expect(pin.name).toBe("a");
+      expect(pin.pin).toBe("a");
       expect(pin.wire).toBe(wireA);
 
       // Check has() function
@@ -460,7 +460,7 @@ describe("WireConstraint class", function(){
 
       // Get next pin
       pin = it.next();
-      expect(pin.name).toBe("b");
+      expect(pin.pin).toBe("b");
       expect(pin.wire).toBeUndefined();
 
       // We are at the end of the iterator
@@ -471,8 +471,20 @@ describe("WireConstraint class", function(){
       it.reset();
 
       // Peek at next pin
-      expect(it.peek().name).toBe("a");
+      expect(it.peek().pin).toBe("a");
       expect(it.peek().wire).toBe(wireA);
+
+      // Disconnect wire
+      // Iterator should not change
+      // Need to get a new iterator to see latest pins
+      block.disconnect("a");
+      expect(it.peek().pin).toBe("a");
+      expect(it.peek().wire).toBe(wireA);
+
+      // Get new iterator
+      it = block.pins();
+      expect(it.peek().pin).toBe("a");
+      expect(it.peek().wire).toBeUndefined();
     });
   });
 });

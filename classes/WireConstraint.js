@@ -3,12 +3,12 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     var refresh = function(){
 
       // Create new pin names array
-      var pinNames = [];
-      for (var pinName in this._wireConstraint._functions)
-        pinNames.push(pinName);
+      var pins = [];
+      for (var pin in this._wireConstraint._functions)
+        pins.push({pin: pin, wire: this._wireConstraint._wires[pin]});
 
-      // Set _pinNames to new pin names array
-      this._pinNames = pinNames;
+      // Set _pins to new pin names array
+      this._pins = pins;
     };
     function WireConstraintPinIterator(wireConstraint){
 
@@ -26,14 +26,14 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     P.next = function(){
 
       // Check if we are at the last pin
-      if (this._index < this._pinNames.length){
+      if (this._index < this._pins.length){
 
         // Get pin name at current index
-        var pinName = this._pinNames[this._index];
+        var pin = this._pins[this._index];
 
         // Increment index and return pin name and connected wire
         this._index = this._index + 1;
-        return {name: pinName, wire: this._wireConstraint._wires[pinName]};
+        return {pin: pin.pin, wire: pin.wire};
       }
       else
         return; // Return undefined
@@ -41,20 +41,28 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     P.peek = function(){
 
       // Check if we are at the last pin
-      if (this._index < this._pinNames.length){
+      if (this._index < this._pins.length){
 
         // Get pin name at current index
-        var pinName = this._pinNames[this._index];
+        var pin = this._pins[this._index];
 
         // Return pin name at current index and connected wire
-        return {name: pinName, wire: this._wireConstraint._wires[pinName]};
+        return {pin: pin.pin, wire: pin.wire};
       }
       else
         return; // Return undefined
     };
-    P.has = function(pinName){
+    P.has = function(pin){
 
-      return hasOwnProperty(this._wireConstraint._functions, pinName);
+      // Search through pins
+      for (var i = 0; i < this._pins.length; i++){
+
+        if (this._pins[i].pin === pin)
+          return true;
+      }
+
+      // Match not found
+      return false;
     };
     return WireConstraintPinIterator;
   }());
