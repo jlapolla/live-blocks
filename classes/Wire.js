@@ -43,7 +43,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     // Compare with ===, but let NaN === NaN be true
     return value !== value ? this._value !== this._value : value === this._value;
   };
-  P.bind = function(block, prop){
+  P.bind = function(block, pin){
 
     // Get bindings list
     var bindings = this._bindings;
@@ -52,18 +52,18 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     var newBindings = [], bindingExists;
     for (var i = 0; i < bindings.length; i++){
       newBindings.push(bindings[i]);
-      if (bindings[i].block === block && bindings[i].prop === prop)
+      if (bindings[i].block === block && bindings[i].pin === pin)
         bindingExists = true;
     }
 
     // Add new binding if not exists
     if (!bindingExists)
-      newBindings.push({block: block, prop: prop});
+      newBindings.push({block: block, pin: pin});
 
     // Replace existing bindings
     this._bindings = newBindings;
   };
-  P.unbind = function(block, prop){
+  P.unbind = function(block, pin){
 
     // Get bindings list
     var bindings = this._bindings;
@@ -71,7 +71,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     // Iterate over bindings and copy to new bindings
     var newBindings = [];
     for (var i = 0; i < bindings.length; i++){
-      if (bindings[i].block !== block || bindings[i].prop !== prop)
+      if (bindings[i].block !== block || bindings[i].pin !== pin)
         newBindings.push(bindings[i]);
     }
 
@@ -85,7 +85,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
 
     // Update each bound block
     for (var i = 0; i < bindings.length; i++)
-      bindings[i].block.update(bindings[i].prop);
+      bindings[i].block.update(bindings[i].pin);
   };
   P.value = function(newValue){
 
