@@ -121,6 +121,10 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     if (!hasOwnProperty(this._functions, pin))
       throw new Error("Pin \"" + pin + "\" not found");
 
+    // Do nothing if the pin is already connectd to the wire
+    if (this._wires[pin] === wire)
+      return;
+
     // Disconnect from old wire, if any
     _disconnect.call(this, pin);
 

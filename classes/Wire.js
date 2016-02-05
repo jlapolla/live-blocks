@@ -1,4 +1,4 @@
-this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
+this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, extendClass){
   var WireConnectionIterator = (function(){
     var refresh = function(){
 
@@ -63,6 +63,8 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
   }());
   function Wire(hash){
 
+    EventEmitter.call(this);
+
     this._bindings = [];
     this._updating = false;
 
@@ -87,7 +89,7 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
 
     maxIterations = iterations;
   };
-  Wire.prototype = {};
+  extendClass(EventEmitter, Wire);
   var P = Wire.prototype;
   P.duplicate = function(){
 
@@ -119,8 +121,14 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     }
 
     // Add new binding if not exists
-    if (!bindingExists)
+    if (!bindingExists) {
+
+      // Add binding
       newBindings.push({block: block, pin: pin});
+
+      // Fire event
+      this.fire("connect", {block: block, pin: pin});
+    }
 
     // Replace existing bindings
     this._bindings = newBindings;
@@ -135,6 +143,8 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     for (var i = 0; i < bindings.length; i++){
       if (bindings[i].block !== block || bindings[i].pin !== pin)
         newBindings.push(bindings[i]);
+      else
+        this.fire("disconnect", {block: bindings[i].block, pin: bindings[i].pin}); // Fire event
     }
 
     // Replace existing bindings
@@ -184,6 +194,9 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
           // Set new value
           this._value = newValue;
 
+          // Fire event
+          this.fire("value", newValue);
+
           // Notify bound blocks
           this.notify();
         }
@@ -207,5 +220,5 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error){
     return new WireConnectionIterator(this);
   };
   return Wire;
-}(this.getUndefined, this.hasOwnProperty, this.Queue, host.Error));
+}(this.getUndefined, this.hasOwnProperty, this.Queue, host.Error, this.EventEmitter, this.extendClass));
 

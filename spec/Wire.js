@@ -295,6 +295,111 @@ describe("Wire class", function(){
     expect(wire.value()).toBe(1);
   });
 
+  it("fires events on connect, disconnect, and value change", function(){
+
+    // Create a wire
+    var wire = new LiveBlocks.Wire();
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list){
+
+      for (var i = 0; i < list.length; i++){
+
+        listeners[list[i]] = (function(eventName){
+
+          return function(arg){
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== "undefined")
+              obj.arg = arg;
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+      }
+    }(["connect", "disconnect", "value"]));
+
+    // Register event listeners
+    wire.on("connect", listeners.connect);
+    wire.on("disconnect", listeners.disconnect);
+    wire.on("value", listeners.value);
+
+    // Create a block
+    var noop = function(){};
+    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+
+    // Register event listeners
+    wire.on("connect", listeners.connect);
+    wire.on("disconnect", listeners.disconnect);
+    wire.on("value", listeners.value);
+    expect(log.length).toBe(0);
+
+    // Connect pin "a"
+    block.connect("a", wire);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.block).toBe(block);
+
+    // Clear log
+    log.length = 0;
+
+    // Connect pin "a" again (redundant)
+    block.connect("a", wire);
+    expect(log.length).toBe(0);
+
+    // Connect pin "b"
+    block.connect("b", wire);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].arg.block).toBe(block);
+
+    // Clear log
+    log.length = 0;
+
+    // Disconnect pin "a"
+    block.disconnect("a", wire);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("disconnect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.block).toBe(block);
+
+    // Clear log
+    log.length = 0;
+
+    // Disconnect pin "a" again (redundant)
+    block.disconnect("a", wire);
+    expect(log.length).toBe(0);
+
+    // Set value to undefined (redundant)
+    wire.value(undefined);
+    expect(log.length).toBe(0);
+
+    // Set value to 1
+    wire.value(1);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("value");
+    expect(log[0].arg).toBe(1);
+
+    // Clear log
+    log.length = 0;
+
+    // Set value to 1 (redundant)
+    wire.value(1);
+    expect(log.length).toBe(0);
+
+    // Set value to undefined
+    wire.value(undefined);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("value");
+    expect(log[0].arg).toBeUndefined();
+  });
+
   describe("connection iterator", function(){
 
     it("iterates over wire connections", function(){
