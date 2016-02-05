@@ -4,176 +4,144 @@ describe("Wire class", function(){
 
   var LiveBlocks = window.LiveBlocks;
 
-  it("duplicates itself with custom equalTo() function", function(){
+  it("duplicates injected equalTo dependencies", function(){
 
     // Create equalTo function
     var neverEqual = function(){return false;};
 
     // Create a wire
     var wire = new LiveBlocks.Wire({equalTo: neverEqual});
+    expect(wire.equalTo).toBe(neverEqual);
 
     // Duplicate wire
     var duplicate = wire.duplicate();
-    duplicate.value(false);
     expect(duplicate.equalTo).toBe(neverEqual);
   });
 
   it("duplicates itself with custom queue object", function(){
 
     // Create fake queue
-    var duplicateQueue = {};
-    var queue = {duplicate: function(){return duplicateQueue;}};
+    var queue2 = {};
+    var queue = {duplicate: function(){return queue2;}};
 
     // Create a wire
     var wire = new LiveBlocks.Wire({queue: queue});
+    expect(wire._valueQueue).toBe(queue);
 
     // Duplicate wire
     var duplicate = wire.duplicate();
-    expect(duplicate._valueQueue).toBe(duplicateQueue);
+    expect(duplicate._valueQueue).toBe(queue2);
     expect(LiveBlocks.hasOwnProperty(duplicate, "equalTo")).toBe(false);
   });
 
-  it("does not bind duplicate block properties", function(){
+  it("does not bind duplicate block pins", function(){
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create some fake blocks
-    var updateLog = [];
-    var update = function(prop){
+    var log = [];
+    var update = function(pin){
 
-      updateLog.push({block: this, prop: prop});
+      log.push({block: this, pin: pin});
     };
     var blocks = [];
     for (var i = 0; i < 2; i++)
       blocks.push({update: update});
 
-    // Bind block properties to wire
+    // Bind block pins to wire
     wire.bind(blocks[0], "0");
     wire.bind(blocks[0], "1");
     wire.bind(blocks[1], "0");
     wire.bind(blocks[1], "1");
     wire.notify();
-    expect(updateLog.length).toBe(4);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[0]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("0");
-    expect(updateLog[3].block).toBe(blocks[1]);
-    expect(updateLog[3].prop).toBe("1");
+    expect(log.length).toBe(4);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].pin).toBe("0");
+    expect(log[1].block).toBe(blocks[0]);
+    expect(log[1].pin).toBe("1");
+    expect(log[2].block).toBe(blocks[1]);
+    expect(log[2].pin).toBe("0");
+    expect(log[3].block).toBe(blocks[1]);
+    expect(log[3].pin).toBe("1");
 
-    // Clear updateLog
-    updateLog.length = 0;
+    // Clear log
+    log.length = 0;
 
-    // Bind duplicate block property to wire
+    // Bind duplicate block pin to wire
     wire.bind(blocks[0], "0");
     wire.notify();
-    expect(updateLog.length).toBe(4);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[0]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("0");
-    expect(updateLog[3].block).toBe(blocks[1]);
-    expect(updateLog[3].prop).toBe("1");
+    expect(log.length).toBe(4);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].pin).toBe("0");
+    expect(log[1].block).toBe(blocks[0]);
+    expect(log[1].pin).toBe("1");
+    expect(log[2].block).toBe(blocks[1]);
+    expect(log[2].pin).toBe("0");
+    expect(log[3].block).toBe(blocks[1]);
+    expect(log[3].pin).toBe("1");
   });
 
-  it("unbinds block properties", function(){
+  it("unbinds block pins", function(){
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create some fake blocks
-    var updateLog = [];
-    var update = function(prop){
+    var log = [];
+    var update = function(pin){
 
-      updateLog.push({block: this, prop: prop});
+      log.push({block: this, pin: pin});
     };
     var blocks = [];
     for (var i = 0; i < 2; i++)
       blocks.push({update: update});
 
-    // Bind block properties to wire
+    // Bind block pins to wire
     wire.bind(blocks[0], "0");
     wire.bind(blocks[0], "1");
     wire.bind(blocks[1], "0");
     wire.bind(blocks[1], "1");
     wire.notify();
-    expect(updateLog.length).toBe(4);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[0]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("0");
-    expect(updateLog[3].block).toBe(blocks[1]);
-    expect(updateLog[3].prop).toBe("1");
+    expect(log.length).toBe(4);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].pin).toBe("0");
+    expect(log[1].block).toBe(blocks[0]);
+    expect(log[1].pin).toBe("1");
+    expect(log[2].block).toBe(blocks[1]);
+    expect(log[2].pin).toBe("0");
+    expect(log[3].block).toBe(blocks[1]);
+    expect(log[3].pin).toBe("1");
 
-    // Clear updateLog
-    updateLog.length = 0;
+    // Clear log
+    log.length = 0;
 
-    // Bind duplicate block property to wire
+    // Unbind block pin
     wire.unbind(blocks[0], "0");
     wire.notify();
-    expect(updateLog.length).toBe(3);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("1");
-    expect(updateLog[1].block).toBe(blocks[1]);
-    expect(updateLog[1].prop).toBe("0");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("1");
-  });
+    expect(log.length).toBe(3);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].pin).toBe("1");
+    expect(log[1].block).toBe(blocks[1]);
+    expect(log[1].pin).toBe("0");
+    expect(log[2].block).toBe(blocks[1]);
+    expect(log[2].pin).toBe("1");
 
-  it("does nothing when a non-existent binding is unbound", function(){
+    // Clear log
+    log.length = 0;
 
-    // Create a wire
-    var wire = new LiveBlocks.Wire();
-
-    // Create some fake blocks
-    var updateLog = [];
-    var update = function(prop){
-
-      updateLog.push({block: this, prop: prop});
-    };
-    var blocks = [];
-    for (var i = 0; i < 2; i++)
-      blocks.push({update: update});
-
-    // Bind block properties to wire
-    wire.bind(blocks[0], "0");
-    wire.bind(blocks[0], "1");
-    wire.bind(blocks[1], "0");
-    wire.bind(blocks[1], "1");
+    // Unbind non-existent pins (redundant)
+    wire.unbind(blocks[0], "0");
+    wire.unbind(blocks[0], "a");
+    wire.unbind({}, "1");
     wire.notify();
-    expect(updateLog.length).toBe(4);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[0]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("0");
-    expect(updateLog[3].block).toBe(blocks[1]);
-    expect(updateLog[3].prop).toBe("1");
-
-    // Clear updateLog
-    updateLog.length = 0;
-
-    // Bind duplicate block property to wire
-    wire.unbind(blocks[0], "noexist");
-    wire.unbind({}, "0");
-    wire.notify();
-    expect(updateLog.length).toBe(4);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[0]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[1]);
-    expect(updateLog[2].prop).toBe("0");
-    expect(updateLog[3].block).toBe(blocks[1]);
-    expect(updateLog[3].prop).toBe("1");
+    expect(log.length).toBe(3);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].pin).toBe("1");
+    expect(log[1].block).toBe(blocks[1]);
+    expect(log[1].pin).toBe("0");
+    expect(log[2].block).toBe(blocks[1]);
+    expect(log[2].pin).toBe("1");
   });
 
   it(".notify() ignores blocks bound or unbound during .notify()", function(){
@@ -183,10 +151,10 @@ describe("Wire class", function(){
 
     // Create some fake blocks
     var blocks = [];
-    var updateLog = [];
+    var log = [];
     var update = function(prop){
 
-      updateLog.push({block: this, prop: prop});
+      log.push({block: this, prop: prop});
       wire.unbind(blocks[2], "2");
       wire.bind(blocks[3], "3");
     };
@@ -198,39 +166,39 @@ describe("Wire class", function(){
     wire.bind(blocks[1], "1");
     wire.bind(blocks[2], "2");
     wire.notify();
-    expect(updateLog.length).toBe(3);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[1]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[2]);
-    expect(updateLog[2].prop).toBe("2");
+    expect(log.length).toBe(3);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].prop).toBe("0");
+    expect(log[1].block).toBe(blocks[1]);
+    expect(log[1].prop).toBe("1");
+    expect(log[2].block).toBe(blocks[2]);
+    expect(log[2].prop).toBe("2");
 
-    // Clear updateLog
-    updateLog.length = 0;
+    // Clear log
+    log.length = 0;
 
     // Notify again
     wire.notify();
-    expect(updateLog.length).toBe(3);
-    expect(updateLog[0].block).toBe(blocks[0]);
-    expect(updateLog[0].prop).toBe("0");
-    expect(updateLog[1].block).toBe(blocks[1]);
-    expect(updateLog[1].prop).toBe("1");
-    expect(updateLog[2].block).toBe(blocks[3]);
-    expect(updateLog[2].prop).toBe("3");
+    expect(log.length).toBe(3);
+    expect(log[0].block).toBe(blocks[0]);
+    expect(log[0].prop).toBe("0");
+    expect(log[1].block).toBe(blocks[1]);
+    expect(log[1].prop).toBe("1");
+    expect(log[2].block).toBe(blocks[3]);
+    expect(log[2].prop).toBe("3");
   });
 
-  it("runs .notify() when values are set", function(){
+  it("handles values set during .notify()", function(){
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create some fake blocks
     var values = [];
-    var updateLog = [];
+    var log = [];
     var update = function(prop){
 
-      updateLog.push(wire.value());
+      log.push(wire.value());
 
       for (var i = 0; i < values.length; i++)
         wire.value(values[i]);
@@ -250,8 +218,8 @@ describe("Wire class", function(){
 
     // Set wire value
     wire.value("a");
-    expect(updateLog.length).toBe(5);
-    expect(updateLog).toEqual(["a", "b", "c", nan, "d"]);
+    expect(log.length).toBe(5);
+    expect(log).toEqual(["a", "b", "c", nan, "d"]);
     expect(nan).not.toBe(nan); // Just to make sure we have a true NaN value
   });
 
