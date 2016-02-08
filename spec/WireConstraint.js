@@ -267,6 +267,60 @@ describe("WireConstraint class", function(){
     expect(block.error()).not.toBeUndefined();
   });
 
+  it("integration test with read-only values", function(){
+
+    // We will make a flip flop from two cross-coupled NOR gates
+
+    // Make two NOR blocks
+    var norQ = new LiveBlocks.WireConstraint((function(){
+
+      var func = function(){
+
+        this.out = !(this.a || this.b)
+      };
+
+      var functions = {
+        a: func,
+        b: func,
+        out: func
+      };
+
+      return {functions: functions};
+    }()));
+    var norNotQ = norQ.duplicate();
+
+    // Make some wires
+    var R = new LiveBlocks.Wire();
+    var S = new LiveBlocks.Wire();
+    var Q = new LiveBlocks.Wire();
+    var notQ = new LiveBlocks.Wire();
+
+    // Connect blocks to wires
+    norQ.connect("out", Q);
+    norQ.connect("a", R);
+    norQ.connect("b", notQ);
+    norNotQ.connect("out", notQ);
+    norNotQ.connect("a", Q);
+    norNotQ.connect("b", S);
+
+    // Set the flip flop
+    R.value(false);
+    S.value(true);
+    S.value(false);
+    expect(R.value()).toBe(false);
+    expect(S.value()).toBe(false);
+    expect(Q.value()).toBe(true);
+    expect(notQ.value()).toBe(false);
+
+    // Reset the flip flop
+    R.value(true);
+    R.value(false);
+    expect(R.value()).toBe(false);
+    expect(S.value()).toBe(false);
+    expect(Q.value()).toBe(false);
+    expect(notQ.value()).toBe(true);
+  });
+
   it("duplicates injected queue dependencies", function(){
 
     // Create a fake queue
