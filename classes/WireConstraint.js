@@ -33,10 +33,13 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
 
         // Increment index and return pin name and connected wire
         this._index = this._index + 1;
-        return {pin: pin.pin, wire: pin.wire};
+        return {
+          done: false,
+          value: {pin: pin.pin, wire: pin.wire}
+        };
       }
       else
-        return; // Return undefined
+        return {done: true};
     };
     P.peek = function(){
 
@@ -47,10 +50,13 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
         var pin = this._pins[this._index];
 
         // Return pin name at current index and connected wire
-        return {pin: pin.pin, wire: pin.wire};
+        return {
+          done: false,
+          value: {pin: pin.pin, wire: pin.wire}
+        };
       }
       else
-        return; // Return undefined
+        return {done: true};
     };
     P.has = function(pin){
 

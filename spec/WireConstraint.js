@@ -2,12 +2,14 @@
 
 describe("WireConstraint class", function(){
 
-  var LiveBlocks = window.LiveBlocks;
+  var host = window;
 
-  it("integration test", function(){
+  var LiveBlocks = host.LiveBlocks;
+
+  it("integration test with Wire class where a wire has multiple connections", function(){
 
     // Update log
-    var updateLog = [];
+    var log = [];
 
     // Make blocks
     var plusOne = new LiveBlocks.WireConstraint((function(){
@@ -16,12 +18,12 @@ describe("WireConstraint class", function(){
       var smaller2bigger = function(){
 
         this.bigger = this.smaller + 1;
-        updateLog.push("smaller2bigger");
+        log.push("smaller2bigger");
       };
       var bigger2smaller = function(){
 
         this.smaller = this.bigger - 1;
-        updateLog.push("bigger2smaller");
+        log.push("bigger2smaller");
       };
 
       // Return function hash
@@ -33,12 +35,12 @@ describe("WireConstraint class", function(){
       var half2double = function(){
 
         this.double = this.half * 2;
-        updateLog.push("half2double");
+        log.push("half2double");
       };
       var double2half = function(){
 
         this.half = this.double / 2;
-        updateLog.push("double2half");
+        log.push("double2half");
       };
 
       // Return function hash
@@ -57,56 +59,56 @@ describe("WireConstraint class", function(){
     timesTwo.connect("double", wires[2]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Set value on wires[0]
     wires[0].value(0);
     expect(wires[0].value()).toBe(0);
     expect(wires[1].value()).toBe(1);
     expect(wires[2].value()).toBe(2);
-    expect(updateLog).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Set another value on wires[0]
     wires[0].value(2);
     expect(wires[0].value()).toBe(2);
     expect(wires[1].value()).toBe(3);
     expect(wires[2].value()).toBe(6);
-    expect(updateLog).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Set value on wires[1]
     wires[1].value(0.5);
     expect(wires[0].value()).toBe(-0.5);
     expect(wires[1].value()).toBe(0.5);
     expect(wires[2].value()).toBe(1);
-    expect(updateLog).toEqual(["bigger2smaller", "smaller2bigger", "half2double", "double2half"]);
+    expect(log).toEqual(["bigger2smaller", "smaller2bigger", "half2double", "double2half"]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Set value on wires[2]
     wires[2].value(8);
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(8);
-    expect(updateLog).toEqual(["double2half", "bigger2smaller", "smaller2bigger", "half2double"]);
+    expect(log).toEqual(["double2half", "bigger2smaller", "smaller2bigger", "half2double"]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Disconnect pins
     timesTwo.disconnect("half");
-    expect(updateLog).toEqual(["half2double", "double2half"]);
+    expect(log).toEqual(["half2double", "double2half"]);
     timesTwo.disconnect("double");
-    expect(updateLog).toEqual(["half2double", "double2half", "double2half"]);
+    expect(log).toEqual(["half2double", "double2half", "double2half"]);
 
     // Clear update log
-    updateLog.length = 0;
+    log.length = 0;
 
     // Rewire blocks
     timesTwo.connect("half", wires[2]);
@@ -114,7 +116,209 @@ describe("WireConstraint class", function(){
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(2);
-    expect(updateLog).toEqual(["half2double", "double2half", "half2double"]);
+    expect(log).toEqual(["half2double", "double2half", "half2double"]);
+  });
+
+  it("integration test with Wire class where the WireConstraint has multiple inputs and outputs", function(){
+
+    // Convert rectangular to polar coordinates
+    var block = new LiveBlocks.WireConstraint((function(Math, isFinite, Error){
+
+      var atan2 = Math.atan2;
+      var cos = Math.cos;
+      var sin = Math.sin;
+      var sqrt = Math.sqrt;
+      var assertFiniteNumber = function(num){
+
+        if (!(typeof num === "number" && isFinite(num)))
+          throw new Error(num + " must be a number");
+      };
+
+      var rect2polar = function(){
+
+        assertFiniteNumber(this.x);
+        assertFiniteNumber(this.y);
+
+        this.r = sqrt(this.x * this.x + this.y * this.y);
+        this.theta = atan2(this.y, this.x);
+      };
+
+      var polar2rect = function(){
+
+        assertFiniteNumber(this.r);
+        assertFiniteNumber(this.theta);
+
+        this.x = this.r * cos(this.theta);
+        this.y = this.r * sin(this.theta);
+      };
+
+      var functions = {
+        x: rect2polar,
+        y: rect2polar,
+        r: polar2rect,
+        theta: polar2rect
+      };
+
+      return {functions: functions};
+    }(host.Math, host.isFinite, host.Error)));
+
+    // Make wires
+    var wires = {};
+    var equalTo = (function(Math, isFinite){
+
+      var abs = Math.abs;
+      var epsilon = 1e-14;
+
+      return function(value){
+
+        if (
+          typeof value === "number"
+          && typeof this._value === "number"
+          && isFinite(value)
+          && isFinite(this._value)
+        )
+          return abs(this._value - value) < epsilon;
+        else
+          return value !== value ? this._value !== this._value : value === this._value;
+      };
+    }(host.Math, host.isFinite));
+    (function(wireNames){
+
+      for (var i = 0; i < wireNames.length; i++)
+        wires[wireNames[i]] = new LiveBlocks.Wire({equalTo: equalTo});
+    }(["x", "y", "r", "theta"]));
+
+    // Register logging event listeners
+    var log = [];
+    block.on("update", function(pin){
+
+      log.push(pin.pin);
+    });
+    block.on("success", function(){
+
+      log.push("success");
+    });
+    block.on("error", function(){
+
+      log.push("error");
+    });
+
+    // Connect wires to block pins
+    block.connect("x", wires.x);
+    block.connect("y", wires.y);
+    block.connect("r", wires.r);
+    block.connect("theta", wires.theta);
+
+    // Clear log
+    log.length = 0;
+
+    // Test input
+    wires.x.value(1);
+    expect(log).toEqual(["x", "error"]);
+    expect(wires.x.equalTo(1)).toBe(true);
+    expect(wires.y.value()).toBeUndefined();
+    expect(wires.r.value()).toBeUndefined();
+    expect(wires.theta.value()).toBeUndefined();
+    expect(block.error()).not.toBeUndefined();
+
+    // Test input
+    wires.y.value(0);
+    expect(wires.x.equalTo(1)).toBe(true);
+    expect(wires.y.equalTo(0)).toBe(true);
+    expect(wires.r.equalTo(1)).toBe(true);
+    expect(wires.theta.equalTo(0)).toBe(true);
+    expect(block.error()).toBeUndefined();
+
+    // Test input
+    wires.r.value(2);
+    expect(wires.x.equalTo(2)).toBe(true);
+    expect(wires.y.equalTo(0)).toBe(true);
+    expect(wires.r.equalTo(2)).toBe(true);
+    expect(wires.theta.equalTo(0)).toBe(true);
+    expect(block.error()).toBeUndefined();
+
+    // Clear log
+    log.length = 0;
+
+    // Test input
+    wires.theta.value(Math.PI/2);
+    expect(log).toEqual(["theta", "success", "x", "success", "y", "success"]);
+    expect(wires.x.equalTo(0)).toBe(true);
+    expect(wires.y.equalTo(2)).toBe(true);
+    expect(wires.r.equalTo(2)).toBe(true);
+    expect(wires.theta.equalTo(Math.PI/2)).toBe(true);
+    expect(block.error()).toBeUndefined();
+
+    // Test input
+    wires.theta.value(Math.PI * 15/4);
+    expect(wires.x.equalTo(2 / Math.SQRT2)).toBe(true);
+    expect(wires.y.equalTo(-2 / Math.SQRT2)).toBe(true);
+    expect(wires.r.equalTo(2)).toBe(true);
+    expect(wires.theta.equalTo(-Math.PI/4)).toBe(true);
+    expect(block.error()).toBeUndefined();
+
+    // Test input
+    wires.theta.value(undefined);
+    expect(wires.x.equalTo(2 / Math.SQRT2)).toBe(true);
+    expect(wires.y.equalTo(-2 / Math.SQRT2)).toBe(true);
+    expect(wires.r.equalTo(2)).toBe(true);
+    expect(wires.theta.equalTo(undefined)).toBe(true);
+    expect(wires.theta.value()).toBeUndefined();
+    expect(block.error()).not.toBeUndefined();
+  });
+
+  it("integration test with read-only values", function(){
+
+    // We will make a flip flop from two cross-coupled NOR gates
+
+    // Make two NOR blocks
+    var norQ = new LiveBlocks.WireConstraint((function(){
+
+      var func = function(){
+
+        this.out = !(this.a || this.b)
+      };
+
+      var functions = {
+        a: func,
+        b: func,
+        out: func
+      };
+
+      return {functions: functions};
+    }()));
+    var norNotQ = norQ.duplicate();
+
+    // Make some wires
+    var R = new LiveBlocks.Wire();
+    var S = new LiveBlocks.Wire();
+    var Q = new LiveBlocks.Wire();
+    var notQ = new LiveBlocks.Wire();
+
+    // Connect blocks to wires
+    norQ.connect("out", Q);
+    norQ.connect("a", R);
+    norQ.connect("b", notQ);
+    norNotQ.connect("out", notQ);
+    norNotQ.connect("a", Q);
+    norNotQ.connect("b", S);
+
+    // Set the flip flop
+    R.value(false);
+    S.value(true);
+    S.value(false);
+    expect(R.value()).toBe(false);
+    expect(S.value()).toBe(false);
+    expect(Q.value()).toBe(true);
+    expect(notQ.value()).toBe(false);
+
+    // Reset the flip flop
+    R.value(true);
+    R.value(false);
+    expect(R.value()).toBe(false);
+    expect(S.value()).toBe(false);
+    expect(Q.value()).toBe(false);
+    expect(notQ.value()).toBe(true);
   });
 
   it("duplicates injected queue dependencies", function(){
@@ -525,11 +729,12 @@ describe("WireConstraint class", function(){
       var it = block.pins();
 
       // Peek at next pin
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Get next pin
-      var pin = it.next();
+      var pin = it.next().value;
       expect(pin.pin).toBe("a");
       expect(pin.wire).toBe(wireA);
 
@@ -539,32 +744,37 @@ describe("WireConstraint class", function(){
       expect(it.has("c")).toBe(false);
 
       // Get next pin
-      pin = it.next();
+      pin = it.next().value;
       expect(pin.pin).toBe("b");
       expect(pin.wire).toBeUndefined();
 
       // We are at the end of the iterator
-      expect(it.peek()).toBeUndefined();
-      expect(it.next()).toBeUndefined();
+      expect(it.peek().done).toBe(true);
+      expect(it.peek().value).toBeUndefined();
+      expect(it.next().done).toBe(true);
+      expect(it.next().value).toBeUndefined();
 
       // Reset iterator
       it.reset();
 
       // Peek at next pin
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Disconnect wire
       // Iterator should not change
       // Need to get a new iterator to see latest pins
       block.disconnect("a");
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Get new iterator
       it = block.pins();
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBeUndefined();
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBeUndefined();
     });
   });
 });

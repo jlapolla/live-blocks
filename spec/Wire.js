@@ -390,24 +390,27 @@ describe("Wire class", function(){
       expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
       expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
       expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().block).toBe(blocks[0]);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.block).toBe(blocks[0]);
 
       // Move to next connection
-      var connection = it.next();
+      var connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[0]);
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().block).toBe(blocks[1]);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.block).toBe(blocks[1]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[1]);
-      expect(it.peek()).toBeUndefined();
+      expect(it.peek().done).toBe(true);
+      expect(it.peek().value).toBeUndefined();
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection).toBeUndefined();
       expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
       expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
@@ -423,17 +426,17 @@ describe("Wire class", function(){
       expect(it.has({block: blocks[2], pin: "a"})).toBe(false);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[0]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[1]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection).toBeUndefined();
       expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
       expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
@@ -446,22 +449,22 @@ describe("Wire class", function(){
       expect(it.has({block: blocks[2], pin: "a"})).toBe(true);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[0]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[1]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection.pin).toBe("a");
       expect(connection.block).toBe(blocks[2]);
 
       // Move to next connection
-      connection = it.next();
+      connection = it.next().value;
       expect(connection).toBeUndefined();
       expect(it.has({block: blocks[0], pin: "a"})).toBe(true);
       expect(it.has({block: blocks[0], pin: "b"})).toBe(false);
