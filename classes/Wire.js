@@ -27,10 +27,13 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
         // Increment index and return connection
         this._index = this._index + 1;
-        return {block: connection.block, pin: connection.pin};
+        return {
+          done: false,
+          value: {block: connection.block, pin: connection.pin}
+        };
       }
       else
-        return; // Return undefined
+        return {done: true};
     };
     P.peek = function(){
 
@@ -41,10 +44,13 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
         var connection = this._connections[this._index];
 
         // Return connection
-        return {block: connection.block, pin: connection.pin};
+        return {
+          done: false,
+          value: {block: connection.block, pin: connection.pin}
+        };
       }
       else
-        return; // Return undefined
+        return {done: true};
     };
     P.has = function(connection){
 

@@ -729,11 +729,12 @@ describe("WireConstraint class", function(){
       var it = block.pins();
 
       // Peek at next pin
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Get next pin
-      var pin = it.next();
+      var pin = it.next().value;
       expect(pin.pin).toBe("a");
       expect(pin.wire).toBe(wireA);
 
@@ -743,32 +744,37 @@ describe("WireConstraint class", function(){
       expect(it.has("c")).toBe(false);
 
       // Get next pin
-      pin = it.next();
+      pin = it.next().value;
       expect(pin.pin).toBe("b");
       expect(pin.wire).toBeUndefined();
 
       // We are at the end of the iterator
-      expect(it.peek()).toBeUndefined();
-      expect(it.next()).toBeUndefined();
+      expect(it.peek().done).toBe(true);
+      expect(it.peek().value).toBeUndefined();
+      expect(it.next().done).toBe(true);
+      expect(it.next().value).toBeUndefined();
 
       // Reset iterator
       it.reset();
 
       // Peek at next pin
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Disconnect wire
       // Iterator should not change
       // Need to get a new iterator to see latest pins
       block.disconnect("a");
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBe(wireA);
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBe(wireA);
 
       // Get new iterator
       it = block.pins();
-      expect(it.peek().pin).toBe("a");
-      expect(it.peek().wire).toBeUndefined();
+      expect(it.peek().done).toBe(false);
+      expect(it.peek().value.pin).toBe("a");
+      expect(it.peek().value.wire).toBeUndefined();
     });
   });
 });
