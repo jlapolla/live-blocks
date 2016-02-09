@@ -1,8 +1,21 @@
-this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set){
+this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set, Error){
   var errorListener = function(e){
 
     if (!hasOwnProperty(this, "_lastError"))
       this._lastError = e;
+  };
+  var _disconnect = function(pin){
+
+    // Disconnect from wire, if any
+    if (hasOwnProperty(this._externalWires, pin)){
+
+      var wire = this._externalWires[pin];
+      wire.unbind(this, pin);
+      delete this._externalWires[pin];
+
+      // Fire disconnect event
+      this.fire("disconnect", {pin: pin, wire: wire});
+    }
   };
   var init = (function(){
 
@@ -162,6 +175,43 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       return new BlackBox({pins: pins, queue: this._updateQueue.duplicate()});
     };
   }());
+  P.error = function(){
+
+    return this._lastError;
+  };
+  P.connect = function(pin, wire){
+
+    // Throw error if pin does not exist
+    if (!hasOwnProperty(this._internalWires, pin))
+      throw new Error("Pin \"" + pin + "\" not found");
+
+    // Do nothing if the pin is already connected to the wire
+    if (this._externalWires[pin] !== wire){
+
+      // Disconnect from old wire, if any
+      _disconnect.call(this, pin);
+
+      // Record new wire
+      this._externalWires[pin] = wire;
+
+      // Bind pin to wire
+      wire.bind(this, pin);
+
+      // Fire connect event
+      this.fire("connect", {pin: pin, wire: wire});
+
+      // Process wire value
+      this.update(pin);
+    }
+  };
+  P.disconnect = function(pin){
+
+    // Disconnect from wire, if any
+    _disconnect.call(this, pin);
+
+    // Process wire value
+    this.update(pin);
+  };
   P.update = function(pin){
 
     // A connected wire value changed
@@ -179,11 +229,14 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
     // Main loop
     while (true){
 
-      // Defensive copy external wires
-      // Internal wires should never change
-      var internalWires = this._internalWires, externalWires = {};
+      // Defensive copy internal and external wires
+      var internalWires = {}, externalWires = {};
       for (var name in internalWires){
 
+        // Copy internal wire
+        internalWires[name] = this._internalWires[name];
+
+        // Copy external wire, if exists
         if (this._externalWires[name])
           externalWires[name] = this._externalWires[name];
       }
@@ -239,6 +292,16 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       // Restart loop
     }
   };
+  P.pins = function(){
+
+    // Collect pins in a set
+    var pinSet = new Set();
+    for (var pin in this._internalWires)
+      pinSet.add({pin: pin, wire: this._internalWires[pin]});
+
+    // Return set iterator
+    return pinSet.values();
+  };
   return BlackBox;
-}(this.EventEmitter, this.extendClass, this.hasOwnProperty, this.Queue, this.getUndefined, this.Map, this.Set));
+}(this.EventEmitter, this.extendClass, this.hasOwnProperty, this.Queue, this.getUndefined, this.Map, this.Set, host.Error));
 
