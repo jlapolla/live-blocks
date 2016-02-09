@@ -47,7 +47,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
         blockSet.add(block);
 
         // Process all wires connected to the block
-        var it = block.connections();
+        var it = block.pins();
         while (!it.peek().done)
           processWire(it.next().value.wire, wireSet, blockSet);
       }
@@ -64,10 +64,10 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       for (var pin in pins){
 
         // Add pin to internal wire hash
-        this._internalWires[pin] = pins[pin].wire;
+        this._internalWires[pin] = pins[pin];
 
         // Process the wire and all connected blocks
-        processWire(pins[pin].wire, wireSet, blockSet);
+        processWire(pins[pin], wireSet, blockSet);
       }
 
       // All blocks are in the block set now
@@ -145,7 +145,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       blockMap.put(block, duplicate);
 
       // Process all wires connected to the block
-      var it = block.connections();
+      var it = block.pins();
       while (!it.peek().done){
 
         // Process and get the duplicate wire
@@ -167,7 +167,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       var blockMap = new Map();
 
       // Construct pins hash for the new BlackBox
-      var pins;
+      var pins = {};
       for (var pin in this._internalWires)
         pins[pin] = processWire(this._internalWires[pin], wireMap, blockMap);
 
@@ -231,7 +231,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
 
       // Defensive copy internal and external wires
       var internalWires = {}, externalWires = {};
-      for (var name in internalWires){
+      for (var name in this._internalWires){
 
         // Copy internal wire
         internalWires[name] = this._internalWires[name];
@@ -254,14 +254,11 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       // Clear last error, if any
       delete this._lastError;
 
-      // Copy values from external wires to internal wires
-      for (var name in internalWires){
-
-        if (externalWires[name])
-          internalWires[name].value(externalWires[name].value());
-        else
-          internalWires[name].value(getUndefined());
-      }
+      // Copy updated pin value to internal wire
+      if (externalWires[pin])
+        internalWires[pin].value(externalWires[pin].value());
+      else
+        internalWires[pin].value(getUndefined());
 
       // Handle successful run
       if (!hasOwnProperty(this, "_lastError")){
