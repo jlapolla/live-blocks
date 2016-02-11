@@ -6,21 +6,60 @@ describe("WireConstraint class", function(){
 
   var LiveBlocks = host.LiveBlocks;
 
+  var assertFiniteNumber, floatWire;
+  beforeEach(function(){
+
+    assertFiniteNumber = (function(isFinite, Error){
+
+      return function(num){
+
+        if (!(typeof num === "number" && isFinite(num)))
+          throw new Error(num + " must be a number");
+      };
+    }(host.isFinite, host.Error));
+
+    // Create a prototype floating point value wire
+    floatWire = new LiveBlocks.Wire((function(Math, isFinite){
+
+      var abs = Math.abs;
+      var epsilon = 1e-14;
+
+      var equalTo = function(value){
+
+        if (
+          typeof value === "number"
+          && typeof this._value === "number"
+          && isFinite(value)
+          && isFinite(this._value)
+        )
+          return abs(this._value - value) < epsilon;
+        else
+          return value !== value ? this._value !== this._value : value === this._value;
+      };
+
+      return {equalTo: equalTo};
+    }(host.Math, host.isFinite)));
+  });
+
   it("integration test with Wire class where a wire has multiple connections", function(){
 
     // Update log
     var log = [];
 
     // Make blocks
-    var plusOne = new LiveBlocks.WireConstraint((function(){
+    var plusOne = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
 
       // Make constraint functions
       var smaller2bigger = function(){
+
+        assertFiniteNumber(this.smaller);
 
         this.bigger = this.smaller + 1;
         log.push("smaller2bigger");
       };
       var bigger2smaller = function(){
+
+        assertFiniteNumber(this.bigger);
 
         this.smaller = this.bigger - 1;
         log.push("bigger2smaller");
@@ -28,16 +67,20 @@ describe("WireConstraint class", function(){
 
       // Return function hash
       return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
-    }()));
-    var timesTwo = new LiveBlocks.WireConstraint((function(){
+    }(assertFiniteNumber)));
+    var timesTwo = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
 
       // Make constraint functions
       var half2double = function(){
+
+        assertFiniteNumber(this.half);
 
         this.double = this.half * 2;
         log.push("half2double");
       };
       var double2half = function(){
+
+        assertFiniteNumber(this.double);
 
         this.half = this.double / 2;
         log.push("double2half");
@@ -45,7 +88,7 @@ describe("WireConstraint class", function(){
 
       // Return function hash
       return {functions: {half: half2double, double: double2half}};
-    }()));
+    }(assertFiniteNumber)));
 
     // Make wires
     var wires = [];
@@ -103,9 +146,9 @@ describe("WireConstraint class", function(){
 
     // Disconnect pins
     timesTwo.disconnect("half");
-    expect(log).toEqual(["half2double", "double2half"]);
+    expect(log).toEqual([]);
     timesTwo.disconnect("double");
-    expect(log).toEqual(["half2double", "double2half", "double2half"]);
+    expect(log).toEqual([]);
 
     // Clear update log
     log.length = 0;
@@ -122,17 +165,12 @@ describe("WireConstraint class", function(){
   it("integration test with Wire class where the WireConstraint has multiple inputs and outputs", function(){
 
     // Convert rectangular to polar coordinates
-    var block = new LiveBlocks.WireConstraint((function(Math, isFinite, Error){
+    var block = new LiveBlocks.WireConstraint((function(Math, assertFiniteNumber){
 
       var atan2 = Math.atan2;
       var cos = Math.cos;
       var sin = Math.sin;
       var sqrt = Math.sqrt;
-      var assertFiniteNumber = function(num){
-
-        if (!(typeof num === "number" && isFinite(num)))
-          throw new Error(num + " must be a number");
-      };
 
       var rect2polar = function(){
 
@@ -160,32 +198,14 @@ describe("WireConstraint class", function(){
       };
 
       return {functions: functions};
-    }(host.Math, host.isFinite, host.Error)));
+    }(host.Math, assertFiniteNumber)));
 
     // Make wires
     var wires = {};
-    var equalTo = (function(Math, isFinite){
-
-      var abs = Math.abs;
-      var epsilon = 1e-14;
-
-      return function(value){
-
-        if (
-          typeof value === "number"
-          && typeof this._value === "number"
-          && isFinite(value)
-          && isFinite(this._value)
-        )
-          return abs(this._value - value) < epsilon;
-        else
-          return value !== value ? this._value !== this._value : value === this._value;
-      };
-    }(host.Math, host.isFinite));
     (function(wireNames){
 
       for (var i = 0; i < wireNames.length; i++)
-        wires[wireNames[i]] = new LiveBlocks.Wire({equalTo: equalTo});
+        wires[wireNames[i]] = floatWire.duplicate();
     }(["x", "y", "r", "theta"]));
 
     // Register logging event listeners

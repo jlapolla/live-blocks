@@ -6,17 +6,45 @@ describe("BlackBox class", function(){
 
   var LiveBlocks = host.LiveBlocks;
 
-  var blocks, wires;
+  var assertFiniteNumber, floatWire;
   beforeEach(function(){
 
-    // Create a prototype "plus one" block
-    var plusOne = new LiveBlocks.WireConstraint((function(isFinite, Error){
+    assertFiniteNumber = (function(isFinite, Error){
 
-      var assertFiniteNumber = function(num){
+      return function(num){
 
         if (!(typeof num === "number" && isFinite(num)))
           throw new Error(num + " must be a number");
       };
+    }(host.isFinite, host.Error));
+
+    // Create a prototype floating point value wire
+    floatWire = new LiveBlocks.Wire((function(Math, isFinite){
+
+      var abs = Math.abs;
+      var epsilon = 1e-14;
+
+      var equalTo = function(value){
+
+        if (
+          typeof value === "number"
+          && typeof this._value === "number"
+          && isFinite(value)
+          && isFinite(this._value)
+        )
+          return abs(this._value - value) < epsilon;
+        else
+          return value !== value ? this._value !== this._value : value === this._value;
+      };
+
+      return {equalTo: equalTo};
+    }(host.Math, host.isFinite)));
+  });
+
+  it("integration test with multiple internal blocks", function(){
+
+    // Create a prototype "plus one" block
+    var plusOne = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
 
       var aToB = function(){
 
@@ -40,16 +68,10 @@ describe("BlackBox class", function(){
       return {
         functions: functions
       };
-    }(host.isFinite, host.Error)));
+    }(assertFiniteNumber)));
 
     // Create a prototype "times two" block
-    var timesTwo = new LiveBlocks.WireConstraint((function(isFinite, Error){
-
-      var assertFiniteNumber = function(num){
-
-        if (!(typeof num === "number" && isFinite(num)))
-          throw new Error(num + " must be a number");
-      };
+    var timesTwo = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
 
       var aToB = function(){
 
@@ -73,34 +95,14 @@ describe("BlackBox class", function(){
       return {
         functions: functions
       };
-    }(host.isFinite, host.Error)));
-
-    // Create a prototype floating point value wire
-    var floatWire = new LiveBlocks.Wire((function(Math, isFinite){
-
-      var abs = Math.abs;
-      var epsilon = 1e-14;
-
-      var equalTo = function(value){
-
-        if (
-          typeof value === "number"
-          && typeof this._value === "number"
-          && isFinite(value)
-          && isFinite(this._value)
-        )
-          return abs(this._value - value) < epsilon;
-        else
-          return value !== value ? this._value !== this._value : value === this._value;
-      };
-    }(host.Math, host.isFinite)));
+    }(assertFiniteNumber)));
 
     // Create blocks and wires
-    blocks = {
+    var blocks = {
       plusOne: plusOne.duplicate(),
       timesTwo: timesTwo.duplicate()
     };
-    wires = {
+    var wires = {
       low: floatWire.duplicate(),
       med: floatWire.duplicate(),
       high: floatWire.duplicate()
@@ -139,9 +141,6 @@ describe("BlackBox class", function(){
     blocks.blackBox2.connect("low", wires.low2);
     blocks.blackBox2.connect("med", wires.med2);
     blocks.blackBox2.connect("high", wires.high2);
-  });
-
-  it("integration test with multiple internal blocks", function(){
 
     // Test stimulus
     wires.med1.value(3);
@@ -195,6 +194,150 @@ describe("BlackBox class", function(){
     expect(wires.med1.equalTo(3)).toBe(true);
     expect(wires.high1.equalTo(6)).toBe(true);
     expect(blocks.blackBox1.error()).not.toBeUndefined();
+  });
+
+  it("integration test with Wire class where a wire has multiple connections (modified from WireConstraint spec)", function(){
+
+    // Update log
+    var log = [];
+
+    // Make black box
+    var block = new LiveBlocks.BlackBox((function(assertFiniteNumber){
+
+      // Make blocks
+      var plusOne = new LiveBlocks.WireConstraint((function(){
+
+        // Make constraint functions
+        var smaller2bigger = function(){
+
+          assertFiniteNumber(this.smaller);
+
+          this.bigger = this.smaller + 1;
+          log.push("smaller2bigger");
+        };
+        var bigger2smaller = function(){
+
+          assertFiniteNumber(this.bigger);
+
+          this.smaller = this.bigger - 1;
+          log.push("bigger2smaller");
+        };
+
+        // Return function hash
+        return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
+      }()));
+      var timesTwo = new LiveBlocks.WireConstraint((function(){
+
+        // Make constraint functions
+        var half2double = function(){
+
+          assertFiniteNumber(this.half);
+
+          this.double = this.half * 2;
+          log.push("half2double");
+        };
+        var double2half = function(){
+
+          assertFiniteNumber(this.double);
+
+          this.half = this.double / 2;
+          log.push("double2half");
+        };
+
+        // Return function hash
+        return {functions: {half: half2double, double: double2half}};
+      }()));
+
+      // Make wires
+      var wires = [];
+      for (var i = 0; i < 3; i++)
+        wires.push(new LiveBlocks.Wire());
+
+      // Connect block pins to wires
+      plusOne.connect("smaller", wires[0]);
+      plusOne.connect("bigger", wires[1]);
+      timesTwo.connect("half", wires[1]);
+      timesTwo.connect("double", wires[2]);
+
+      // Make pins hash
+      var pins = {
+        a: wires[0],
+        b: wires[1],
+        c: wires[2]
+      };
+
+      // Return
+      return {pins: pins};
+    }(assertFiniteNumber)));
+
+    // Make wires
+    var wires = [];
+    for (var i = 0; i < 3; i++)
+      wires.push(new LiveBlocks.Wire());
+
+    // Connect block properties to wires
+    block.connect("a", wires[0]);
+    block.connect("b", wires[1]);
+    block.connect("c", wires[2]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Set value on wires[0]
+    wires[0].value(0);
+    expect(wires[0].value()).toBe(0);
+    expect(wires[1].value()).toBe(1);
+    expect(wires[2].value()).toBe(2);
+    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Set another value on wires[0]
+    wires[0].value(2);
+    expect(wires[0].value()).toBe(2);
+    expect(wires[1].value()).toBe(3);
+    expect(wires[2].value()).toBe(6);
+    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Set value on wires[1]
+    wires[1].value(0.5);
+    expect(wires[0].value()).toBe(-0.5);
+    expect(wires[1].value()).toBe(0.5);
+    expect(wires[2].value()).toBe(1);
+    expect(log).toEqual(["bigger2smaller", "smaller2bigger", "half2double", "double2half"]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Set value on wires[2]
+    wires[2].value(8);
+    expect(wires[0].value()).toBe(3);
+    expect(wires[1].value()).toBe(4);
+    expect(wires[2].value()).toBe(8);
+    expect(log).toEqual(["double2half", "bigger2smaller", "smaller2bigger", "half2double"]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Disconnect pins
+    block.disconnect("b");
+    expect(log).toEqual([]);
+    block.disconnect("c");
+    expect(log).toEqual([]);
+
+    // Clear update log
+    log.length = 0;
+
+    // Rewire blocks
+    block.connect("b", wires[2]);
+    block.connect("c", wires[1]);
+    expect(wires[0].value()).toBe(1);
+    expect(wires[1].value()).toBe(4);
+    expect(wires[2].value()).toBe(2);
   });
 });
 
