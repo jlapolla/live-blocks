@@ -177,7 +177,12 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
       if (this._updating){
 
         // Add new value to queue and return
-        this._valueQueue.push(newValue);
+
+        // Don't add the same value to the queue
+        if (!this.equalTo(newValue))
+          this._valueQueue.push(newValue);
+
+        // Return
         return;
       }
       else
