@@ -47,19 +47,15 @@ describe("WireConstraint class", function(){
     var log = [];
 
     // Make blocks
-    var plusOne = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
+    var plusOne = new LiveBlocks.WireConstraint((function(){
 
       // Make constraint functions
       var smaller2bigger = function(){
-
-        assertFiniteNumber(this.smaller);
 
         this.bigger = this.smaller + 1;
         log.push("smaller2bigger");
       };
       var bigger2smaller = function(){
-
-        assertFiniteNumber(this.bigger);
 
         this.smaller = this.bigger - 1;
         log.push("bigger2smaller");
@@ -67,20 +63,16 @@ describe("WireConstraint class", function(){
 
       // Return function hash
       return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
-    }(assertFiniteNumber)));
-    var timesTwo = new LiveBlocks.WireConstraint((function(assertFiniteNumber){
+    }()));
+    var timesTwo = new LiveBlocks.WireConstraint((function(){
 
       // Make constraint functions
       var half2double = function(){
-
-        assertFiniteNumber(this.half);
 
         this.double = this.half * 2;
         log.push("half2double");
       };
       var double2half = function(){
-
-        assertFiniteNumber(this.double);
 
         this.half = this.double / 2;
         log.push("double2half");
@@ -88,7 +80,7 @@ describe("WireConstraint class", function(){
 
       // Return function hash
       return {functions: {half: half2double, double: double2half}};
-    }(assertFiniteNumber)));
+    }()));
 
     // Make wires
     var wires = [];
@@ -146,9 +138,9 @@ describe("WireConstraint class", function(){
 
     // Disconnect pins
     timesTwo.disconnect("half");
-    expect(log).toEqual([]);
+    expect(log).toEqual(["half2double", "double2half"]);
     timesTwo.disconnect("double");
-    expect(log).toEqual([]);
+    expect(log).toEqual(["half2double", "double2half", "double2half"]);
 
     // Clear update log
     log.length = 0;
