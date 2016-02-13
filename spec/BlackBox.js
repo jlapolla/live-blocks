@@ -779,5 +779,88 @@ describe("BlackBox class", function(){
     wireA.value(undefined);
     expect(block.error().message).toBe("Pin \"a\" must be a number");
   });
+
+  it("reports persistent internal errors", function(){
+
+    // Create contrived black box to illustrate the problem
+    var errorBlock
+    var block = new LiveBlocks.BlackBox((function(Error){
+
+      // Make blocks
+      errorBlock = new LiveBlocks.WireConstraint((function(Error){
+
+        var errFunc = function(){
+
+          throw new Error("Just because");
+        };
+
+        var functions = {
+          x: errFunc
+        };
+
+        return {functions: functions};
+      }(Error)));
+      var passStringBlock = new LiveBlocks.WireConstraint((function(){
+
+        var aToB = function(){
+
+          if (typeof this.a === "string")
+            this.b = this.a;
+        };
+
+        var bToA = function(){
+
+          if (typeof this.b === "string")
+            this.a = this.b;
+        }
+
+        var functions = {
+          a: aToB,
+          b: bToA
+        };
+
+        return {functions: functions};
+      }()));
+
+      // Make wires
+      var wireA = new LiveBlocks.Wire();
+      var wireB = wireA.duplicate();
+
+      // Connect blocks to wires
+      passStringBlock.connect("a", wireA);
+      passStringBlock.connect("b", wireB);
+      errorBlock.connect("x", wireB);
+
+      // Create pins hash
+      var pins = {
+        a: wireA
+      };
+
+      // Return
+      return {pins: pins};
+    }(host.Error)));
+
+    // Make wires
+    var wire = new LiveBlocks.Wire();
+
+    // Connect blocks to wires
+    block.connect("a", wire);
+
+    // Check for internal and external errors
+    expect(errorBlock.error()).not.toBeUndefined();
+    expect(block.error()).not.toBeUndefined();
+
+    // Set a string value
+    // This forces errorBlock to fire a new "error" event
+    wire.value("string");
+    expect(errorBlock.error()).not.toBeUndefined();
+    expect(block.error()).not.toBeUndefined();
+
+    // Set a non-string value
+    // errorBlock does not fire a new "error" event, but its error condition persists
+    wire.value(1);
+    expect(errorBlock.error()).not.toBeUndefined();
+    expect(block.error()).not.toBeUndefined();
+  });
 });
 
