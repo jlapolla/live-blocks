@@ -73,8 +73,15 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       // All blocks are in the block set now
       // Attach "error" event listener to all blocks in the network
       var it = blockSet.values();
-      while (!it.peek().done)
+      while (!it.peek().done) {
+
+        // Check for pre-existing error
+        if (it.peek().value.error())
+          this._errorListener(it.peek().value.error());
+
+        // Register error listener
         it.next().value.on("error", this._errorListener);
+      }
     };
   }());
   function BlackBox(hash){
@@ -229,52 +236,56 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
     // Main loop
     while (true){
 
-      // Defensive copy internal and external wires
-      var internalWires = {}, externalWires = {};
-      for (var name in this._internalWires){
-
-        // Copy internal wire
-        internalWires[name] = this._internalWires[name];
-
-        // Copy external wire, if exists
-        if (this._externalWires[name])
-          externalWires[name] = this._externalWires[name];
-      }
-
       // Get updated pin value
       var value;
-      if(externalWires[pin])
-        value = externalWires[pin].value();
+      if(this._externalWires[pin])
+        value = this._externalWires[pin].value();
       else
         value = getUndefined();
 
-      // Fire update event
-      this.fire("update", {pin: pin, value: value});
+      // Set internal wire value is different
+      if (!this._internalWires[pin].equalTo(value)){
 
-      // Clear last error, if any
-      delete this._lastError;
+        // Defensive copy internal and external wires
+        var internalWires = {}, externalWires = {};
+        for (var name in this._internalWires){
 
-      // Copy updated pin value to internal wire
-      if (externalWires[pin])
-        internalWires[pin].value(externalWires[pin].value());
-      else
-        internalWires[pin].value(getUndefined());
+          // Copy internal wire
+          internalWires[name] = this._internalWires[name];
 
-      // Handle successful run
-      if (!hasOwnProperty(this, "_lastError")){
-
-        // Fire event
-        this.fire("success");
-
-        // Copy values from internal wires to external wires
-        for (var name in internalWires){
-
-          if (externalWires[name])
-            externalWires[name].value(internalWires[name].value());
+          // Copy external wire, if exists
+          if (this._externalWires[name])
+            externalWires[name] = this._externalWires[name];
         }
+
+        // Fire update event
+        this.fire("update", {pin: pin, value: value});
+
+        // Clear last error, if any
+        delete this._lastError;
+
+        // Copy updated pin value to internal wire
+        if (externalWires[pin])
+          internalWires[pin].value(externalWires[pin].value());
+        else
+          internalWires[pin].value(getUndefined());
+
+        // Handle successful run
+        if (!hasOwnProperty(this, "_lastError")){
+
+          // Fire event
+          this.fire("success");
+
+          // Copy values from internal wires to external wires
+          for (var name in internalWires){
+
+            if (externalWires[name])
+              externalWires[name].value(internalWires[name].value());
+          }
+        }
+        else
+          this.fire("error", this._lastError); // Fire event
       }
-      else
-        this.fire("error", this._lastError); // Fire event
 
       // Proces update queue
       if (this._updateQueue.isEmpty()){

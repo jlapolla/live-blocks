@@ -545,6 +545,10 @@ describe("WireConstraint class", function(){
     wireA.value(1);
     expect(block.error()).toBeUndefined();
     expect(wireB.value()).toBe(1);
+
+    // Reset error
+    wireA.value(undefined);
+    expect(block.error().message).toBe("Pin \"a\" must be a number");
   });
 
   it("fires events on update, success, and error", function(){
