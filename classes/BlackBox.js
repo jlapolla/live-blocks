@@ -1,9 +1,4 @@
 this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set, Error){
-  var errorListener = function(e){
-
-    if (!hasOwnProperty(this, "_lastError"))
-      this._lastError = e;
-  };
   var _disconnect = function(pin){
 
     // Disconnect from wire, if any
@@ -71,10 +66,8 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       }
 
       // All blocks are in the block set now
-      // Attach "error" event listener to all blocks in the network
-      var it = blockSet.values();
-      while (!it.peek().done)
-        it.next().value.on("error", this._errorListener);
+      // Store the block set
+      this._innerBlockSet = blockSet;
     };
   }());
   function BlackBox(hash){
@@ -84,7 +77,6 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
     this._updating = false;
     this._internalWires = {};
     this._externalWires = {};
-    this._errorListener = errorListener.bind(this);
 
     if (typeof hash !== "undefined"){
 
@@ -177,7 +169,20 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
   }());
   P.error = function(){
 
-    return this._lastError;
+    // Iterate through blocks and check for errors
+    var it = this._innerBlockSet.values();
+    while (!it.peek().done){
+
+      // Get the block
+      var block = it.peek().value;
+
+      // Check block for error
+      if (block.error())
+        return block.error();
+
+      // Move to next block
+      it.next();
+    }
   };
   P.connect = function(pin, wire){
 
@@ -251,9 +256,6 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
       // Fire update event
       this.fire("update", {pin: pin, value: value});
 
-      // Clear last error, if any
-      delete this._lastError;
-
       // Copy updated pin value to internal wire
       if (externalWires[pin])
         internalWires[pin].value(externalWires[pin].value());
@@ -261,7 +263,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
         internalWires[pin].value(getUndefined());
 
       // Handle successful run
-      if (!hasOwnProperty(this, "_lastError")){
+      if (!this.error()){
 
         // Fire event
         this.fire("success");
@@ -274,7 +276,7 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
         }
       }
       else
-        this.fire("error", this._lastError); // Fire event
+        this.fire("error", this.error()); // Fire event
 
       // Proces update queue
       if (this._updateQueue.isEmpty()){
