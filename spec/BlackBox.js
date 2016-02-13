@@ -459,7 +459,7 @@ describe("BlackBox class", function(){
 
     // Test input
     wires.theta.value(Math.PI/2);
-    expect(log).toEqual(["theta", "success"]);
+    expect(log).toEqual(["theta", "success", "x", "success", "y", "success"]);
     expect(wires.x.equalTo(0)).toBe(true);
     expect(wires.y.equalTo(2)).toBe(true);
     expect(wires.r.equalTo(2)).toBe(true);
