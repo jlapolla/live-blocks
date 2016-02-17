@@ -780,6 +780,229 @@ describe("BlackBox class", function(){
     expect(block.error().message).toBe("Pin \"a\" must be a number");
   });
 
+  it("fires events on update, success, and error", function(){
+
+    // Create a black box
+    var block = new LiveBlocks.BlackBox((function(TypeError){
+
+      // Create a block that throws error
+      var block = new LiveBlocks.WireConstraint({
+        functions: {
+          a: function(){
+
+            // Throw error if "a" is not a number
+            if (typeof this.a !== "number")
+              throw new TypeError("Pin \"a\" must be a number");
+
+            // Copy "a" to "b"
+            this.b = this.a;
+          },
+          b: function(){
+
+            // Throw error if "b" is not a number
+            if (typeof this.b !== "number")
+              throw new TypeError("Pin \"b\" must be a number");
+
+            // Copy "b" to "a"
+            this.a = this.b;
+          }
+        }
+      });
+
+      // Create wires
+      var wireA = new LiveBlocks.Wire();
+      var wireB = new LiveBlocks.Wire();
+
+      // Connect blocks and wires
+      block.connect("a", wireA);
+      block.connect("b", wireB);
+
+      // Create pins hash
+      var pins = {
+        a: wireA,
+        b: wireB
+      };
+
+      // Return
+      return {pins: pins};
+    }(host.TypeError)));
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list){
+
+      for (var i = 0; i < list.length; i++){
+
+        listeners[list[i]] = (function(eventName){
+
+          return function(arg){
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== "undefined")
+              obj.arg = arg;
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+      }
+    }(["update", "success", "error"]));
+
+    // Attach event listeners
+    block.on("update", listeners.update);
+    block.on("success", listeners.success);
+    block.on("error", listeners.error);
+
+    // Create wires
+    var wireA = new LiveBlocks.Wire();
+    var wireB = new LiveBlocks.Wire();
+
+    // Connect wireA to block
+    block.connect("a", wireA);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "a", value: undefined});
+    expect(log[1].event).toBe("error");
+    expect(log[1].arg.message).toBe("Pin \"b\" must be a number");
+    expect(log.length).toBe(2);
+
+    // Clear log
+    log.length = 0;
+
+    // Connect wireB to block
+    block.connect("b", wireB);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "b", value: undefined});
+    expect(log[1].event).toBe("error");
+    expect(log[1].arg.message).toBe("Pin \"b\" must be a number");
+    expect(log.length).toBe(2);
+
+    // Clear log
+    log.length = 0;
+
+    // Clear error
+    wireA.value(1);
+    expect(log[0].event).toBe("update");
+    expect(log[0].arg).toEqual({pin: "a", value: 1});
+    expect(log[1].event).toBe("success");
+    expect(log[1].arg).toBeUndefined();
+    expect(log[2].event).toBe("update");
+    expect(log[2].arg).toEqual({pin: "b", value: 1});
+    expect(log[3].event).toBe("success");
+    expect(log[3].arg).toBeUndefined();
+    expect(log.length).toBe(4);
+  });
+
+  it("fires events on pin connect and disconnect", function(){
+
+    // Create a black box
+    var block = new LiveBlocks.BlackBox((function(){
+
+      // Create a block
+      var noop = function(){};
+      var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+
+      // Create wires
+      var wires = [];
+      for (var i = 0; i < 2; i++)
+        wires.push(new LiveBlocks.Wire());
+
+      // Connect block to wires
+      block.connect("a", wires[0]);
+      block.connect("b", wires[1]);
+
+      // Create pins hash
+      var pins = {
+        a: wires[0],
+        b: wires[1]
+      };
+
+      // Return
+      return {pins: pins};
+    }()));
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list){
+
+      for (var i = 0; i < list.length; i++){
+
+        listeners[list[i]] = (function(eventName){
+
+          return function(arg){
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== "undefined")
+              obj.arg = arg;
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+      }
+    }(["connect", "disconnect"]));
+
+    // Create wires
+    var wires = [];
+    for (var i = 0; i < 2; i++)
+      wires.push(new LiveBlocks.Wire());
+
+    // Register event listeners
+    block.on("connect", listeners.connect);
+    block.on("disconnect", listeners.disconnect);
+    expect(log.length).toBe(0);
+
+    // Connect pin "a"
+    block.connect("a", wires[0]);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.wire).toBe(wires[0]);
+
+    // Clear log
+    log.length = 0;
+
+    // Connect pin "b"
+    block.connect("b", wires[1]);
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("connect");
+    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].arg.wire).toBe(wires[1]);
+
+    // Clear log
+    log.length = 0;
+
+    // Reconnect pin "a"
+    block.connect("a", wires[1]);
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe("disconnect");
+    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].arg.wire).toBe(wires[0]);
+    expect(log[1].event).toBe("connect");
+    expect(log[1].arg.pin).toBe("a");
+    expect(log[1].arg.wire).toBe(wires[1]);
+
+    // Clear log
+    log.length = 0;
+
+    // Reconnect pin "a" to same wire (does nothing)
+    block.connect("a", wires[1]);
+    expect(log.length).toBe(0);
+
+    // Clear log
+    log.length = 0;
+
+    // Disconnect pin "b"
+    block.disconnect("b");
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe("disconnect");
+    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].arg.wire).toBe(wires[1]);
+  });
+
   it("reports persistent internal errors", function(){
 
     // Create contrived black box to illustrate the problem
