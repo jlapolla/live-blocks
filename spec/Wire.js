@@ -368,6 +368,47 @@ describe("Wire class", function(){
     expect(log[0].arg).toBeUndefined();
   });
 
+  it("handles wire contention issues", function(){
+
+    // Create prototype NOT block
+    var not = new LiveBlocks.WireConstraint((function(){
+
+      var aToB = function(){
+
+        this.b = !this.a;
+      };
+
+      var functions = {
+        a: aToB,
+        b: aToB
+      };
+
+      return {functions: functions};
+    }()));
+
+    // Create blocks
+    var blocks = [];
+    for (var i = 0; i < 2; i++)
+      blocks.push(not.duplicate());
+
+    // Create wires
+    var wires = [];
+    for (var i = 0; i < 3; i++)
+      wires.push(new LiveBlocks.Wire());
+
+    // Connect blocks and wires
+    blocks[0].connect("a", wires[0]);
+    blocks[0].connect("b", wires[1]);
+    blocks[1].connect("a", wires[1]);
+    blocks[1].connect("b", wires[2]);
+
+    // Set undefined value on wires[1]
+    expect(function(){
+
+      wires[1].value(undefined);
+    }).not.toThrow();
+  });
+
   describe("connection iterator", function(){
 
     it("iterates over wire connections", function(){
