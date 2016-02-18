@@ -57,66 +57,63 @@ describe("Set class", function(){
       expect(set.has(removedValues[name])).toBe(false);
   });
 
-  describe("value iterator", function(){
+  it("value() function returns an iterator which iterates over set values", function(){
 
-    it("iterates over set values", function(){
+    // Make a set
+    var set = new LiveBlocks.Set();
 
-      // Make a set
-      var set = new LiveBlocks.Set();
+    // Make some values
+    var values = {
+      a: {},
+      b: {}
+    };
 
-      // Make some values
-      var values = {
-        a: {},
-        b: {}
-      };
+    // Put values in the set
+    for (var name in values)
+      set.add(values[name]);
 
-      // Put values in the set
-      for (var name in values)
-        set.add(values[name]);
+    // Get set iterator
+    var it = set.values();
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value).toBe(values.a);
 
-      // Get set iterator
-      var it = set.values();
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value).toBe(values.a);
+    // Move to next value
+    var value = it.next().value;
+    expect(value).toBe(values.a)
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value).toBe(values.b);
 
-      // Move to next value
-      var value = it.next().value;
-      expect(value).toBe(values.a)
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value).toBe(values.b);
+    // Move to next value
+    var value = it.next().value;
+    expect(value).toBe(values.b)
+    expect(it.peek().done).toBe(true);
+    expect(it.peek().value).toBeUndefined();
 
-      // Move to next value
-      var value = it.next().value;
-      expect(value).toBe(values.b)
-      expect(it.peek().done).toBe(true);
-      expect(it.peek().value).toBeUndefined();
+    // Add a new value to the set
+    values.c = {};
+    set.add(values.c);
 
-      // Add a new value to the set
-      values.c = {};
-      set.add(values.c);
+    // Reset iterator
+    it.reset();
 
-      // Reset iterator
-      it.reset();
+    // Check iterator
+    expect(it.next().value).toBe(values.a);
+    expect(it.next().value).toBe(values.b);
+    expect(it.peek().done).toBe(true);
+    expect(it.peek().value).toBeUndefined();
 
-      // Check iterator
-      expect(it.next().value).toBe(values.a);
-      expect(it.next().value).toBe(values.b);
-      expect(it.peek().done).toBe(true);
-      expect(it.peek().value).toBeUndefined();
+    // Get new iterator
+    it = set.values();
 
-      // Get new iterator
-      it = set.values();
+    // Check iterator
+    expect(it.next().value).toBe(values.a);
+    expect(it.next().value).toBe(values.b);
+    expect(it.next().value).toBe(values.c);
+    expect(it.peek().done).toBe(true);
+    expect(it.peek().value).toBeUndefined();
 
-      // Check iterator
-      expect(it.next().value).toBe(values.a);
-      expect(it.next().value).toBe(values.b);
-      expect(it.next().value).toBe(values.c);
-      expect(it.peek().done).toBe(true);
-      expect(it.peek().value).toBeUndefined();
-
-      var value = it.next();
-      expect(value).toEqual({done: true});
-    });
+    var value = it.next();
+    expect(value).toEqual({done: true});
   });
 });
 
