@@ -1,77 +1,4 @@
-this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, EventEmitter){
-  var WireConstraintPinIterator = (function(){
-    var refresh = function(){
-
-      // Create new pin names array
-      var pins = [];
-      for (var pin in this._wireConstraint._functions)
-        pins.push({pin: pin, wire: this._wireConstraint._wires[pin]});
-
-      // Set _pins to new pin names array
-      this._pins = pins;
-    };
-    function WireConstraintPinIterator(wireConstraint){
-
-      this._wireConstraint = wireConstraint;
-      this._index = 0;
-      refresh.call(this);
-    }
-    WireConstraintPinIterator.prototype = {};
-    var P = WireConstraintPinIterator.prototype;
-    P.reset = function(){
-
-      // Reset iterator index
-      this._index = 0;
-    };
-    P.next = function(){
-
-      // Check if we are at the last pin
-      if (this._index < this._pins.length){
-
-        // Get pin name at current index
-        var pin = this._pins[this._index];
-
-        // Increment index and return pin name and connected wire
-        this._index = this._index + 1;
-        return {
-          done: false,
-          value: {pin: pin.pin, wire: pin.wire}
-        };
-      }
-      else
-        return {done: true};
-    };
-    P.peek = function(){
-
-      // Check if we are at the last pin
-      if (this._index < this._pins.length){
-
-        // Get pin name at current index
-        var pin = this._pins[this._index];
-
-        // Return pin name at current index and connected wire
-        return {
-          done: false,
-          value: {pin: pin.pin, wire: pin.wire}
-        };
-      }
-      else
-        return {done: true};
-    };
-    P.has = function(pin){
-
-      // Search through pins
-      for (var i = 0; i < this._pins.length; i++){
-
-        if (this._pins[i].pin === pin)
-          return true;
-      }
-
-      // Match not found
-      return false;
-    };
-    return WireConstraintPinIterator;
-  }());
+this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, EventEmitter, ArrayIterator){
   var _disconnect = function(pin){
 
     // Disconnect from wire, if any
@@ -219,8 +146,13 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
   };
   P.pins = function(){
 
-    return new WireConstraintPinIterator(this);
+    // Create array of pins
+    var pins = [];
+    for (var pin in this._functions)
+      pins.push({pin: pin, wire: this._wires[pin]});
+
+    return new ArrayIterator(pins);
   };
   return WireConstraint;
-}(this.hasOwnProperty, this.Queue, host.Error, this.extendClass, this.EventEmitter));
+}(this.hasOwnProperty, this.Queue, host.Error, this.extendClass, this.EventEmitter, this.ArrayIterator));
 
