@@ -263,5 +263,5 @@
       });
     }(classNames[i]));
   }
-}(["EventEmitter", "Block", "WireConstraint", "Wire", "BlackBox"]));
+}(["EventEmitter", "WireConstraint", "Wire", "BlackBox"]));
 
