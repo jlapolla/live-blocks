@@ -1085,5 +1085,64 @@ describe("BlackBox class", function(){
     expect(errorBlock.error()).not.toBeUndefined();
     expect(block.error()).not.toBeUndefined();
   });
+
+  it("pins() iterator iterates over pins", function(){
+
+    // Create a black box
+    var block = new LiveBlocks.BlackBox((function(){
+
+      // Create pins hash
+      var pins = {
+        a: new LiveBlocks.Wire(),
+        b: new LiveBlocks.Wire(),
+        c: new LiveBlocks.Wire()
+      };
+
+      // Return
+      return {pins: pins};
+    }()));
+
+    // Create wires
+    var wires = {
+      a: new LiveBlocks.Wire(),
+      b: new LiveBlocks.Wire(),
+      c: new LiveBlocks.Wire()
+    };
+
+    // Connect block to wires
+    block.connect("a", wires.a);
+    block.connect("b", wires.b);
+
+    // Get pins iterator
+    var it = block.pins();
+
+    // Connect last wire (should not show up in the iterator)
+    block.connect("c", wires.c);
+
+    // Run through iterator
+    var pin = it.peek().value;
+    expect(pin.pin).toBe("a");
+    expect(pin.wire).toBe(wires.a);
+    pin = it.next().value;
+    expect(pin.pin).toBe("a");
+    expect(pin.wire).toBe(wires.a);
+
+    pin = it.peek().value;
+    expect(pin.pin).toBe("b");
+    expect(pin.wire).toBe(wires.b);
+    pin = it.next().value;
+    expect(pin.pin).toBe("b");
+    expect(pin.wire).toBe(wires.b);
+
+    pin = it.peek().value;
+    expect(pin.pin).toBe("c");
+    expect(pin.wire).toBeUndefined();
+    pin = it.next().value;
+    expect(pin.pin).toBe("c");
+    expect(pin.wire).toBeUndefined();
+
+    expect(it.peek().done).toBe(true);
+    expect(it.next().done).toBe(true);
+  });
 });
 
