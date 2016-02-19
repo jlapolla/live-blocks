@@ -1,4 +1,4 @@
-this.Map = (function(){
+this.Map = (function(ArrayIterator){
   var same = function(a, b){
 
     return a !== a ? b !== b : a === b;
@@ -61,6 +61,16 @@ this.Map = (function(){
     // Match not found
     return false;
   };
+  P.keys = function(){
+
+    // Copy keys to a new array
+    var array = this._array, keys = [];
+    for (var i = 0; i < array.length; i++)
+      keys.push(array[i].key);
+
+    // Return ArrayIterator for the keys array
+    return new ArrayIterator(keys);
+  };
   return Map;
-}());
+}(this.ArrayIterator));
 
