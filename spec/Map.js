@@ -97,5 +97,58 @@ describe("Map class", function(){
     expect(map.get("b")).toBe(4);
     expect(map._array.length).toBe(3);
   });
+
+  it("keys() function returns an iterator over Map keys", function(){
+
+    // Make a map
+    var map = new LiveBlocks.Map();
+
+    // Make some keys
+    var keys = {
+      a: {},
+      b: {},
+      c: {}
+    };
+
+    // Make some values
+    var values = {
+      a: {},
+      b: {},
+      c: {}
+    };
+
+    // Put keys and values in the map
+    for (var name in keys)
+      map.put(keys[name], values[name]);
+
+    // Get keys iterator
+    var it = map.keys();
+
+    // Add some other mapping to the map (shouldn't be reflected in our iterator)
+    map.put({}, {});
+
+    // Run through iterator
+    expect(it.peek().value).toBe(keys.a);
+    expect(it.next().value).toBe(keys.a);
+    expect(it.peek().value).toBe(keys.b);
+    expect(it.next().value).toBe(keys.b);
+    expect(it.peek().value).toBe(keys.c);
+    expect(it.next().value).toBe(keys.c);
+    expect(it.peek().done).toBe(true);
+    expect(it.next().done).toBe(true);
+
+    // Reset the iterator
+    it.reset();
+
+    // Run through iterator
+    expect(it.peek().value).toBe(keys.a);
+    expect(it.next().value).toBe(keys.a);
+    expect(it.peek().value).toBe(keys.b);
+    expect(it.next().value).toBe(keys.b);
+    expect(it.peek().value).toBe(keys.c);
+    expect(it.next().value).toBe(keys.c);
+    expect(it.peek().done).toBe(true);
+    expect(it.next().done).toBe(true);
+  });
 });
 

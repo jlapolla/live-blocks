@@ -1,4 +1,4 @@
-this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set, Error){
+this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set, Error, ArrayIterator){
   var _disconnect = function(pin){
 
     // Disconnect from wire, if any
@@ -293,14 +293,14 @@ this.BlackBox = (function(EventEmitter, extendClass, hasOwnProperty, Queue, getU
   };
   P.pins = function(){
 
-    // Collect pins in a set
-    var pinSet = new Set();
+    // Collect pins in an array
+    var arr = [];
     for (var pin in this._internalWires)
-      pinSet.add({pin: pin, wire: this._internalWires[pin]});
+      arr.push({pin: pin, wire: this._externalWires[pin]});
 
-    // Return set iterator
-    return pinSet.values();
+    // Return array iterator
+    return new ArrayIterator(arr);
   };
   return BlackBox;
-}(this.EventEmitter, this.extendClass, this.hasOwnProperty, this.Queue, this.getUndefined, this.Map, this.Set, host.Error));
+}(this.EventEmitter, this.extendClass, this.hasOwnProperty, this.Queue, this.getUndefined, this.Map, this.Set, host.Error, this.ArrayIterator));
 

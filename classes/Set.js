@@ -1,59 +1,4 @@
-this.Set = (function(){
-  var SetIterator = (function(){
-    var refresh = function(){
-
-      this._array = this._set._array;
-    };
-    function SetIterator(set){
-
-      this._set = set;
-      this._index = 0;
-      refresh.call(this);
-    }
-    SetIterator.prototype = {};
-    var P = SetIterator.prototype;
-    P.reset = function(){
-
-      // Reset iterator index
-      this._index = 0;
-    };
-    P.next = function(){
-
-      // Check if we are at the end of the iterator
-      if (this._index < this._array.length){
-
-        // Get current value
-        var value = this._array[this._index];
-
-        // Increment index and return value
-        this._index = this._index + 1;
-        return {
-          done: false,
-          value: value
-        };
-      }
-      else
-        return {done: true};
-    };
-    P.peek = function(){
-
-      // Check if we are at the end of the iterator
-      if (this._index < this._array.length){
-
-        // Get current value
-        var value = this._array[this._index];
-
-        // Return value
-        return {
-          done: false,
-          value: value
-        };
-      }
-      else
-        return {done: true};
-    };
-    return SetIterator;
-  }());
+this.Set = (function(ArrayIterator){
   var same = function(a, b){
 
     return a !== a ? b !== b : a === b;
@@ -108,8 +53,8 @@ this.Set = (function(){
   };
   P.values = function(){
 
-    return new SetIterator(this);
+    return new ArrayIterator(this._array);
   };
   return Set;
-}());
+}(this.ArrayIterator));
 

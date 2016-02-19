@@ -724,74 +724,66 @@ describe("WireConstraint class", function(){
     expect(log[0].arg.wire).toBe(wires[1]);
   });
 
-  describe("pin iterator", function(){
+  it("pins() iterator iterates over block pins", function(){
 
-    it("iterates over block pins", function(){
+    // Create a block that throws error
+    var block = new LiveBlocks.WireConstraint((function(){
+      var noop = function(){};
+      var functions = {a: noop, b: noop};
+      return {functions: functions};
+    }()));
 
-      // Create a block that throws error
-      var block = new LiveBlocks.WireConstraint((function(){
-        var noop = function(){};
-        var functions = {a: noop, b: noop};
-        return {functions: functions};
-      }()));
+    // Create wires
+    var wireA = new LiveBlocks.Wire();
 
-      // Create wires
-      var wireA = new LiveBlocks.Wire();
+    // Connect wires to block
+    block.connect("a", wireA);
 
-      // Connect wires to block
-      block.connect("a", wireA);
+    // Get pin iterator
+    var it = block.pins();
 
-      // Get pin iterator
-      var it = block.pins();
+    // Peek at next pin
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.wire).toBe(wireA);
 
-      // Peek at next pin
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value.pin).toBe("a");
-      expect(it.peek().value.wire).toBe(wireA);
+    // Get next pin
+    var pin = it.next().value;
+    expect(pin.pin).toBe("a");
+    expect(pin.wire).toBe(wireA);
 
-      // Get next pin
-      var pin = it.next().value;
-      expect(pin.pin).toBe("a");
-      expect(pin.wire).toBe(wireA);
+    // Get next pin
+    pin = it.next().value;
+    expect(pin.pin).toBe("b");
+    expect(pin.wire).toBeUndefined();
 
-      // Check has() function
-      expect(it.has("a")).toBe(true);
-      expect(it.has("b")).toBe(true);
-      expect(it.has("c")).toBe(false);
+    // We are at the end of the iterator
+    expect(it.peek().done).toBe(true);
+    expect(it.peek().value).toBeUndefined();
+    expect(it.next().done).toBe(true);
+    expect(it.next().value).toBeUndefined();
 
-      // Get next pin
-      pin = it.next().value;
-      expect(pin.pin).toBe("b");
-      expect(pin.wire).toBeUndefined();
+    // Reset iterator
+    it.reset();
 
-      // We are at the end of the iterator
-      expect(it.peek().done).toBe(true);
-      expect(it.peek().value).toBeUndefined();
-      expect(it.next().done).toBe(true);
-      expect(it.next().value).toBeUndefined();
+    // Peek at next pin
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.wire).toBe(wireA);
 
-      // Reset iterator
-      it.reset();
+    // Disconnect wire
+    // Iterator should not change
+    // Need to get a new iterator to see latest pins
+    block.disconnect("a");
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.wire).toBe(wireA);
 
-      // Peek at next pin
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value.pin).toBe("a");
-      expect(it.peek().value.wire).toBe(wireA);
-
-      // Disconnect wire
-      // Iterator should not change
-      // Need to get a new iterator to see latest pins
-      block.disconnect("a");
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value.pin).toBe("a");
-      expect(it.peek().value.wire).toBe(wireA);
-
-      // Get new iterator
-      it = block.pins();
-      expect(it.peek().done).toBe(false);
-      expect(it.peek().value.pin).toBe("a");
-      expect(it.peek().value.wire).toBeUndefined();
-    });
+    // Get new iterator
+    it = block.pins();
+    expect(it.peek().done).toBe(false);
+    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.wire).toBeUndefined();
   });
 });
 

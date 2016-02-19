@@ -1,72 +1,4 @@
-this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, extendClass){
-  var WireConnectionIterator = (function(){
-    var refresh = function(){
-
-      this._connections = this._wire._bindings;
-    };
-    function WireConnectionIterator(wire){
-
-      this._wire = wire;
-      this._index = 0;
-      refresh.call(this);
-    }
-    WireConnectionIterator.prototype = {};
-    var P = WireConnectionIterator.prototype;
-    P.reset = function(){
-
-      // Reset iterator index
-      this._index = 0;
-    };
-    P.next = function(){
-
-      // Check if we are at the last connection
-      if (this._index < this._connections.length){
-
-        // Get current connection
-        var connection = this._connections[this._index];
-
-        // Increment index and return connection
-        this._index = this._index + 1;
-        return {
-          done: false,
-          value: {block: connection.block, pin: connection.pin}
-        };
-      }
-      else
-        return {done: true};
-    };
-    P.peek = function(){
-
-      // Check if we are at the last connection
-      if (this._index < this._connections.length){
-
-        // Get current connection
-        var connection = this._connections[this._index];
-
-        // Return connection
-        return {
-          done: false,
-          value: {block: connection.block, pin: connection.pin}
-        };
-      }
-      else
-        return {done: true};
-    };
-    P.has = function(connection){
-
-      // Run through iterator and check for equivalent connection
-      for (var i = 0; i < this._connections.length; i++){
-
-        var con = this._connections[i];
-        if (con.block === connection.block && con.pin === connection.pin)
-          return true;
-      }
-
-      // Match not found
-      return false;
-    };
-    return WireConnectionIterator;
-  }());
+this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, extendClass, ArrayIterator){
   function Wire(hash){
 
     EventEmitter.call(this);
@@ -228,8 +160,13 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
   P.connections = function(){
 
-    return new WireConnectionIterator(this);
+    // Collect bindings in an array
+    var arr = [], bindings = this._bindings;
+    for (var i = 0; i < bindings.length; i++)
+      arr.push({block: bindings[i].block, pin: bindings[i].pin});
+
+    return new ArrayIterator(arr);
   };
   return Wire;
-}(this.getUndefined, this.hasOwnProperty, this.Queue, host.Error, this.EventEmitter, this.extendClass));
+}(this.getUndefined, this.hasOwnProperty, this.Queue, host.Error, this.EventEmitter, this.extendClass, this.ArrayIterator));
 
