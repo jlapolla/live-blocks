@@ -1,26 +1,28 @@
-"use strict";
+'use strict';
 
-describe("Set class", function(){
+describe('Set class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
-  it("works with any kind of value", function(){
+  it('works with any kind of value', function () {
 
     // Make a set
     var set = new LiveBlocks.Set();
 
     // Make NaN
-    var nan = 1/(function(){}());
+    var nan = 1 / (function () {}());
+
     expect(nan === nan).toBe(false); // Make sure we have an actual NaN value
 
     // Make some values
     var values = {
       a: nan,
       b: {},
-      c: function(){},
-      d: "x",
+      c: function () {},
+
+      d: 'x',
       e: undefined,
-      f: null
+      f: null,
     };
 
     // Put values in the set
@@ -36,12 +38,12 @@ describe("Set class", function(){
 
     // Negative test for value existence
     expect(set.has({})).toBe(false);
-    expect(set.has(function(){})).toBe(false);
+    expect(set.has(function () {})).toBe(false);
 
     // Remove some values
     var removedValues = {
       a: values.a,
-      b: values.b
+      b: values.b,
     };
     delete values.a;
     delete values.b;
@@ -57,7 +59,7 @@ describe("Set class", function(){
       expect(set.has(removedValues[name])).toBe(false);
   });
 
-  it("value() function returns an iterator which iterates over set values", function(){
+  it('value() function returns an iterator which iterates over set values', function () {
 
     // Make a set
     var set = new LiveBlocks.Set();
@@ -65,7 +67,7 @@ describe("Set class", function(){
     // Make some values
     var values = {
       a: {},
-      b: {}
+      b: {},
     };
 
     // Put values in the set
@@ -79,13 +81,13 @@ describe("Set class", function(){
 
     // Move to next value
     var value = it.next().value;
-    expect(value).toBe(values.a)
+    expect(value).toBe(values.a);
     expect(it.peek().done).toBe(false);
     expect(it.peek().value).toBe(values.b);
 
     // Move to next value
     var value = it.next().value;
-    expect(value).toBe(values.b)
+    expect(value).toBe(values.b);
     expect(it.peek().done).toBe(true);
     expect(it.peek().value).toBeUndefined();
 
@@ -113,7 +115,7 @@ describe("Set class", function(){
     expect(it.peek().value).toBeUndefined();
 
     var value = it.next();
-    expect(value).toEqual({done: true});
+    expect(value).toEqual({ done: true });
   });
 });
 

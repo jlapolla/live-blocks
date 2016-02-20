@@ -1,10 +1,11 @@
-this.EventEmitter = (function(hasOwnProperty){
-  function EventEmitter(){
+this.EventEmitter = (function (hasOwnProperty) {
+  function EventEmitter() {
     this._listeners = {};
   };
+
   EventEmitter.prototype = {};
   var P = EventEmitter.prototype;
-  P.on = function(ev, callback){
+  P.on = function (ev, callback) {
 
     // Look up listeners
     var listeners;
@@ -15,7 +16,7 @@ this.EventEmitter = (function(hasOwnProperty){
 
     // Iterate over listeners and copy to newListeners
     var newListeners = [], listenerExists;
-    for (var i = 0; i < listeners.length; i++){
+    for (var i = 0; i < listeners.length; i++) {
       newListeners.push(listeners[i]);
       if (listeners[i] === callback)
         listenerExists = true;
@@ -28,7 +29,8 @@ this.EventEmitter = (function(hasOwnProperty){
     // Replace listeners
     this._listeners[ev] = newListeners;
   };
-  P.off = function(ev, callback){
+
+  P.off = function (ev, callback) {
 
     // Look up listeners
     var listeners;
@@ -39,7 +41,7 @@ this.EventEmitter = (function(hasOwnProperty){
 
     // Iterate over listeners and copy to newListeners
     var newListeners = [];
-    for (var i = 0; i < listeners.length; i++){
+    for (var i = 0; i < listeners.length; i++) {
       if (listeners[i] !== callback)
         newListeners.push(listeners[i]);
     }
@@ -50,7 +52,8 @@ this.EventEmitter = (function(hasOwnProperty){
     else
       delete this._listeners[ev];
   };
-  P.fire = function(ev, arg){
+
+  P.fire = function (ev, arg) {
 
     // Look up listeners
     var listeners;
@@ -60,15 +63,15 @@ this.EventEmitter = (function(hasOwnProperty){
       return; // Nothing left to do
 
     // Call each callback
-    if (typeof arg !== "undefined"){
+    if (typeof arg !== 'undefined') {
       for (var i = 0; i < listeners.length; i++)
         listeners[i](arg);
-    }
-    else {
+    } else {
       for (var i = 0; i < listeners.length; i++)
         listeners[i]();
     }
-  }
+  };
+
   return EventEmitter;
 }(this.hasOwnProperty));
 

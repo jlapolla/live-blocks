@@ -1,2 +1,2 @@
-this.getUndefined = function(){};
+this.getUndefined = function () {};
 

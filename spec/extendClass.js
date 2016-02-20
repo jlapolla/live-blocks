@@ -1,27 +1,29 @@
-"use strict";
+'use strict';
 
-describe("extendClass function", function(){
+describe('extendClass function', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
-  it("extends a class", function(){
+  it('extends a class', function () {
 
     // Make Mover class
-    function Mover(){
+    function Mover() {
       this._myMove = "I'm a mover";
     }
+
     Mover.prototype = {};
-    Mover.prototype.move = function(){
+    Mover.prototype.move = function () {
       return this._myMove;
     };
 
     // Make Walker class
-    function Walker(){
+    function Walker() {
       Mover.call(this);
-      this._myWalk = "I walk the walk";
+      this._myWalk = 'I walk the walk';
     }
+
     LiveBlocks.extendClass(Mover, Walker);
-    Walker.prototype.walk = function(){
+    Walker.prototype.walk = function () {
       return this._myWalk;
     };
 
@@ -33,7 +35,7 @@ describe("extendClass function", function(){
     expect(object instanceof Mover).toBe(true);
 
     // Check functions
-    expect(object.walk()).toBe("I walk the walk");
+    expect(object.walk()).toBe('I walk the walk');
     expect(object.move()).toBe("I'm a mover");
   });
 });

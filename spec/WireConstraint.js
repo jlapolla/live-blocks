@@ -1,34 +1,34 @@
-"use strict";
+'use strict';
 
-describe("WireConstraint class", function(){
+describe('WireConstraint class', function () {
 
   var host = window;
 
   var LiveBlocks = host.LiveBlocks;
 
   var assertFiniteNumber, floatWire;
-  beforeEach(function(){
+  beforeEach(function () {
 
-    assertFiniteNumber = (function(isFinite, Error){
+    assertFiniteNumber = (function (isFinite, Error) {
 
-      return function(num){
+      return function (num) {
 
-        if (!(typeof num === "number" && isFinite(num)))
-          throw new Error(num + " must be a number");
+        if (!(typeof num === 'number' && isFinite(num)))
+          throw new Error(num + ' must be a number');
       };
     }(host.isFinite, host.Error));
 
     // Create a prototype floating point value wire
-    floatWire = new LiveBlocks.Wire((function(Math, isFinite){
+    floatWire = new LiveBlocks.Wire((function (Math, isFinite) {
 
       var abs = Math.abs;
       var epsilon = 1e-14;
 
-      var equalTo = function(value){
+      var equalTo = function (value) {
 
         if (
-          typeof value === "number"
-          && typeof this._value === "number"
+          typeof value === 'number'
+          && typeof this._value === 'number'
           && isFinite(value)
           && isFinite(this._value)
         )
@@ -37,49 +37,52 @@ describe("WireConstraint class", function(){
           return value !== value ? this._value !== this._value : value === this._value;
       };
 
-      return {equalTo: equalTo};
+      return { equalTo: equalTo };
     }(host.Math, host.isFinite)));
   });
 
-  it("integration test with Wire class where a wire has multiple connections", function(){
+  it('integration test with Wire class where a wire has multiple connections', function () {
 
     // Update log
     var log = [];
 
     // Make blocks
-    var plusOne = new LiveBlocks.WireConstraint((function(){
+    var plusOne = new LiveBlocks.WireConstraint((function () {
 
       // Make constraint functions
-      var smaller2bigger = function(){
+      var smaller2bigger = function () {
 
         this.bigger = this.smaller + 1;
-        log.push("smaller2bigger");
+        log.push('smaller2bigger');
       };
-      var bigger2smaller = function(){
+
+      var bigger2smaller = function () {
 
         this.smaller = this.bigger - 1;
-        log.push("bigger2smaller");
+        log.push('bigger2smaller');
       };
 
       // Return function hash
-      return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
+      return { functions: { bigger: bigger2smaller, smaller: smaller2bigger } };
     }()));
-    var timesTwo = new LiveBlocks.WireConstraint((function(){
+
+    var timesTwo = new LiveBlocks.WireConstraint((function () {
 
       // Make constraint functions
-      var half2double = function(){
+      var half2double = function () {
 
         this.double = this.half * 2;
-        log.push("half2double");
+        log.push('half2double');
       };
-      var double2half = function(){
+
+      var double2half = function () {
 
         this.half = this.double / 2;
-        log.push("double2half");
+        log.push('double2half');
       };
 
       // Return function hash
-      return {functions: {half: half2double, double: double2half}};
+      return { functions: { half: half2double, double: double2half } };
     }()));
 
     // Make wires
@@ -88,10 +91,10 @@ describe("WireConstraint class", function(){
       wires.push(new LiveBlocks.Wire());
 
     // Connect block properties to wires
-    plusOne.connect("smaller", wires[0]);
-    plusOne.connect("bigger", wires[1]);
-    timesTwo.connect("half", wires[1]);
-    timesTwo.connect("double", wires[2]);
+    plusOne.connect('smaller', wires[0]);
+    plusOne.connect('bigger', wires[1]);
+    timesTwo.connect('half', wires[1]);
+    timesTwo.connect('double', wires[2]);
 
     // Clear update log
     log.length = 0;
@@ -101,7 +104,7 @@ describe("WireConstraint class", function(){
     expect(wires[0].value()).toBe(0);
     expect(wires[1].value()).toBe(1);
     expect(wires[2].value()).toBe(2);
-    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -111,7 +114,7 @@ describe("WireConstraint class", function(){
     expect(wires[0].value()).toBe(2);
     expect(wires[1].value()).toBe(3);
     expect(wires[2].value()).toBe(6);
-    expect(log).toEqual(["smaller2bigger", "half2double", "double2half", "bigger2smaller"]);
+    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -121,7 +124,7 @@ describe("WireConstraint class", function(){
     expect(wires[0].value()).toBe(-0.5);
     expect(wires[1].value()).toBe(0.5);
     expect(wires[2].value()).toBe(1);
-    expect(log).toEqual(["bigger2smaller", "smaller2bigger", "half2double", "double2half"]);
+    expect(log).toEqual(['bigger2smaller', 'smaller2bigger', 'half2double', 'double2half']);
 
     // Clear update log
     log.length = 0;
@@ -131,40 +134,40 @@ describe("WireConstraint class", function(){
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(8);
-    expect(log).toEqual(["double2half", "bigger2smaller", "smaller2bigger", "half2double"]);
+    expect(log).toEqual(['double2half', 'bigger2smaller', 'smaller2bigger', 'half2double']);
 
     // Clear update log
     log.length = 0;
 
     // Disconnect pins
-    timesTwo.disconnect("half");
-    expect(log).toEqual(["half2double", "double2half"]);
-    timesTwo.disconnect("double");
-    expect(log).toEqual(["half2double", "double2half", "double2half"]);
+    timesTwo.disconnect('half');
+    expect(log).toEqual(['half2double', 'double2half']);
+    timesTwo.disconnect('double');
+    expect(log).toEqual(['half2double', 'double2half', 'double2half']);
 
     // Clear update log
     log.length = 0;
 
     // Rewire blocks
-    timesTwo.connect("half", wires[2]);
-    timesTwo.connect("double", wires[1]);
+    timesTwo.connect('half', wires[2]);
+    timesTwo.connect('double', wires[1]);
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(2);
-    expect(log).toEqual(["half2double", "double2half", "half2double"]);
+    expect(log).toEqual(['half2double', 'double2half', 'half2double']);
   });
 
-  it("integration test with Wire class where the WireConstraint has multiple inputs and outputs", function(){
+  it('integration test with Wire class where the WireConstraint has multiple inputs and outputs', function () {
 
     // Convert rectangular to polar coordinates
-    var block = new LiveBlocks.WireConstraint((function(Math, assertFiniteNumber){
+    var block = new LiveBlocks.WireConstraint((function (Math, assertFiniteNumber) {
 
       var atan2 = Math.atan2;
       var cos = Math.cos;
       var sin = Math.sin;
       var sqrt = Math.sqrt;
 
-      var rect2polar = function(){
+      var rect2polar = function () {
 
         assertFiniteNumber(this.x);
         assertFiniteNumber(this.y);
@@ -173,7 +176,7 @@ describe("WireConstraint class", function(){
         this.theta = atan2(this.y, this.x);
       };
 
-      var polar2rect = function(){
+      var polar2rect = function () {
 
         assertFiniteNumber(this.r);
         assertFiniteNumber(this.theta);
@@ -186,47 +189,49 @@ describe("WireConstraint class", function(){
         x: rect2polar,
         y: rect2polar,
         r: polar2rect,
-        theta: polar2rect
+        theta: polar2rect,
       };
 
-      return {functions: functions};
+      return { functions: functions };
     }(host.Math, assertFiniteNumber)));
 
     // Make wires
     var wires = {};
-    (function(wireNames){
+    (function (wireNames) {
 
       for (var i = 0; i < wireNames.length; i++)
         wires[wireNames[i]] = floatWire.duplicate();
-    }(["x", "y", "r", "theta"]));
+    }(['x', 'y', 'r', 'theta']));
 
     // Register logging event listeners
     var log = [];
-    block.on("update", function(pin){
+    block.on('update', function (pin) {
 
       log.push(pin.pin);
     });
-    block.on("success", function(){
 
-      log.push("success");
+    block.on('success', function () {
+
+      log.push('success');
     });
-    block.on("error", function(){
 
-      log.push("error");
+    block.on('error', function () {
+
+      log.push('error');
     });
 
     // Connect wires to block pins
-    block.connect("x", wires.x);
-    block.connect("y", wires.y);
-    block.connect("r", wires.r);
-    block.connect("theta", wires.theta);
+    block.connect('x', wires.x);
+    block.connect('y', wires.y);
+    block.connect('r', wires.r);
+    block.connect('theta', wires.theta);
 
     // Clear log
     log.length = 0;
 
     // Test input
     wires.x.value(1);
-    expect(log).toEqual(["x", "error"]);
+    expect(log).toEqual(['x', 'error']);
     expect(wires.x.equalTo(1)).toBe(true);
     expect(wires.y.value()).toBeUndefined();
     expect(wires.r.value()).toBeUndefined();
@@ -253,20 +258,20 @@ describe("WireConstraint class", function(){
     log.length = 0;
 
     // Test input
-    wires.theta.value(Math.PI/2);
-    expect(log).toEqual(["theta", "success", "x", "success", "y", "success"]);
+    wires.theta.value(Math.PI / 2);
+    expect(log).toEqual(['theta', 'success', 'x', 'success', 'y', 'success']);
     expect(wires.x.equalTo(0)).toBe(true);
     expect(wires.y.equalTo(2)).toBe(true);
     expect(wires.r.equalTo(2)).toBe(true);
-    expect(wires.theta.equalTo(Math.PI/2)).toBe(true);
+    expect(wires.theta.equalTo(Math.PI / 2)).toBe(true);
     expect(block.error()).toBeUndefined();
 
     // Test input
-    wires.theta.value(Math.PI * 15/4);
+    wires.theta.value(Math.PI * 15 / 4);
     expect(wires.x.equalTo(2 / Math.SQRT2)).toBe(true);
     expect(wires.y.equalTo(-2 / Math.SQRT2)).toBe(true);
     expect(wires.r.equalTo(2)).toBe(true);
-    expect(wires.theta.equalTo(-Math.PI/4)).toBe(true);
+    expect(wires.theta.equalTo(-Math.PI / 4)).toBe(true);
     expect(block.error()).toBeUndefined();
 
     // Test input
@@ -279,26 +284,27 @@ describe("WireConstraint class", function(){
     expect(block.error()).not.toBeUndefined();
   });
 
-  it("integration test with read-only values", function(){
+  it('integration test with read-only values', function () {
 
     // We will make a flip flop from two cross-coupled NOR gates
 
     // Make two NOR blocks
-    var norQ = new LiveBlocks.WireConstraint((function(){
+    var norQ = new LiveBlocks.WireConstraint((function () {
 
-      var func = function(){
+      var func = function () {
 
-        this.out = !(this.a || this.b)
+        this.out = !(this.a || this.b);
       };
 
       var functions = {
         a: func,
         b: func,
-        out: func
+        out: func,
       };
 
-      return {functions: functions};
+      return { functions: functions };
     }()));
+
     var norNotQ = norQ.duplicate();
 
     // Make some wires
@@ -308,12 +314,12 @@ describe("WireConstraint class", function(){
     var notQ = new LiveBlocks.Wire();
 
     // Connect blocks to wires
-    norQ.connect("out", Q);
-    norQ.connect("a", R);
-    norQ.connect("b", notQ);
-    norNotQ.connect("out", notQ);
-    norNotQ.connect("a", Q);
-    norNotQ.connect("b", S);
+    norQ.connect('out', Q);
+    norQ.connect('a', R);
+    norQ.connect('b', notQ);
+    norNotQ.connect('out', notQ);
+    norNotQ.connect('a', Q);
+    norNotQ.connect('b', S);
 
     // Set the flip flop
     R.value(false);
@@ -333,14 +339,14 @@ describe("WireConstraint class", function(){
     expect(notQ.value()).toBe(true);
   });
 
-  it("duplicates injected queue dependencies", function(){
+  it('duplicates injected queue dependencies', function () {
 
     // Create a fake queue
     var queue2 = {};
-    var queue = {duplicate: function(){return queue2;}};
+    var queue = { duplicate: function () {return queue2;} };
 
     // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint({queue: queue});
+    var wc = new LiveBlocks.WireConstraint({ queue: queue });
     expect(wc._updateQueue).toBe(queue);
 
     // Duplicate wire constraint
@@ -348,16 +354,17 @@ describe("WireConstraint class", function(){
     expect(duplicate._updateQueue).toBe(queue2);
   });
 
-  it("duplicates injected function dependencies", function(){
+  it('duplicates injected function dependencies', function () {
 
     // Create function hash
     var fnHash = {
-      a: function(){},
-      b: function(){}
+      a: function () {},
+
+      b: function () {},
     };
 
     // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint({functions: fnHash});
+    var wc = new LiveBlocks.WireConstraint({ functions: fnHash });
     expect(wc._functions).not.toBe(fnHash);
     expect(wc._functions).toEqual(fnHash);
 
@@ -367,37 +374,37 @@ describe("WireConstraint class", function(){
     expect(duplicate._functions).toEqual(fnHash);
   });
 
-  it("creates a default queue when no queue is injected", function(){
+  it('creates a default queue when no queue is injected', function () {
 
     // Create a wire constraint
     var wc = new LiveBlocks.WireConstraint();
     expect(wc._updateQueue).not.toBeUndefined();
   });
 
-  it("disconnects pin from wire before connecting to a new wire", function(){
+  it('disconnects pin from wire before connecting to a new wire', function () {
 
     // Create a block
-    var block = new LiveBlocks.WireConstraint({functions: {x: function(){}}});
+    var block = new LiveBlocks.WireConstraint({ functions: { x: function () {} } });
 
     // Create wires which log their binding events
     var log = [];
-    var bindFn = (function(bind){
+    var bindFn = (function (bind) {
 
-      return function(block, prop){
+      return function (block, prop) {
 
         // Log bind call
-        log.push({function: "bind", block: block, prop: prop});
+        log.push({ function: 'bind', block: block, prop: prop });
 
         // Call through
         return bind.call(this, block, prop);
       };
     }(LiveBlocks.Wire.prototype.bind));
-    var unbindFn = (function(unbind){
+    var unbindFn = (function (unbind) {
 
-      return function(block, prop){
+      return function (block, prop) {
 
         // Log unbind call
-        log.push({function: "unbind", block: block, prop: prop});
+        log.push({ function: 'unbind', block: block, prop: prop });
 
         // Call through
         return unbind.call(this, block, prop);
@@ -418,43 +425,43 @@ describe("WireConstraint class", function(){
     }
 
     // Connect block to wire 0
-    block.connect("x", wires[0]);
+    block.connect('x', wires[0]);
     expect(log.length).toBe(1);
-    expect(log[0].function).toBe("bind");
+    expect(log[0].function).toBe('bind');
     expect(log[0].block).toBe(block);
-    expect(log[0].prop).toBe("x");
+    expect(log[0].prop).toBe('x');
 
     // Clear log
     log.length = 0;
 
     // Connect block to wire 1
-    block.connect("x", wires[1]);
+    block.connect('x', wires[1]);
     expect(log.length).toBe(2);
-    expect(log[0].function).toBe("unbind");
+    expect(log[0].function).toBe('unbind');
     expect(log[0].block).toBe(block);
-    expect(log[0].prop).toBe("x");
-    expect(log[1].function).toBe("bind");
+    expect(log[0].prop).toBe('x');
+    expect(log[1].function).toBe('bind');
     expect(log[1].block).toBe(block);
-    expect(log[1].prop).toBe("x");
+    expect(log[1].prop).toBe('x');
   });
 
-  it("treats disconnected pin as undefined", function(){
-
+  it('treats disconnected pin as undefined', function () {
 
     // Create a passthrough block
     var block = new LiveBlocks.WireConstraint({
       functions: {
-        a: function(){
+        a: function () {
 
           // Copy "a" to "b"
           this.b = this.a;
         },
-        b: function(){
+
+        b: function () {
 
           // Copy "b" to "a"
           this.a = this.b;
-        }
-      }
+        },
+      },
     });
 
     // Create wires
@@ -462,14 +469,14 @@ describe("WireConstraint class", function(){
     var wireB = new LiveBlocks.Wire();
 
     // Set values on wires
-    wireA.value("a");
-    wireB.value("b");
+    wireA.value('a');
+    wireB.value('b');
 
     // Connect wires to block
-    block.connect("a", wireA);
-    block.connect("b", wireB);
-    expect(wireA.value()).toBe("b");
-    expect(wireB.value()).toBe("b");
+    block.connect('a', wireA);
+    block.connect('b', wireB);
+    expect(wireA.value()).toBe('b');
+    expect(wireB.value()).toBe('b');
 
     // Test stimulus
     wireA.value(undefined);
@@ -477,22 +484,22 @@ describe("WireConstraint class", function(){
     expect(wireB.value()).toBeUndefined();
 
     // Test stimulus
-    wireA.value("a");
-    expect(wireA.value()).toBe("a");
-    expect(wireB.value()).toBe("a");
+    wireA.value('a');
+    expect(wireA.value()).toBe('a');
+    expect(wireB.value()).toBe('a');
 
     // Disconnect pin "b"
-    block.disconnect("a");
-    expect(wireA.value()).toBe("a");
+    block.disconnect('a');
+    expect(wireA.value()).toBe('a');
     expect(wireB.value()).toBeUndefined();
 
     // Test stimulus
-    wireA.value("b");
-    expect(wireA.value()).toBe("b");
+    wireA.value('b');
+    expect(wireA.value()).toBe('b');
     expect(wireB.value()).toBeUndefined();
   });
 
-  it("throws error when connecting to non-existent pin", function(){
+  it('throws error when connecting to non-existent pin', function () {
 
     // Create a block with no pins
     var block = new LiveBlocks.WireConstraint();
@@ -501,35 +508,36 @@ describe("WireConstraint class", function(){
     var wire = new LiveBlocks.Wire();
 
     // Connect to non-existent pin
-    expect(function(){
-      block.connect("x", wire);
-    }).toThrowError("Pin \"x\" not found");
+    expect(function () {
+      block.connect('x', wire);
+    }).toThrowError('Pin "x" not found');
   });
 
-  it("catches exceptions in pin functions", function(){
+  it('catches exceptions in pin functions', function () {
 
     // Create a block that throws error
     var block = new LiveBlocks.WireConstraint({
       functions: {
-        a: function(){
+        a: function () {
 
           // Throw error if "a" is not a number
-          if (typeof this.a !== "number")
-            throw new TypeError("Pin \"a\" must be a number");
+          if (typeof this.a !== 'number')
+            throw new TypeError('Pin "a" must be a number');
 
           // Copy "a" to "b"
           this.b = this.a;
         },
-        b: function(){
+
+        b: function () {
 
           // Throw error if "b" is not a number
-          if (typeof this.b !== "number")
-            throw new TypeError("Pin \"b\" must be a number");
+          if (typeof this.b !== 'number')
+            throw new TypeError('Pin "b" must be a number');
 
           // Copy "b" to "a"
           this.a = this.b;
-        }
-      }
+        },
+      },
     });
 
     // Create wires
@@ -537,9 +545,9 @@ describe("WireConstraint class", function(){
     var wireB = new LiveBlocks.Wire();
 
     // Connect wires to block
-    block.connect("a", wireA);
-    block.connect("b", wireB);
-    expect(block.error().message).toBe("Pin \"b\" must be a number");
+    block.connect('a', wireA);
+    block.connect('b', wireB);
+    expect(block.error().message).toBe('Pin "b" must be a number');
 
     // Clear error
     wireA.value(1);
@@ -548,49 +556,50 @@ describe("WireConstraint class", function(){
 
     // Reset error
     wireA.value(undefined);
-    expect(block.error().message).toBe("Pin \"a\" must be a number");
+    expect(block.error().message).toBe('Pin "a" must be a number');
   });
 
-  it("fires events on update, success, and error", function(){
+  it('fires events on update, success, and error', function () {
 
     // Create a block that throws error
     var block = new LiveBlocks.WireConstraint({
       functions: {
-        a: function(){
+        a: function () {
 
           // Throw error if "a" is not a number
-          if (typeof this.a !== "number")
-            throw new TypeError("Pin \"a\" must be a number");
+          if (typeof this.a !== 'number')
+            throw new TypeError('Pin "a" must be a number');
 
           // Copy "a" to "b"
           this.b = this.a;
         },
-        b: function(){
+
+        b: function () {
 
           // Throw error if "b" is not a number
-          if (typeof this.b !== "number")
-            throw new TypeError("Pin \"b\" must be a number");
+          if (typeof this.b !== 'number')
+            throw new TypeError('Pin "b" must be a number');
 
           // Copy "b" to "a"
           this.a = this.b;
-        }
-      }
+        },
+      },
     });
 
     // Create logging event listeners
     var log = [];
     var listeners = {};
-    (function(list){
+    (function (list) {
 
-      for (var i = 0; i < list.length; i++){
+      for (var i = 0; i < list.length; i++) {
 
-        listeners[list[i]] = (function(eventName){
+        listeners[list[i]] = (function (eventName) {
 
-          return function(arg){
+          return function (arg) {
 
             // Create log object
-            var obj = {event: eventName};
-            if (typeof arg !== "undefined")
+            var obj = { event: eventName };
+            if (typeof arg !== 'undefined')
               obj.arg = arg;
 
             // Add log object to log
@@ -598,34 +607,34 @@ describe("WireConstraint class", function(){
           };
         }(list[i]));
       }
-    }(["update", "success", "error"]));
+    }(['update', 'success', 'error']));
 
     // Attach event listeners
-    block.on("update", listeners.update);
-    block.on("success", listeners.success);
-    block.on("error", listeners.error);
+    block.on('update', listeners.update);
+    block.on('success', listeners.success);
+    block.on('error', listeners.error);
 
     // Create wires
     var wireA = new LiveBlocks.Wire();
     var wireB = new LiveBlocks.Wire();
 
     // Connect wireA to block
-    block.connect("a", wireA);
-    expect(log[0].event).toBe("update");
-    expect(log[0].arg).toEqual({pin: "a", value: undefined});
-    expect(log[1].event).toBe("error");
-    expect(log[1].arg.message).toBe("Pin \"a\" must be a number");
+    block.connect('a', wireA);
+    expect(log[0].event).toBe('update');
+    expect(log[0].arg).toEqual({ pin: 'a', value: undefined });
+    expect(log[1].event).toBe('error');
+    expect(log[1].arg.message).toBe('Pin "a" must be a number');
     expect(log.length).toBe(2);
 
     // Clear log
     log.length = 0;
 
     // Connect wireB to block
-    block.connect("b", wireB);
-    expect(log[0].event).toBe("update");
-    expect(log[0].arg).toEqual({pin: "b", value: undefined});
-    expect(log[1].event).toBe("error");
-    expect(log[1].arg.message).toBe("Pin \"b\" must be a number");
+    block.connect('b', wireB);
+    expect(log[0].event).toBe('update');
+    expect(log[0].arg).toEqual({ pin: 'b', value: undefined });
+    expect(log[1].event).toBe('error');
+    expect(log[1].arg.message).toBe('Pin "b" must be a number');
     expect(log.length).toBe(2);
 
     // Clear log
@@ -633,37 +642,38 @@ describe("WireConstraint class", function(){
 
     // Clear error
     wireA.value(1);
-    expect(log[0].event).toBe("update");
-    expect(log[0].arg).toEqual({pin: "a", value: 1});
-    expect(log[1].event).toBe("success");
+    expect(log[0].event).toBe('update');
+    expect(log[0].arg).toEqual({ pin: 'a', value: 1 });
+    expect(log[1].event).toBe('success');
     expect(log[1].arg).toBeUndefined();
-    expect(log[2].event).toBe("update");
-    expect(log[2].arg).toEqual({pin: "b", value: 1});
-    expect(log[3].event).toBe("success");
+    expect(log[2].event).toBe('update');
+    expect(log[2].arg).toEqual({ pin: 'b', value: 1 });
+    expect(log[3].event).toBe('success');
     expect(log[3].arg).toBeUndefined();
     expect(log.length).toBe(4);
   });
 
-  it("fires events on pin connect and disconnect", function(){
+  it('fires events on pin connect and disconnect', function () {
 
     // Create a block
-    var noop = function(){};
-    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+    var noop = function () {};
+
+    var block = new LiveBlocks.WireConstraint({ functions: { a: noop, b: noop } });
 
     // Create logging event listeners
     var log = [];
     var listeners = {};
-    (function(list){
+    (function (list) {
 
-      for (var i = 0; i < list.length; i++){
+      for (var i = 0; i < list.length; i++) {
 
-        listeners[list[i]] = (function(eventName){
+        listeners[list[i]] = (function (eventName) {
 
-          return function(arg){
+          return function (arg) {
 
             // Create log object
-            var obj = {event: eventName};
-            if (typeof arg !== "undefined")
+            var obj = { event: eventName };
+            if (typeof arg !== 'undefined')
               obj.arg = arg;
 
             // Add log object to log
@@ -671,7 +681,7 @@ describe("WireConstraint class", function(){
           };
         }(list[i]));
       }
-    }(["connect", "disconnect"]));
+    }(['connect', 'disconnect']));
 
     // Create wires
     var wires = [];
@@ -679,82 +689,83 @@ describe("WireConstraint class", function(){
       wires.push(new LiveBlocks.Wire());
 
     // Register event listeners
-    block.on("connect", listeners.connect);
-    block.on("disconnect", listeners.disconnect);
+    block.on('connect', listeners.connect);
+    block.on('disconnect', listeners.disconnect);
     expect(log.length).toBe(0);
 
     // Connect pin "a"
-    block.connect("a", wires[0]);
+    block.connect('a', wires[0]);
     expect(log.length).toBe(1);
-    expect(log[0].event).toBe("connect");
-    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].event).toBe('connect');
+    expect(log[0].arg.pin).toBe('a');
     expect(log[0].arg.wire).toBe(wires[0]);
 
     // Clear log
     log.length = 0;
 
     // Connect pin "b"
-    block.connect("b", wires[1]);
+    block.connect('b', wires[1]);
     expect(log.length).toBe(1);
-    expect(log[0].event).toBe("connect");
-    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].event).toBe('connect');
+    expect(log[0].arg.pin).toBe('b');
     expect(log[0].arg.wire).toBe(wires[1]);
 
     // Clear log
     log.length = 0;
 
     // Reconnect pin "a"
-    block.connect("a", wires[1]);
+    block.connect('a', wires[1]);
     expect(log.length).toBe(2);
-    expect(log[0].event).toBe("disconnect");
-    expect(log[0].arg.pin).toBe("a");
+    expect(log[0].event).toBe('disconnect');
+    expect(log[0].arg.pin).toBe('a');
     expect(log[0].arg.wire).toBe(wires[0]);
-    expect(log[1].event).toBe("connect");
-    expect(log[1].arg.pin).toBe("a");
+    expect(log[1].event).toBe('connect');
+    expect(log[1].arg.pin).toBe('a');
     expect(log[1].arg.wire).toBe(wires[1]);
 
     // Clear log
     log.length = 0;
 
     // Disconnect pin "b"
-    block.disconnect("b");
+    block.disconnect('b');
     expect(log.length).toBe(1);
-    expect(log[0].event).toBe("disconnect");
-    expect(log[0].arg.pin).toBe("b");
+    expect(log[0].event).toBe('disconnect');
+    expect(log[0].arg.pin).toBe('b');
     expect(log[0].arg.wire).toBe(wires[1]);
   });
 
-  it("pins() iterator iterates over block pins", function(){
+  it('pins() iterator iterates over block pins', function () {
 
     // Create a block that throws error
-    var block = new LiveBlocks.WireConstraint((function(){
-      var noop = function(){};
-      var functions = {a: noop, b: noop};
-      return {functions: functions};
+    var block = new LiveBlocks.WireConstraint((function () {
+      var noop = function () {};
+
+      var functions = { a: noop, b: noop };
+      return { functions: functions };
     }()));
 
     // Create wires
     var wireA = new LiveBlocks.Wire();
 
     // Connect wires to block
-    block.connect("a", wireA);
+    block.connect('a', wireA);
 
     // Get pin iterator
     var it = block.pins();
 
     // Peek at next pin
     expect(it.peek().done).toBe(false);
-    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.pin).toBe('a');
     expect(it.peek().value.wire).toBe(wireA);
 
     // Get next pin
     var pin = it.next().value;
-    expect(pin.pin).toBe("a");
+    expect(pin.pin).toBe('a');
     expect(pin.wire).toBe(wireA);
 
     // Get next pin
     pin = it.next().value;
-    expect(pin.pin).toBe("b");
+    expect(pin.pin).toBe('b');
     expect(pin.wire).toBeUndefined();
 
     // We are at the end of the iterator
@@ -768,21 +779,21 @@ describe("WireConstraint class", function(){
 
     // Peek at next pin
     expect(it.peek().done).toBe(false);
-    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.pin).toBe('a');
     expect(it.peek().value.wire).toBe(wireA);
 
     // Disconnect wire
     // Iterator should not change
     // Need to get a new iterator to see latest pins
-    block.disconnect("a");
+    block.disconnect('a');
     expect(it.peek().done).toBe(false);
-    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.pin).toBe('a');
     expect(it.peek().value.wire).toBe(wireA);
 
     // Get new iterator
     it = block.pins();
     expect(it.peek().done).toBe(false);
-    expect(it.peek().value.pin).toBe("a");
+    expect(it.peek().value.pin).toBe('a');
     expect(it.peek().value.wire).toBeUndefined();
   });
 });

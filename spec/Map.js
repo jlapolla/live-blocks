@@ -1,26 +1,28 @@
-"use strict";
+'use strict';
 
-describe("Map class", function(){
+describe('Map class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
-  it("works with any kind of key", function(){
+  it('works with any kind of key', function () {
 
     // Make a map
     var map = new LiveBlocks.Map();
 
     // Make NaN
-    var nan = 1/(function(){}());
+    var nan = 1 / (function () {}());
+
     expect(nan === nan).toBe(false); // Make sure we have an actual NaN value
 
     // Make some keys
     var keys = {
       a: nan,
       b: {},
-      c: function(){},
-      d: "x",
+      c: function () {},
+
+      d: 'x',
       e: undefined,
-      f: null
+      f: null,
     };
 
     // Make some values
@@ -30,7 +32,7 @@ describe("Map class", function(){
       c: {},
       d: {},
       e: {},
-      f: {}
+      f: {},
     };
 
     // Put values in the map
@@ -43,7 +45,7 @@ describe("Map class", function(){
 
     // Negative tests for key existence
     expect(map.has({})).toBe(false);
-    expect(map.has(function(){})).toBe(false);
+    expect(map.has(function () {})).toBe(false);
 
     // Retrieve values
     for (var name in keys)
@@ -55,11 +57,11 @@ describe("Map class", function(){
     // Remove some keys
     var removedKeys = {
       a: keys.a,
-      b: keys.b
+      b: keys.b,
     };
     var removedValues = {
       a: values.a,
-      b: values.b
+      b: values.b,
     };
     delete keys.a;
     delete keys.b;
@@ -69,36 +71,36 @@ describe("Map class", function(){
       map.remove(removedKeys[name]);
 
     // Positive test for remaining keys
-    for (var name in keys){
+    for (var name in keys) {
       expect(map.has(keys[name])).toBe(true);
       expect(map.get(keys[name])).toBe(values[name]);
     }
 
     // Negative test for removed keys
-    for (var name in removedKeys){
+    for (var name in removedKeys) {
       expect(map.has(removedKeys[name])).toBe(false);
       expect(map.get(removedKeys[name])).toBeUndefined();
     }
   });
 
-  it("does not record duplicate keys", function(){
+  it('does not record duplicate keys', function () {
 
     // Make a map
     var map = new LiveBlocks.Map();
 
     // Add some values
-    map.put("a", 1);
-    map.put("b", 2);
-    map.put("c", 3);
-    expect(map.get("b")).toBe(2);
+    map.put('a', 1);
+    map.put('b', 2);
+    map.put('c', 3);
+    expect(map.get('b')).toBe(2);
 
     // Add value at duplicate key
-    map.put("b", 4);
-    expect(map.get("b")).toBe(4);
+    map.put('b', 4);
+    expect(map.get('b')).toBe(4);
     expect(map._array.length).toBe(3);
   });
 
-  it("keys() function returns an iterator over Map keys", function(){
+  it('keys() function returns an iterator over Map keys', function () {
 
     // Make a map
     var map = new LiveBlocks.Map();
@@ -107,14 +109,14 @@ describe("Map class", function(){
     var keys = {
       a: {},
       b: {},
-      c: {}
+      c: {},
     };
 
     // Make some values
     var values = {
       a: {},
       b: {},
-      c: {}
+      c: {},
     };
 
     // Put keys and values in the map
