@@ -41,6 +41,11 @@ $(d)node_modules/karma/bin/karma:
 $(call helpdoc,$(d)test-deps,Run "make watch WATCHLIST=test-deps > /dev/null" in the background while Karma is running)
 $(d)test-deps: $(d)karma $(d)live-blocks-test.js
 
+.PHONY: $(d)lint
+$(call helpdoc,$(d)lint,Fix code style issues)
+$(d)lint:
+	jscs -x $(wildcard $(d)classes/*) $(wildcard $(d)spec/*)
+
 $(eval $(d)order :=)
 
 .DEFAULT_GOAL := help

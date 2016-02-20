@@ -1,0 +1,11 @@
+{
+  "preset" : "airbnb",
+  "disallowMultipleVarDecl" : false,
+  "maximumLineLength" : {
+    "value" : 100,
+    "allExcept" : [
+      "urlComments",
+      "functionSignature"
+    ]
+  }
+}
