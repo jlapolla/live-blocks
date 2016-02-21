@@ -19,6 +19,11 @@ $(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsu
 	mkdir -p $(d)dist/
 	cat $(d)partials/preamble.js $(d)partials/header.js $($(d)order) $(d)partials/footer.js > $(d)dist/live-blocks.js
 
+$(call helpdoc,$(d)dist/live-blocks.min.js,LiveBlocks for browser (minified))
+$(d)dist/live-blocks.min.js: $(d)dist/live-blocks.js $(d)partials/preamble.js
+	cat $(d)partials/preamble.js > $(d)dist/live-blocks.min.js
+	uglifyjs -mc unsafe -- - < $(d)dist/live-blocks.js >> $(d)dist/live-blocks.min.js
+
 $(call helpdoc,$(d)test/live-blocks-test.js,LiveBlocks which exposes private properties for testing (not for use in production))
 $(d)test/live-blocks-test.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/test-,$(addsuffix .js,header footer))
 	mkdir -p $(d)test/
@@ -26,7 +31,7 @@ $(d)test/live-blocks-test.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/tes
 
 .PHONY: $(d)all
 $(call helpdoc,$(d)all,Build main files)
-$(d)all: $(d)dist/live-blocks.js
+$(d)all: $(addprefix $(d)dist/,$(addsuffix .js,live-blocks live-blocks.min))
 
 .PHONY: $(d)test
 $(call helpdoc,$(d)test,Start Karma test runner)
