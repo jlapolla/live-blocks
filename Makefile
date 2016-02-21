@@ -15,9 +15,9 @@ $(eval $(d)order += $(d)src/WireConstraint.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
 
 $(call helpdoc,$(d)dist/live-blocks.js,LiveBlocks for browser)
-$(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsuffix .js,header footer))
+$(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsuffix .js,header footer preamble))
 	mkdir -p $(d)dist/
-	cat $(d)partials/header.js $($(d)order) $(d)partials/footer.js > $(d)dist/live-blocks.js
+	cat $(d)partials/preamble.js $(d)partials/header.js $($(d)order) $(d)partials/footer.js > $(d)dist/live-blocks.js
 
 $(call helpdoc,$(d)test/live-blocks-test.js,LiveBlocks which exposes private properties for testing (not for use in production))
 $(d)test/live-blocks-test.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/test-,$(addsuffix .js,header footer))
