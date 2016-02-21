@@ -1,28 +1,28 @@
 define $(d)template
 $(eval include helpdoc.mk)
 $(eval include watch.mk)
-$(eval $(d)order := $(d)classes/getUndefined.js)
-$(eval $(d)order += $(d)classes/extendClass.js)
-$(eval $(d)order += $(d)classes/hasOwnProperty.js)
-$(eval $(d)order += $(d)classes/multiInheritClass.js)
-$(eval $(d)order += $(d)classes/ArrayIterator.js)
-$(eval $(d)order += $(d)classes/Queue.js)
-$(eval $(d)order += $(d)classes/Set.js)
-$(eval $(d)order += $(d)classes/Map.js)
-$(eval $(d)order += $(d)classes/EventEmitter.js)
-$(eval $(d)order += $(d)classes/Wire.js)
-$(eval $(d)order += $(d)classes/WireConstraint.js)
-$(eval $(d)order += $(d)classes/BlackBox.js)
+$(eval $(d)order := $(d)src/getUndefined.js)
+$(eval $(d)order += $(d)src/extendClass.js)
+$(eval $(d)order += $(d)src/hasOwnProperty.js)
+$(eval $(d)order += $(d)src/multiInheritClass.js)
+$(eval $(d)order += $(d)src/ArrayIterator.js)
+$(eval $(d)order += $(d)src/Queue.js)
+$(eval $(d)order += $(d)src/Set.js)
+$(eval $(d)order += $(d)src/Map.js)
+$(eval $(d)order += $(d)src/EventEmitter.js)
+$(eval $(d)order += $(d)src/Wire.js)
+$(eval $(d)order += $(d)src/WireConstraint.js)
+$(eval $(d)order += $(d)src/BlackBox.js)
 
 $(call helpdoc,$(d)dist/live-blocks.js,LiveBlocks for browser)
-$(d)dist/live-blocks.js: $(wildcard $(d)classes/*) $(addprefix $(d)iife/,$(addsuffix .js,header footer))
+$(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsuffix .js,header footer))
 	mkdir -p $(d)dist/
-	cat $(d)iife/header.js $($(d)order) $(d)iife/footer.js > $(d)dist/live-blocks.js
+	cat $(d)partials/header.js $($(d)order) $(d)partials/footer.js > $(d)dist/live-blocks.js
 
 $(call helpdoc,$(d)test/live-blocks-test.js,LiveBlocks which exposes private properties for testing (not for use in production))
-$(d)test/live-blocks-test.js: $(wildcard $(d)classes/*) $(addprefix $(d)iife/test-,$(addsuffix .js,header footer))
+$(d)test/live-blocks-test.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/test-,$(addsuffix .js,header footer))
 	mkdir -p $(d)test/
-	cat $(d)iife/test-header.js $($(d)order) $(d)iife/test-footer.js > $(d)test/live-blocks-test.js
+	cat $(d)partials/test-header.js $($(d)order) $(d)partials/test-footer.js > $(d)test/live-blocks-test.js
 
 .PHONY: $(d)all
 $(call helpdoc,$(d)all,Build main files)
@@ -50,7 +50,7 @@ $(d)test-deps: $(d)karma $(d)test/live-blocks-test.js
 .PHONY: $(d)lint
 $(call helpdoc,$(d)lint,Fix code style issues)
 $(d)lint:
-	jscs -x $(wildcard $(d)classes/*) $(wildcard $(d)spec/*)
+	jscs -x $(wildcard $(d)src/*) $(wildcard $(d)spec/*)
 
 .PHONY: $(d)clean
 $(call helpdoc,$(d)clean,Delete build products)
