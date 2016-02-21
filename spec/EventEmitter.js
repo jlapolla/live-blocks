@@ -10,6 +10,10 @@
 
         var LiveBlocks = window.LiveBlocks;
 
+        // Skip test if "name" is not exposed
+        if (!LiveBlocks[name])
+          return;
+
         it('does not register duplicate listeners', function () {
 
           // Create an EventEmitter

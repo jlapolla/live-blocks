@@ -4,6 +4,10 @@ describe('ArrayIterator class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
+  // Skip test if ArrayIterator is not exposed
+  if (!LiveBlocks.ArrayIterator)
+    return;
+
   it('iterates over an array', function () {
 
     // Make an array iterator

@@ -6,6 +6,10 @@ describe('WireConstraint class', function () {
 
   var LiveBlocks = host.LiveBlocks;
 
+  // Skip test if WireConstraint is not exposed
+  if (!LiveBlocks.WireConstraint)
+    return;
+
   var assertFiniteNumber, floatWire;
   beforeEach(function () {
 

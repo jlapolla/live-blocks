@@ -1,5 +1,5 @@
+/dist
 /karma
-/live-blocks.js
-/live-blocks-test.js
 /node_modules
+/reports
 /test

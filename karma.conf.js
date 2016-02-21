@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'live-blocks-test.js',
+      'test/live-blocks.js',
       'spec/*.js'
     ],
 
@@ -28,7 +28,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'live-blocks-test.js': 'coverage'
+      'test/live-blocks.js': 'coverage'
     },
 
 
@@ -38,7 +38,7 @@ module.exports = function(config) {
     reporters: ['progress', 'coverage'],
     coverageReporter: {
       type: 'html',
-      dir: 'test'
+      dir: 'reports/coverage'
     },
 
 

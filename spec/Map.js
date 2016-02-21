@@ -4,6 +4,10 @@ describe('Map class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
+  // Skip test if Map is not exposed
+  if (!LiveBlocks.Map)
+    return;
+
   it('works with any kind of key', function () {
 
     // Make a map

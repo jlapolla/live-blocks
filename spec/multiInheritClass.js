@@ -4,6 +4,10 @@ describe('multiInheritClass function', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
+  // Skip test if multiInheritClass is not exposed
+  if (!LiveBlocks.multiInheritClass)
+    return;
+
   it('fakes multiple inheritance in Javascript', function () {
 
     // Make Walker class

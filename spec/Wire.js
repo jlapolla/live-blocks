@@ -4,6 +4,10 @@ describe('Wire class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
+  // Skip test if Wire is not exposed
+  if (!LiveBlocks.Wire)
+    return;
+
   it('duplicates injected equalTo dependencies', function () {
 
     // Create equalTo function

@@ -6,6 +6,10 @@ describe('BlackBox class', function () {
 
   var LiveBlocks = host.LiveBlocks;
 
+  // Skip test if BlackBox is not exposed
+  if (!LiveBlocks.BlackBox)
+    return;
+
   var assertFiniteNumber, floatWire;
   beforeEach(function () {
 

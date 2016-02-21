@@ -4,6 +4,10 @@ describe('Set class', function () {
 
   var LiveBlocks = window.LiveBlocks;
 
+  // Skip test if Set is not exposed
+  if (!LiveBlocks.Set)
+    return;
+
   it('works with any kind of value', function () {
 
     // Make a set
