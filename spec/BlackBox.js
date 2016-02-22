@@ -200,6 +200,145 @@ describe('BlackBox class', function () {
     expect(blocks.blackBox1.error()).not.toBeUndefined();
   });
 
+  it('integration test with nested BlackBox', function () {
+
+    // Make BlackBox prototype with nested BlackBox's
+    var proto = new LiveBlocks.BlackBox((function () {
+
+      // Make internal BlackBox prototype
+      var proto = new LiveBlocks.BlackBox((function () {
+
+        // Pass-through wire constraint
+        var block = new LiveBlocks.WireConstraint((function () {
+
+          // Constraint functions
+          var aToB = function () {
+
+            this.b = this.a;
+          };
+
+          var bToA = function () {
+
+            this.a = this.b;
+          };
+
+          // Functions hash
+          var functions = {
+            a: aToB,
+            b: bToA,
+          };
+
+          // Return
+          return { functions: functions };
+        }()));
+
+        // Wires
+        var wires = [];
+        for (var i = 0; i < 2; i++)
+          wires.push(new LiveBlocks.Wire());
+
+        // Connect block to wires
+        block.connect('a', wires[0]);
+        block.connect('b', wires[1]);
+
+        // Create BlackBox pins hash
+        var pins = {
+          a: wires[0],
+          b: wires[1],
+        };
+
+        // Return
+        return { pins: pins };
+      }()));
+
+      // Make internal BlackBox's
+      var blocks = [];
+      for (var i = 0; i < 2; i++)
+        blocks.push(proto.duplicate());
+
+      // Make wires
+      var wires = [];
+      for (var i = 0; i < 3; i++)
+        wires.push(new LiveBlocks.Wire());
+
+      // Connect internal BlackBox's to wires
+      blocks[0].connect('a', wires[0]);
+      blocks[0].connect('b', wires[1]);
+      blocks[1].connect('a', wires[1]);
+      blocks[1].connect('b', wires[2]);
+
+      // Make pins hash
+      var pins = {
+        a: wires[0],
+        b: wires[1],
+        c: wires[2],
+      };
+
+      // Return
+      return { pins: pins };
+    }()));
+
+    // Duplicate prototype
+    var block = proto.duplicate();
+
+    // Make wires
+    var wires = [];
+    for (var i = 0; i < 3; i++)
+      wires.push(new LiveBlocks.Wire());
+
+    // Connect block to wires
+    block.connect('a', wires[0]);
+    block.connect('b', wires[1]);
+    block.connect('c', wires[2]);
+
+    // Make values
+    var values = {
+      a: {},
+      b: {},
+      c: {},
+    };
+
+    // Test stimulus
+    wires[0].value(values.a);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.a);
+
+    // Test stimulus
+    wires[1].value(values.b);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.b);
+
+    // Test stimulus
+    wires[2].value(values.c);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.c);
+
+    // Disconnect block and connect prototype
+    block.disconnect('a');
+    block.disconnect('b');
+    block.disconnect('c');
+
+    // Connect prototype to wires
+    proto.connect('a', wires[0]);
+    proto.connect('b', wires[1]);
+    proto.connect('c', wires[2]);
+
+    // Test stimulus
+    wires[0].value(values.a);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.a);
+
+    // Test stimulus
+    wires[1].value(values.b);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.b);
+
+    // Test stimulus
+    wires[2].value(values.c);
+    for (var i = 0; i < wires.length; i++)
+      expect(wires[i].value()).toBe(values.c);
+  });
+
   it('integration test with Wire class where a wire has multiple connections (adapted from WireConstraint spec)', function () {
 
     // Update log
