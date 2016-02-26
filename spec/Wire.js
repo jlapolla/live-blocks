@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Wire class', function () {
+describe('Wire class', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
@@ -8,13 +8,13 @@ describe('Wire class', function () {
   if (!LiveBlocks.Wire)
     return;
 
-  it('duplicates injected equalTo dependencies', function () {
+  it('duplicates injected equalTo dependencies', function() {
 
     // Create equalTo function
-    var neverEqual = function () {return false;};
+    var neverEqual = function() {return false;};
 
     // Create a wire
-    var wire = new LiveBlocks.Wire({ equalTo: neverEqual });
+    var wire = new LiveBlocks.Wire({equalTo: neverEqual});
     expect(wire.equalTo).toBe(neverEqual);
 
     // Duplicate wire
@@ -22,14 +22,14 @@ describe('Wire class', function () {
     expect(duplicate.equalTo).toBe(neverEqual);
   });
 
-  it('duplicates itself with custom queue object', function () {
+  it('duplicates itself with custom queue object', function() {
 
     // Create fake queue
     var queue2 = {};
-    var queue = { duplicate: function () {return queue2;} };
+    var queue = {duplicate: function() {return queue2;}};
 
     // Create a wire
-    var wire = new LiveBlocks.Wire({ queue: queue });
+    var wire = new LiveBlocks.Wire({queue: queue});
     expect(wire._valueQueue).toBe(queue);
 
     // Duplicate wire
@@ -38,21 +38,21 @@ describe('Wire class', function () {
     expect(LiveBlocks.hasOwnProperty(duplicate, 'equalTo')).toBe(false);
   });
 
-  it('does not bind duplicate block pins', function () {
+  it('does not bind duplicate block pins', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create some fake blocks
     var log = [];
-    var update = function (pin) {
+    var update = function(pin) {
 
-      log.push({ block: this, pin: pin });
+      log.push({block: this, pin: pin});
     };
 
     var blocks = [];
     for (var i = 0; i < 2; i++)
-      blocks.push({ update: update });
+      blocks.push({update: update});
 
     // Bind block pins to wire
     wire.bind(blocks[0], '0');
@@ -87,21 +87,21 @@ describe('Wire class', function () {
     expect(log[3].pin).toBe('1');
   });
 
-  it('unbinds block pins', function () {
+  it('unbinds block pins', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create some fake blocks
     var log = [];
-    var update = function (pin) {
+    var update = function(pin) {
 
-      log.push({ block: this, pin: pin });
+      log.push({block: this, pin: pin});
     };
 
     var blocks = [];
     for (var i = 0; i < 2; i++)
-      blocks.push({ update: update });
+      blocks.push({update: update});
 
     // Bind block pins to wire
     wire.bind(blocks[0], '0');
@@ -150,7 +150,7 @@ describe('Wire class', function () {
     expect(log[2].pin).toBe('1');
   });
 
-  it('.notify() ignores blocks bound or unbound during .notify()', function () {
+  it('.notify() ignores blocks bound or unbound during .notify()', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
@@ -158,15 +158,15 @@ describe('Wire class', function () {
     // Create some fake blocks
     var blocks = [];
     var log = [];
-    var update = function (prop) {
+    var update = function(prop) {
 
-      log.push({ block: this, prop: prop });
+      log.push({block: this, prop: prop});
       wire.unbind(blocks[2], '2');
       wire.bind(blocks[3], '3');
     };
 
     for (var i = 0; i < 4; i++)
-      blocks.push({ update: update });
+      blocks.push({update: update});
 
     // Bind block properties to wire
     wire.bind(blocks[0], '0');
@@ -195,7 +195,7 @@ describe('Wire class', function () {
     expect(log[2].prop).toBe('3');
   });
 
-  it('handles values set during .notify()', function () {
+  it('handles values set during .notify()', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
@@ -203,7 +203,7 @@ describe('Wire class', function () {
     // Create some fake blocks
     var values = [];
     var log = [];
-    var update = function (prop) {
+    var update = function(prop) {
 
       log.push(wire.value());
 
@@ -215,13 +215,13 @@ describe('Wire class', function () {
 
     var blocks = [];
     for (var i = 0; i < 1; i++)
-      blocks.push({ update: update });
+      blocks.push({update: update});
 
     // Bind block to wire
     wire.bind(blocks[0], '0');
 
     // Set up values
-    var nan = 0 / (function () {}());
+    var nan = 0 / (function() {}());
 
     values = ['b', 'c', 'c', nan, nan, 'd'];
 
@@ -232,19 +232,19 @@ describe('Wire class', function () {
     expect(nan).not.toBe(nan); // Just to make sure we have a true NaN value
   });
 
-  it('detects infinite loops', function () {
+  it('detects infinite loops', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
 
     // Create a block that will cause an infinite loop
-    var block = { update: function () {wire.value(!wire.value());} };
+    var block = {update: function() {wire.value(!wire.value());}};
 
     // Bind block properties
     wire.bind(block, 'x');
 
     // Create infinite loop
-    var triggerLoop = function () {
+    var triggerLoop = function() {
       wire.value(!wire.value());
     };
 
@@ -255,7 +255,7 @@ describe('Wire class', function () {
     expect(triggerLoop).toThrowError('Infinite loop detected: reached 100 iterations');
   });
 
-  it('can take undefined as a value', function () {
+  it('can take undefined as a value', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
@@ -273,7 +273,7 @@ describe('Wire class', function () {
     expect(wire.value()).toBe(1);
   });
 
-  it('fires events on connect, disconnect, and value change', function () {
+  it('fires events on connect, disconnect, and value change', function() {
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
@@ -281,16 +281,16 @@ describe('Wire class', function () {
     // Create logging event listeners
     var log = [];
     var listeners = {};
-    (function (list) {
+    (function(list) {
 
       for (var i = 0; i < list.length; i++) {
 
-        listeners[list[i]] = (function (eventName) {
+        listeners[list[i]] = (function(eventName) {
 
-          return function (arg) {
+          return function(arg) {
 
             // Create log object
-            var obj = { event: eventName };
+            var obj = {event: eventName};
             if (typeof arg !== 'undefined')
               obj.arg = arg;
 
@@ -307,9 +307,9 @@ describe('Wire class', function () {
     wire.on('value', listeners.value);
 
     // Create a block
-    var noop = function () {};
+    var noop = function() {};
 
-    var block = new LiveBlocks.WireConstraint({ functions: { a: noop, b: noop } });
+    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
 
     // Register event listeners
     wire.on('connect', listeners.connect);
@@ -379,12 +379,12 @@ describe('Wire class', function () {
     expect(log[0].arg).toBeUndefined();
   });
 
-  it('handles wire contention issues', function () {
+  it('handles wire contention issues', function() {
 
     // Create prototype NOT block
-    var not = new LiveBlocks.WireConstraint((function () {
+    var not = new LiveBlocks.WireConstraint((function() {
 
-      var aToB = function () {
+      var aToB = function() {
 
         this.b = !this.a;
       };
@@ -394,7 +394,7 @@ describe('Wire class', function () {
         b: aToB,
       };
 
-      return { functions: functions };
+      return {functions: functions};
     }()));
 
     // Create blocks
@@ -414,20 +414,20 @@ describe('Wire class', function () {
     blocks[1].connect('b', wires[2]);
 
     // Set undefined value on wires[1]
-    expect(function () {
+    expect(function() {
 
       wires[1].value(undefined);
     }).not.toThrow();
   });
 
-  it('connections() iterator iterates over wire connections', function () {
+  it('connections() iterator iterates over wire connections', function() {
 
     // Create a few blocks
     var blocks = [];
-    var noop = function () {};
+    var noop = function() {};
 
     for (var i = 0; i < 3; i++)
-      blocks.push(new LiveBlocks.WireConstraint({ functions: { a: noop } }));
+      blocks.push(new LiveBlocks.WireConstraint({functions: {a: noop}}));
 
     // Create a wire
     var wire = new LiveBlocks.Wire();

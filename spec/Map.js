@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Map class', function () {
+describe('Map class', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
@@ -8,13 +8,13 @@ describe('Map class', function () {
   if (!LiveBlocks.Map)
     return;
 
-  it('works with any kind of key', function () {
+  it('works with any kind of key', function() {
 
     // Make a map
     var map = new LiveBlocks.Map();
 
     // Make NaN
-    var nan = 1 / (function () {}());
+    var nan = 1 / (function() {}());
 
     expect(nan === nan).toBe(false); // Make sure we have an actual NaN value
 
@@ -22,7 +22,7 @@ describe('Map class', function () {
     var keys = {
       a: nan,
       b: {},
-      c: function () {},
+      c: function() {},
 
       d: 'x',
       e: undefined,
@@ -49,7 +49,7 @@ describe('Map class', function () {
 
     // Negative tests for key existence
     expect(map.has({})).toBe(false);
-    expect(map.has(function () {})).toBe(false);
+    expect(map.has(function() {})).toBe(false);
 
     // Retrieve values
     for (var name in keys)
@@ -87,7 +87,7 @@ describe('Map class', function () {
     }
   });
 
-  it('does not record duplicate keys', function () {
+  it('does not record duplicate keys', function() {
 
     // Make a map
     var map = new LiveBlocks.Map();
@@ -104,7 +104,7 @@ describe('Map class', function () {
     expect(map._array.length).toBe(3);
   });
 
-  it('keys() function returns an iterator over Map keys', function () {
+  it('keys() function returns an iterator over Map keys', function() {
 
     // Make a map
     var map = new LiveBlocks.Map();

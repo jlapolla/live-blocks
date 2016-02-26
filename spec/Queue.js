@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Queue class', function () {
+describe('Queue class', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
@@ -8,7 +8,7 @@ describe('Queue class', function () {
   if (!LiveBlocks.Queue)
     return;
 
-  it('duplicates itself', function () {
+  it('duplicates itself', function() {
 
     // Create original queue
     var original = new LiveBlocks.Queue();
@@ -21,7 +21,7 @@ describe('Queue class', function () {
     expect(duplicate instanceof LiveBlocks.Queue).toBe(true);
   });
 
-  it('is a forward queue', function () {
+  it('is a forward queue', function() {
 
     // Create items
     var items = [{}, {}, {}];
@@ -65,7 +65,7 @@ describe('Queue class', function () {
     expect(queue.next()).toBeUndefined();
   });
 
-  it('handles "undefined" items', function () {
+  it('handles "undefined" items', function() {
 
     // Make a queue
     var queue = new LiveBlocks.Queue();

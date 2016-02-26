@@ -1,6 +1,6 @@
 'use strict';
 
-describe('getUndefined function', function () {
+describe('getUndefined function', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
@@ -8,7 +8,7 @@ describe('getUndefined function', function () {
   if (!LiveBlocks.getUndefined)
     return;
 
-  it('returns the primitive value "undefined"', function () {
+  it('returns the primitive value "undefined"', function() {
 
     // Call getUndefined()
     expect(LiveBlocks.getUndefined()).toBeUndefined();

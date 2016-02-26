@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Set class', function () {
+describe('Set class', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
@@ -8,13 +8,13 @@ describe('Set class', function () {
   if (!LiveBlocks.Set)
     return;
 
-  it('works with any kind of value', function () {
+  it('works with any kind of value', function() {
 
     // Make a set
     var set = new LiveBlocks.Set();
 
     // Make NaN
-    var nan = 1 / (function () {}());
+    var nan = 1 / (function() {}());
 
     expect(nan === nan).toBe(false); // Make sure we have an actual NaN value
 
@@ -22,7 +22,7 @@ describe('Set class', function () {
     var values = {
       a: nan,
       b: {},
-      c: function () {},
+      c: function() {},
 
       d: 'x',
       e: undefined,
@@ -42,7 +42,7 @@ describe('Set class', function () {
 
     // Negative test for value existence
     expect(set.has({})).toBe(false);
-    expect(set.has(function () {})).toBe(false);
+    expect(set.has(function() {})).toBe(false);
 
     // Remove some values
     var removedValues = {
@@ -63,7 +63,7 @@ describe('Set class', function () {
       expect(set.has(removedValues[name])).toBe(false);
   });
 
-  it('value() function returns an iterator which iterates over set values', function () {
+  it('value() function returns an iterator which iterates over set values', function() {
 
     // Make a set
     var set = new LiveBlocks.Set();
@@ -119,7 +119,7 @@ describe('Set class', function () {
     expect(it.peek().value).toBeUndefined();
 
     var value = it.next();
-    expect(value).toEqual({ done: true });
+    expect(value).toEqual({done: true});
   });
 });
 
