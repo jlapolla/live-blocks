@@ -55,7 +55,7 @@ $(d)test-deps: $(d)karma $(d)test/live-blocks-test.js
 .PHONY: $(d)lint
 $(call helpdoc,$(d)lint,Fix code style issues)
 $(d)lint:
-	jscs -x $(wildcard $(d)src/*) $(wildcard $(d)spec/*)
+	jscs -x -r inline $(wildcard $(d)src/*) $(wildcard $(d)spec/*)
 
 .PHONY: $(d)clean
 $(call helpdoc,$(d)clean,Delete build products)

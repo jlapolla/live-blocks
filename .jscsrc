@@ -1,11 +1,6 @@
 {
-  "preset" : "airbnb",
-  "disallowMultipleVarDecl" : false,
-  "maximumLineLength" : {
-    "value" : 100,
-    "allExcept" : [
-      "urlComments",
-      "functionSignature"
-    ]
-  }
+  "verbose"                   : true,
+  "preset"                    : "google",
+  "disallowKeywordsOnNewLine" : [],
+  "requireKeywordsOnNewLine"  : ["else"],
 }
