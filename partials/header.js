@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
 this.LiveBlocks = {};
-(function(host){
+(function(host) {
 
   // Collect all classes and functions on inner
   var inner = {};
-  (function(host){
+  (function(host) {
 
