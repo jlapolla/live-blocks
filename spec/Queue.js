@@ -4,8 +4,9 @@ describe('Queue class', function() {
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Queue is not exposed
-  if (!LiveBlocks.Queue)
+  if (!LiveBlocks.Queue) {
     return;
+  }
 
   it('duplicates itself', function() {
     // Create original queue

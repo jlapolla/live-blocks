@@ -13,8 +13,9 @@ this.Map = (function(ArrayIterator) {
     // Get value at key
     var array = this._array;
     for (var i = 0; i < array.length; i++) {
-      if (same(array[i].key, key))
+      if (same(array[i].key, key)) {
         return array[i].value;
+      }
     }
   };
 
@@ -22,8 +23,9 @@ this.Map = (function(ArrayIterator) {
     // Copy entries to new array, except entry with matching key
     var array = this._array, newArray = [];
     for (var i = 0; i < array.length; i++) {
-      if (!same(array[i].key, key))
+      if (!same(array[i].key, key)) {
         newArray.push(array[i]);
+      }
     }
 
     // Add new entry to new array
@@ -37,8 +39,9 @@ this.Map = (function(ArrayIterator) {
     // Copy entries to new array, except entry with matching key
     var array = this._array, newArray = [];
     for (var i = 0; i < array.length; i++) {
-      if (!same(array[i].key, key))
+      if (!same(array[i].key, key)) {
         newArray.push(array[i]);
+      }
     }
 
     // Set private array to new array
@@ -49,8 +52,9 @@ this.Map = (function(ArrayIterator) {
     // Search for matching key
     var array = this._array;
     for (var i = 0; i < array.length; i++) {
-      if (same(array[i].key, key))
+      if (same(array[i].key, key)) {
         return true;
+      }
     }
 
     // Match not found
@@ -60,8 +64,9 @@ this.Map = (function(ArrayIterator) {
   P.keys = function() {
     // Copy keys to a new array
     var array = this._array, keys = [];
-    for (var i = 0; i < array.length; i++)
+    for (var i = 0; i < array.length; i++) {
       keys.push(array[i].key);
+    }
 
     // Return ArrayIterator for the keys array
     return new ArrayIterator(keys);

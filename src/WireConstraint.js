@@ -21,18 +21,21 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     if (typeof hash !== 'undefined') {
       // Add constraint functions if supplied
       if (hasOwnProperty(hash, 'functions')) {
-        for (var name in hash.functions)
+        for (var name in hash.functions) {
           this._functions[name] = hash.functions[name];
+        }
       }
 
       // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue'))
+      if (hasOwnProperty(hash, 'queue')) {
         this._updateQueue = hash.queue;
+      }
     }
 
     // Set defaults
-    if (!hasOwnProperty(this, '_updateQueue'))
+    if (!hasOwnProperty(this, '_updateQueue')) {
       this._updateQueue = new Queue();
+    }
   }
 
   extendClass(EventEmitter, WireConstraint);
@@ -47,12 +50,14 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
 
   P.connect = function(pin, wire) {
     // Throw error if pin does not exist
-    if (!hasOwnProperty(this._functions, pin))
+    if (!hasOwnProperty(this._functions, pin)) {
       throw new Error('Pin "' + pin + '" not found');
+    }
 
     // Do nothing if the pin is already connected to the wire
-    if (this._wires[pin] === wire)
+    if (this._wires[pin] === wire) {
       return;
+    }
 
     // Disconnect from old wire, if any
     _disconnect.call(this, pin);
@@ -87,8 +92,9 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
       this._updateQueue.push(pin);
       return;
     }
-    else
-         this._updating = true; // Set updating flag
+    else {
+      this._updating = true; // Set updating flag
+    }
 
     // Main loop
     while (true) {
@@ -117,8 +123,9 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
       // Handle successful run
       if (!hasOwnProperty(this, '_lastError')) {
         // Send new wire values to wires
-        for (var name in wires)
+        for (var name in wires) {
           wires[name].value(wireValues[name]);
+        }
       }
 
       // Proces update queue
@@ -127,8 +134,9 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
         this._updating = false;
         return;
       }
-      else
-             pin = this._updateQueue.next(); // Get next updated pin from queue
+      else {
+        pin = this._updateQueue.next(); // Get next updated pin from queue
+      }
 
       // Restart loop
     }
@@ -137,8 +145,9 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
   P.pins = function() {
     // Create array of pins
     var pins = [];
-    for (var pin in this._functions)
+    for (var pin in this._functions) {
       pins.push({pin: pin, wire: this._wires[pin]});
+    }
 
     return new ArrayIterator(pins);
   };

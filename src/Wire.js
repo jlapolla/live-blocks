@@ -8,17 +8,20 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
     // Process argument
     if (typeof hash !== 'undefined') {
       // Add equalTo function if supplied
-      if (hasOwnProperty(hash, 'equalTo'))
+      if (hasOwnProperty(hash, 'equalTo')) {
         this.equalTo = hash.equalTo;
+      }
 
       // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue'))
+      if (hasOwnProperty(hash, 'queue')) {
         this._valueQueue = hash.queue;
+      }
     }
 
     // Set defaults
-    if (!hasOwnProperty(this, '_valueQueue'))
+    if (!hasOwnProperty(this, '_valueQueue')) {
       this._valueQueue = new Queue();
+    }
   }
 
   var maxIterations = 1000;
@@ -33,8 +36,9 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
       queue: this._valueQueue.duplicate(),
     };
 
-    if (hasOwnProperty(this, 'equalTo'))
+    if (hasOwnProperty(this, 'equalTo')) {
       hash.equalTo = this.equalTo;
+    }
 
     return new Wire(hash);
   };
@@ -52,8 +56,9 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
     var newBindings = [], bindingExists;
     for (var i = 0; i < bindings.length; i++) {
       newBindings.push(bindings[i]);
-      if (bindings[i].block === block && bindings[i].pin === pin)
+      if (bindings[i].block === block && bindings[i].pin === pin) {
         bindingExists = true;
+      }
     }
 
     // Add new binding if not exists
@@ -76,10 +81,12 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
     // Iterate over bindings and copy to new bindings
     var newBindings = [];
     for (var i = 0; i < bindings.length; i++) {
-      if (bindings[i].block !== block || bindings[i].pin !== pin)
+      if (bindings[i].block !== block || bindings[i].pin !== pin) {
         newBindings.push(bindings[i]);
-      else
+      }
+      else {
         this.fire('disconnect', {block: bindings[i].block, pin: bindings[i].pin}); // Fire event
+      }
     }
 
     // Replace existing bindings
@@ -91,13 +98,15 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
     var bindings = this._bindings;
 
     // Update each bound block
-    for (var i = 0; i < bindings.length; i++)
+    for (var i = 0; i < bindings.length; i++) {
       bindings[i].block.update(bindings[i].pin);
+    }
   };
 
   P.value = function(newValue) {
-    if (!arguments.length)
+    if (!arguments.length) {
       return this._value; // We are getting the value
+    }
     else {
       // We are setting a new value
 
@@ -106,14 +115,16 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
         // Add new value to queue and return
 
         // Don't add the same value to the queue
-        if (!this.equalTo(newValue))
+        if (!this.equalTo(newValue)) {
           this._valueQueue.push(newValue);
+        }
 
         // Return
         return;
       }
-      else
-             this._updating = true; // Set updating flag
+      else {
+        this._updating = true; // Set updating flag
+      }
 
       // Main loop
       var iterations = 1;
@@ -142,8 +153,9 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
           this._updating = false;
           return;
         }
-        else
-                 newValue = this._valueQueue.next(); // Get next value from queue
+        else {
+          newValue = this._valueQueue.next(); // Get next value from queue
+        }
 
         // Restart loop
       }
@@ -153,8 +165,9 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   P.connections = function() {
     // Collect bindings in an array
     var arr = [], bindings = this._bindings;
-    for (var i = 0; i < bindings.length; i++)
+    for (var i = 0; i < bindings.length; i++) {
       arr.push({block: bindings[i].block, pin: bindings[i].pin});
+    }
 
     return new ArrayIterator(arr);
   };

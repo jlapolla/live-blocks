@@ -13,20 +13,23 @@ this.ArrayIterator = (function() {
 
   P.next = function() {
     // Check if we are at the end of the iterator
-    if (this._index < this._array.length)
-
+    if (this._index < this._array.length) {
       // Return current value and increment index
       return {done: false, value: this._array[this._index++]};
-    else
+    }
+    else {
       return {done: true};
+    }
   };
 
   P.peek = function() {
     // Check if we are at the end of the iterator
-    if (this._index < this._array.length)
+    if (this._index < this._array.length) {
       return {done: false, value: this._array[this._index]}; // Return current value
-    else
+    }
+    else {
       return {done: true};
+    }
   };
 
   return ArrayIterator;

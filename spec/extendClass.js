@@ -4,8 +4,9 @@ describe('extendClass function', function() {
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if extendClass is not exposed
-  if (!LiveBlocks.extendClass)
+  if (!LiveBlocks.extendClass) {
     return;
+  }
 
   it('extends a class', function() {
     // Make Mover class

@@ -13,8 +13,9 @@ this.Set = (function(ArrayIterator) {
     // Copy entries to new array, except entry with same value
     var array = this._array, newArray = [];
     for (var i = 0; i < array.length; i++) {
-      if (!same(array[i], value))
+      if (!same(array[i], value)) {
         newArray.push(array[i]);
+      }
     }
 
     // Add new entry to new array
@@ -28,8 +29,9 @@ this.Set = (function(ArrayIterator) {
     // Copy entries to new array, except entry with same value
     var array = this._array, newArray = [];
     for (var i = 0; i < array.length; i++) {
-      if (!same(array[i], value))
+      if (!same(array[i], value)) {
         newArray.push(array[i]);
+      }
     }
 
     // Set private array to new array
@@ -40,8 +42,9 @@ this.Set = (function(ArrayIterator) {
     // Search for same value
     var array = this._array;
     for (var i = 0; i < array.length; i++) {
-      if (same(array[i], value))
+      if (same(array[i], value)) {
         return true;
+      }
     }
 
     // Match not found

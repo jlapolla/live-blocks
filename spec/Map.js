@@ -4,8 +4,9 @@ describe('Map class', function() {
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Map is not exposed
-  if (!LiveBlocks.Map)
+  if (!LiveBlocks.Map) {
     return;
+  }
 
   it('works with any kind of key', function() {
     // Make a map
@@ -38,20 +39,23 @@ describe('Map class', function() {
     };
 
     // Put values in the map
-    for (var name in keys)
+    for (var name in keys) {
       map.put(keys[name], values[name]);
+    }
 
     // Positive tests for key existence
-    for (var name in keys)
+    for (var name in keys) {
       expect(map.has(keys[name])).toBe(true);
+    }
 
     // Negative tests for key existence
     expect(map.has({})).toBe(false);
     expect(map.has(function() {})).toBe(false);
 
     // Retrieve values
-    for (var name in keys)
+    for (var name in keys) {
       expect(map.get(keys[name])).toBe(values[name]);
+    }
 
     // Retrieve value from non-existent key
     expect(map.get({})).toBeUndefined();
@@ -69,8 +73,9 @@ describe('Map class', function() {
     delete keys.b;
     delete values.a;
     delete values.b;
-    for (var name in removedKeys)
+    for (var name in removedKeys) {
       map.remove(removedKeys[name]);
+    }
 
     // Positive test for remaining keys
     for (var name in keys) {
@@ -120,8 +125,9 @@ describe('Map class', function() {
     };
 
     // Put keys and values in the map
-    for (var name in keys)
+    for (var name in keys) {
       map.put(keys[name], values[name]);
+    }
 
     // Get keys iterator
     var it = map.keys();

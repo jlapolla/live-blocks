@@ -6,15 +6,17 @@ describe('BlackBox class', function() {
   var LiveBlocks = host.LiveBlocks;
 
   // Skip test if BlackBox is not exposed
-  if (!LiveBlocks.BlackBox)
+  if (!LiveBlocks.BlackBox) {
     return;
+  }
 
   var assertFiniteNumber, floatWire;
   beforeEach(function() {
     assertFiniteNumber = (function(isFinite, Error) {
       return function(num) {
-        if (!(typeof num === 'number' && isFinite(num)))
+        if (!(typeof num === 'number' && isFinite(num))) {
           throw new Error(num + ' must be a number');
+        }
       };
     }(host.isFinite, host.Error));
 
@@ -31,8 +33,9 @@ describe('BlackBox class', function() {
           isFinite(this._value)
         )
           return abs(this._value - value) < epsilon;
-        else
+        else {
           return value !== value ? this._value !== this._value : value === this._value;
+        }
       };
 
       return {equalTo: equalTo};
@@ -215,8 +218,9 @@ describe('BlackBox class', function() {
 
         // Wires
         var wires = [];
-        for (var i = 0; i < 2; i++)
+        for (var i = 0; i < 2; i++) {
           wires.push(new LiveBlocks.Wire());
+        }
 
         // Connect block to wires
         block.connect('a', wires[0]);
@@ -234,13 +238,15 @@ describe('BlackBox class', function() {
 
       // Make internal BlackBox's
       var blocks = [];
-      for (var i = 0; i < 2; i++)
+      for (var i = 0; i < 2; i++) {
         blocks.push(proto.duplicate());
+      }
 
       // Make wires
       var wires = [];
-      for (var i = 0; i < 3; i++)
+      for (var i = 0; i < 3; i++) {
         wires.push(new LiveBlocks.Wire());
+      }
 
       // Connect internal BlackBox's to wires
       blocks[0].connect('a', wires[0]);
@@ -264,8 +270,9 @@ describe('BlackBox class', function() {
 
     // Make wires
     var wires = [];
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < 3; i++) {
       wires.push(new LiveBlocks.Wire());
+    }
 
     // Connect block to wires
     block.connect('a', wires[0]);
@@ -281,18 +288,21 @@ describe('BlackBox class', function() {
 
     // Test stimulus
     wires[0].value(values.a);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.a);
+    }
 
     // Test stimulus
     wires[1].value(values.b);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.b);
+    }
 
     // Test stimulus
     wires[2].value(values.c);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.c);
+    }
 
     // Disconnect block and connect prototype
     block.disconnect('a');
@@ -306,18 +316,21 @@ describe('BlackBox class', function() {
 
     // Test stimulus
     wires[0].value(values.a);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.a);
+    }
 
     // Test stimulus
     wires[1].value(values.b);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.b);
+    }
 
     // Test stimulus
     wires[2].value(values.c);
-    for (var i = 0; i < wires.length; i++)
+    for (var i = 0; i < wires.length; i++) {
       expect(wires[i].value()).toBe(values.c);
+    }
   });
 
   it('integration test with Wire class where a wire has multiple connections (adapted from WireConstraint spec)', function() {
@@ -361,8 +374,9 @@ describe('BlackBox class', function() {
 
       // Make wires
       var wires = [];
-      for (var i = 0; i < 3; i++)
+      for (var i = 0; i < 3; i++) {
         wires.push(new LiveBlocks.Wire());
+      }
 
       // Connect block properties to wires
       plusOne.connect('smaller', wires[0]);
@@ -383,8 +397,9 @@ describe('BlackBox class', function() {
 
     // Make wires
     var wires = [];
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < 3; i++) {
       wires.push(new LiveBlocks.Wire());
+    }
 
     // Connect block properties to wires
     block.connect('a', wires[0]);
@@ -488,8 +503,9 @@ describe('BlackBox class', function() {
       // Make wires
       var wires = {};
       (function(wireNames) {
-        for (var i = 0; i < wireNames.length; i++)
+        for (var i = 0; i < wireNames.length; i++) {
           wires[wireNames[i]] = floatWire.duplicate();
+        }
       }(['x', 'y', 'r', 'theta']));
 
       // Connect wires to block pins
@@ -513,8 +529,9 @@ describe('BlackBox class', function() {
     // Make wires
     var wires = {};
     (function(wireNames) {
-      for (var i = 0; i < wireNames.length; i++)
+      for (var i = 0; i < wireNames.length; i++) {
         wires[wireNames[i]] = floatWire.duplicate();
+      }
     }(['x', 'y', 'r', 'theta']));
 
     // Connect wires to block pins
@@ -818,8 +835,9 @@ describe('BlackBox class', function() {
         functions: {
           a: function() {
             // Throw error if "a" is not a number
-            if (typeof this.a !== 'number')
+            if (typeof this.a !== 'number') {
               throw new TypeError('Pin "a" must be a number');
+            }
 
             // Copy "a" to "b"
             this.b = this.a;
@@ -827,8 +845,9 @@ describe('BlackBox class', function() {
 
           b: function() {
             // Throw error if "b" is not a number
-            if (typeof this.b !== 'number')
+            if (typeof this.b !== 'number') {
               throw new TypeError('Pin "b" must be a number');
+            }
 
             // Copy "b" to "a"
             this.a = this.b;
@@ -881,8 +900,9 @@ describe('BlackBox class', function() {
         functions: {
           a: function() {
             // Throw error if "a" is not a number
-            if (typeof this.a !== 'number')
+            if (typeof this.a !== 'number') {
               throw new TypeError('Pin "a" must be a number');
+            }
 
             // Copy "a" to "b"
             this.b = this.a;
@@ -890,8 +910,9 @@ describe('BlackBox class', function() {
 
           b: function() {
             // Throw error if "b" is not a number
-            if (typeof this.b !== 'number')
+            if (typeof this.b !== 'number') {
               throw new TypeError('Pin "b" must be a number');
+            }
 
             // Copy "b" to "a"
             this.a = this.b;
@@ -926,8 +947,9 @@ describe('BlackBox class', function() {
           return function(arg) {
             // Create log object
             var obj = {event: eventName};
-            if (typeof arg !== 'undefined')
+            if (typeof arg !== 'undefined') {
               obj.arg = arg;
+            }
 
             // Add log object to log
             log.push(obj);
@@ -990,8 +1012,9 @@ describe('BlackBox class', function() {
 
       // Create wires
       var wires = [];
-      for (var i = 0; i < 2; i++)
+      for (var i = 0; i < 2; i++) {
         wires.push(new LiveBlocks.Wire());
+      }
 
       // Connect block to wires
       block.connect('a', wires[0]);
@@ -1016,8 +1039,9 @@ describe('BlackBox class', function() {
           return function(arg) {
             // Create log object
             var obj = {event: eventName};
-            if (typeof arg !== 'undefined')
+            if (typeof arg !== 'undefined') {
               obj.arg = arg;
+            }
 
             // Add log object to log
             log.push(obj);
@@ -1028,8 +1052,9 @@ describe('BlackBox class', function() {
 
     // Create wires
     var wires = [];
-    for (var i = 0; i < 2; i++)
+    for (var i = 0; i < 2; i++) {
       wires.push(new LiveBlocks.Wire());
+    }
 
     // Register event listeners
     block.on('connect', listeners.connect);
@@ -1103,13 +1128,15 @@ describe('BlackBox class', function() {
 
       var passStringBlock = new LiveBlocks.WireConstraint((function() {
         var aToB = function() {
-          if (typeof this.a === 'string')
+          if (typeof this.a === 'string') {
             this.b = this.a;
+          }
         };
 
         var bToA = function() {
-          if (typeof this.b === 'string')
+          if (typeof this.b === 'string') {
             this.a = this.b;
+          }
         };
 
         var functions = {

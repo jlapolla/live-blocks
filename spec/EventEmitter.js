@@ -7,8 +7,9 @@
         var LiveBlocks = window.LiveBlocks;
 
         // Skip test if "name" is not exposed
-        if (!LiveBlocks[name])
+        if (!LiveBlocks[name]) {
           return;
+        }
 
         it('does not register duplicate listeners', function() {
           // Create an EventEmitter
@@ -137,10 +138,12 @@
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
-                if (typeof arg !== 'undefined')
+                if (typeof arg !== 'undefined') {
                   callbackLog.push({callback: listeners[i], arg: arg});
-                else
+                }
+                else {
                   callbackLog.push({callback: listeners[i]});
+                }
               };
             }(listeners, i)));
           }
@@ -178,10 +181,12 @@
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
-                if (typeof arg !== 'undefined')
+                if (typeof arg !== 'undefined') {
                   callbackLog.push({callback: listeners[i], arg: arg});
-                else
+                }
+                else {
                   callbackLog.push({callback: listeners[i]});
+                }
               };
             }(listeners, i)));
           }
@@ -206,10 +211,12 @@
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
-                if (typeof arg !== 'undefined')
+                if (typeof arg !== 'undefined') {
                   callbackLog.push({callback: listeners[i], arg: arg});
-                else
+                }
+                else {
                   callbackLog.push({callback: listeners[i]});
+                }
 
                 // Deregister listeners[1]
                 emitter.off('x', listeners[1]);
@@ -242,10 +249,12 @@
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
-                if (typeof arg !== 'undefined')
+                if (typeof arg !== 'undefined') {
                   callbackLog.push({callback: listeners[i], arg: arg});
-                else
+                }
+                else {
                   callbackLog.push({callback: listeners[i]});
+                }
 
                 // Register listeners[2]
                 emitter.on('x', listeners[2]);

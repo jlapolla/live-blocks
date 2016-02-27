@@ -37,22 +37,26 @@ this.Queue = (function(getUndefined) {
         this._queueCurrent = getUndefined();
         this._queueTip = getUndefined();
       }
-      else
-             this._queueCurrent = this._queueCurrent.next; // Increment queue pointer
+      else {
+        this._queueCurrent = this._queueCurrent.next; // Increment queue pointer
+      }
 
       // Return item
       return item;
     }
-    else
-         return; // Return undefined
+    else {
+      return; // Return undefined
+    }
   };
 
   P.peek = function() {
     // Get next item without incrementing
-    if (this._queueCurrent)
+    if (this._queueCurrent) {
       return this._queueCurrent.item; // We are not at the end of the queue
-    else
+    }
+    else {
       return; // We are at the end of the queue
+    }
   };
 
   P.isEmpty = function() {
