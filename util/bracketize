@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# See http://usevim.com/2012/04/06/search-and-replace-files/
+vim '+:argdo %s/^\( \+\)\(if\|for\|while\) \((.*)\)\n\(.*\)\n/\1\2 \3 {\r\4\r\1}\r/e | update' '+:argdo %s/^\( \+\)else\n\(.*\)\n/\1else {\r\2\r\1}\r/e | update' '+:qa' "$@"
