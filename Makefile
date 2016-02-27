@@ -25,7 +25,7 @@ $(eval include helpdoc.mk)
 $(eval include watch.mk)
 
 $(call helpdoc,$(d)dist/live-blocks.js,LiveBlocks for browser)
-$(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsuffix .js,header footer preamble))
+$(d)dist/live-blocks.js: $($(d)order) $(addprefix $(d)partials/,$(addsuffix .js,header footer preamble))
 	mkdir -p $(d)dist/
 	cat $(d)partials/preamble.js $(d)partials/header.js $($(d)order) $(d)partials/footer.js > $(d)dist/live-blocks.js
 
@@ -66,6 +66,11 @@ $(d)test-deps: $(d)karma $(d)test/test-start.js $(patsubst $(d)src/%,$(d)test/%,
 $(d)test/test-start.js: $(d)partials/test-start.js
 	mkdir -p $(d)test/
 	cp $(d)partials/test-start.js $(d)test/test-start.js
+
+.PHONY: $(d)serve-reports
+$(call helpdoc,$(d)serve-reports,Run 'make serve-reports' to view code coverage reports in your browser. Starts an HTTP server serving files from $(d)reports/ on port 8080.)
+$(d)serve-reports:
+	http-server -c-1 $(d)reports/
 
 .PHONY: $(d)lint
 $(call helpdoc,$(d)lint,Fix code style issues)
