@@ -397,13 +397,6 @@ describe('WireConstraint class', function() {
     expect(duplicate._pins).toEqual(pinHash);
   });
 
-  it('creates a default queue when no queue is injected', function() {
-
-    // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint();
-    expect(wc._updateQueue).not.toBeUndefined();
-  });
-
   it('disconnects pin from wire before connecting to a new wire', function() {
 
     // Create a block
@@ -525,7 +518,7 @@ describe('WireConstraint class', function() {
   it('throws error when connecting to non-existent pin', function() {
 
     // Create a block with no pins
-    var block = new LiveBlocks.WireConstraint();
+    var block = new LiveBlocks.WireConstraint({});
 
     // Create a wire
     var wire = new LiveBlocks.Wire();

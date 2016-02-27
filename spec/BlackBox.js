@@ -776,13 +776,6 @@ describe('BlackBox class', function() {
     expect(notQ.value()).toBe(true);
   });
 
-  it('creates a default queue when no queue is injected', function() {
-
-    // Create a black box
-    var block = new LiveBlocks.BlackBox();
-    expect(block._updateQueue).not.toBeUndefined();
-  });
-
   it('disconnects pin from wire before connecting to a new wire', function() {
 
     // Create a black box
@@ -900,7 +893,7 @@ describe('BlackBox class', function() {
   it('throws error when connecting to non-existent pin', function() {
 
     // Create a block with no pins
-    var block = new LiveBlocks.BlackBox();
+    var block = new LiveBlocks.BlackBox({});
 
     // Create a wire
     var wire = new LiveBlocks.Wire();

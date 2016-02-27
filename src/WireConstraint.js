@@ -28,16 +28,9 @@ this.WireConstraint = (function(hasOwnProperty,
     this._updating = false;
     this._updateQueue = new Queue();
 
-    if (typeof hash !== 'undefined') {
+    for (var name in hash.pins) {
 
-      // Add constraint functions if supplied
-      if (hasOwnProperty(hash, 'pins')) {
-
-        for (var name in hash.pins) {
-
-          this._pins[name] = hash.pins[name];
-        }
-      }
+      this._pins[name] = hash.pins[name];
     }
   }
 

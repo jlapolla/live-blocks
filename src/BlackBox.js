@@ -95,14 +95,7 @@ this.BlackBox = (function(EventEmitter,
     this._externalWires = {};
     this._updateQueue = new Queue();
 
-    if (typeof hash !== 'undefined') {
-
-      // Add pins if supplied
-      if (hasOwnProperty(hash, 'pins')) {
-
-        init.call(this, hash.pins);
-      }
-    }
+    init.call(this, hash.pins);
   }
 
   extendClass(EventEmitter, BlackBox);
