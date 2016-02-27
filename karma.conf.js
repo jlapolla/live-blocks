@@ -15,7 +15,19 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'test/live-blocks.js',
+      'test/test-start.js',
+      'test/getUndefined.js',
+      'test/extendClass.js',
+      'test/hasOwnProperty.js',
+      'test/multiInheritClass.js',
+      'test/ArrayIterator.js',
+      'test/Queue.js',
+      'test/Set.js',
+      'test/Map.js',
+      'test/EventEmitter.js',
+      'test/Wire.js',
+      'test/WireConstraint.js',
+      'test/BlackBox.js',
       'spec/*.js'
     ],
 
@@ -28,7 +40,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/live-blocks.js': 'coverage'
+      'test/*.js': 'coverage'
     },
 
 

@@ -1,6 +1,4 @@
-define $(d)template
-$(eval include helpdoc.mk)
-$(eval include watch.mk)
+# Source files must be concatenated in a specific order
 $(eval $(d)order := $(d)src/getUndefined.js)
 $(eval $(d)order += $(d)src/extendClass.js)
 $(eval $(d)order += $(d)src/hasOwnProperty.js)
@@ -14,6 +12,18 @@ $(eval $(d)order += $(d)src/Wire.js)
 $(eval $(d)order += $(d)src/WireConstraint.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
 
+# Source files wrapped in "test" IIFE
+define $(d)template
+$(d)test/$(patsubst $(d)src/%,%,$(1)): $(1) $(addprefix $(d)partials/test-,$(addsuffix .js,header footer))
+	mkdir -p $(d)test/
+	cat $(d)partials/test-header.js $(1) $(d)partials/test-footer.js > $(d)test/$(patsubst $(d)src/%,%,$(1))
+endef
+$(foreach $(d)var,$($(d)order),$(eval $(call $(d)template,$($(d)var))))
+
+define $(d)template
+$(eval include helpdoc.mk)
+$(eval include watch.mk)
+
 $(call helpdoc,$(d)dist/live-blocks.js,LiveBlocks for browser)
 $(d)dist/live-blocks.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/,$(addsuffix .js,header footer preamble))
 	mkdir -p $(d)dist/
@@ -24,18 +34,13 @@ $(d)dist/live-blocks.min.js: $(d)dist/live-blocks.js $(d)partials/preamble.js
 	cat $(d)partials/preamble.js > $(d)dist/live-blocks.min.js
 	uglifyjs -mc unsafe -- - < $(d)dist/live-blocks.js >> $(d)dist/live-blocks.min.js
 
-$(call helpdoc,$(d)test/live-blocks-test.js,LiveBlocks which exposes private properties for testing (not for use in production))
-$(d)test/live-blocks-test.js: $(wildcard $(d)src/*) $(addprefix $(d)partials/test-,$(addsuffix .js,header footer))
-	mkdir -p $(d)test/
-	cat $(d)partials/test-header.js $($(d)order) $(d)partials/test-footer.js > $(d)test/live-blocks-test.js
-
 .PHONY: $(d)all
 $(call helpdoc,$(d)all,Build main files)
 $(d)all: $(addprefix $(d)dist/,$(addsuffix .js,live-blocks live-blocks.min))
 
 .PHONY: $(d)test
 $(call helpdoc,$(d)test,Start Karma test runner)
-$(d)test: $(d)karma $(d)test/live-blocks.js
+$(d)test: $(d)karma $(d)test/test-start.js $(patsubst $(d)src/%,$(d)test/%,$($(d)order))
 	$(if $(d),(cd $(d) && ./karma start),./karma start)
 
 $(d)karma: $(d)node_modules/karma/bin/karma
@@ -44,13 +49,13 @@ $(d)karma: $(d)node_modules/karma/bin/karma
 $(d)node_modules/karma/bin/karma:
 	$(if $(d),(cd $(d) && npm install),npm install)
 
-$(call helpdoc,$(d)test/live-blocks.js,Soft link to LiveBlocks file to test. Point it at the file you want to test. This allows us to test production and minified versions of LiveBlocks directly.)
-$(d)test/live-blocks.js: | $(d)test/live-blocks-test.js
-	ln -sf live-blocks-test.js $(d)test/live-blocks.js
-
 .PHONY: $(d)test-deps
 $(call helpdoc,$(d)test-deps,Build files needed for testing. For continuous integration run 'make watch WATCHLIST=test-deps' in the background while 'make test' is running.)
-$(d)test-deps: $(d)karma $(d)test/live-blocks-test.js
+$(d)test-deps: $(d)karma $(d)test/test-start.js $(patsubst $(d)src/%,$(d)test/%,$($(d)order))
+
+$(d)test/test-start.js: $(d)partials/test-start.js
+	mkdir -p $(d)test/
+	cp $(d)partials/test-start.js $(d)test/test-start.js
 
 .PHONY: $(d)lint
 $(call helpdoc,$(d)lint,Fix code style issues)
@@ -62,12 +67,12 @@ $(call helpdoc,$(d)clean,Delete build products)
 $(d)clean:
 	rm -rf $(d)dist/ $(d)test/ $(d)reports/
 
-$(eval $(d)order :=)
-
 .DEFAULT_GOAL := help
 
 endef
 
 $(eval $($(d)template))
 $(eval $(d)template :=)
+$(eval $(d)order :=)
+$(eval $(d)var :=)
 
