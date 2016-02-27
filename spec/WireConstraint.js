@@ -28,10 +28,10 @@ describe('WireConstraint class', function() {
 
       var equalTo = function(value) {
         if (
-          typeof value === 'number' &&
-          typeof this._value === 'number' &&
-          isFinite(value) &&
-          isFinite(this._value)) {
+          typeof value === 'number'
+          && typeof this._value === 'number'
+          && isFinite(value)
+          && isFinite(this._value)) {
           return abs(this._value - value) < epsilon;
         }
         else if (value !== value) {
@@ -172,8 +172,8 @@ describe('WireConstraint class', function() {
     expect(log).toEqual(['half2double', 'double2half', 'half2double']);
   });
 
-  it('integration test with Wire class where the WireConstraint' +
-  'has multiple inputs and outputs', function() {
+  it('integration test with Wire class where the WireConstraint'
+  + 'has multiple inputs and outputs', function() {
     // Convert rectangular to polar coordinates
     var block = new LiveBlocks.WireConstraint(
     (function(Math, assertFiniteNumber) {

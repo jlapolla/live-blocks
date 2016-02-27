@@ -28,10 +28,10 @@ describe('BlackBox class', function() {
 
       var equalTo = function(value) {
         if (
-          typeof value === 'number' &&
-          typeof this._value === 'number' &&
-          isFinite(value) &&
-          isFinite(this._value)) {
+          typeof value === 'number'
+          && typeof this._value === 'number'
+          && isFinite(value)
+          && isFinite(this._value)) {
           return abs(this._value - value) < epsilon;
         }
         else if (value !== value) {
@@ -337,8 +337,8 @@ describe('BlackBox class', function() {
     }
   });
 
-  it('integration test with Wire class where a wire has multiple connections ' +
-  '(adapted from WireConstraint spec)', function() {
+  it('integration test with Wire class where a wire has multiple connections '
+  + '(adapted from WireConstraint spec)', function() {
     // Update log
     var log = [];
 
@@ -490,8 +490,8 @@ describe('BlackBox class', function() {
       'half2double']);
   });
 
-  it('integration test with Wire class where the WireConstraint has multiple ' +
-  'inputs and outputs (adapted from WireConstraint)', function() {
+  it('integration test with Wire class where the WireConstraint has multiple '
+  + 'inputs and outputs (adapted from WireConstraint)', function() {
     // Convert rectangular to polar coordinates
     var block = new LiveBlocks.BlackBox((function() {
       var block = new LiveBlocks.WireConstraint(
@@ -639,8 +639,8 @@ describe('BlackBox class', function() {
     expect(block.error()).not.toBeUndefined();
   });
 
-  it('integration test with read-only values (adapted ' +
-  ' from WireConstraint spec)', function() {
+  it('integration test with read-only values (adapted '
+  + ' from WireConstraint spec)', function() {
     // We will make a flip flop from two cross-coupled NOR gates
     var block = new LiveBlocks.BlackBox((function() {
       // Make two NOR blocks

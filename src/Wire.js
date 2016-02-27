@@ -147,8 +147,8 @@ this.Wire = (function(
         // Check iteration count
         if (iterations++ > maxIterations) {
           this._updating = false;
-          throw new Error('Infinite loop detected: reached ' +
-            maxIterations + ' iterations');
+          throw new Error('Infinite loop detected: reached '
+            + maxIterations + ' iterations');
         }
 
         // Compare new value to current value

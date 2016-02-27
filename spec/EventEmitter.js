@@ -115,8 +115,8 @@
           });
         });
 
-        it('does nothing when a listener is deregistered from ' +
-        'an un-watched event', function() {
+        it('does nothing when a listener is deregistered from '
+        + 'an un-watched event', function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -209,8 +209,8 @@
           expect(callbackLog.length).toBe(0);
         });
 
-        it('.fire() calls each listener once, even if listeners ' +
-        'are deregistered during .fire()', function() {
+        it('.fire() calls each listener once, even if listeners '
+        + 'are deregistered during .fire()', function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 

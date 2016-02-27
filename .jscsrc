@@ -3,5 +3,7 @@
   "preset"                          : "google",
   "disallowKeywordsOnNewLine"       : [],
   "requireKeywordsOnNewLine"        : ["else"],
+  "disallowOperatorBeforeLineBreak" : true,
+  "requireOperatorBeforeLineBreak"  : false,
   "disallowPaddingNewlinesInBlocks" : true,
 }
