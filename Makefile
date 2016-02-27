@@ -39,9 +39,19 @@ $(call helpdoc,$(d)all,Build main files)
 $(d)all: $(addprefix $(d)dist/,$(addsuffix .js,live-blocks live-blocks.min))
 
 .PHONY: $(d)test
-$(call helpdoc,$(d)test,Start Karma test runner)
+$(call helpdoc,$(d)test,Start Karma test runner to run tests on source files)
 $(d)test: $(d)karma $(d)test/test-start.js $(patsubst $(d)src/%,$(d)test/%,$($(d)order))
-	$(if $(d),(cd $(d) && ./karma start),./karma start)
+	$(if $(d),(cd $(d) && ./karma start config/karma.conf.js),./karma start config/karma.conf.js)
+
+.PHONY: $(d)test-production
+$(call helpdoc,$(d)test-production,Start Karma test runner to run tests on built live-blocks.js file)
+$(d)test-production: $(d)karma $(d)dist/live-blocks.js
+	$(if $(d),(cd $(d) && ./karma start config/karma-production.conf.js),./karma start config/karma-production.conf.js)
+
+.PHONY: $(d)test-minified
+$(call helpdoc,$(d)test-minified,Start Karma test runner to run tests on minified live-blocks.min.js file)
+$(d)test-minified: $(d)karma $(d)dist/live-blocks.min.js
+	$(if $(d),(cd $(d) && ./karma start config/karma-minified.conf.js),./karma start config/karma-minified.conf.js)
 
 $(d)karma: $(d)node_modules/karma/bin/karma
 	ln -sf node_modules/karma/bin/karma $(d)karma
