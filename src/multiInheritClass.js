@@ -1,4 +1,4 @@
-this.multiInheritClass = function (base, derived) {
+this.multiInheritClass = function(base, derived) {
 
   // Fake multiple inheritance
   for (var name in base.prototype) {

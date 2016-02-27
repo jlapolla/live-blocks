@@ -1,5 +1,5 @@
-this.Map = (function (ArrayIterator) {
-  var same = function (a, b) {
+this.Map = (function(ArrayIterator) {
+  var same = function(a, b) {
 
     return a !== a ? b !== b : a === b;
   };
@@ -11,7 +11,7 @@ this.Map = (function (ArrayIterator) {
 
   Map.prototype = {};
   var P = Map.prototype;
-  P.get = function (key) {
+  P.get = function(key) {
 
     // Get value at key
     var array = this._array;
@@ -22,7 +22,7 @@ this.Map = (function (ArrayIterator) {
     }
   };
 
-  P.put = function (key, value) {
+  P.put = function(key, value) {
 
     // Copy entries to new array, except entry with matching key
     var array = this._array, newArray = [];
@@ -33,13 +33,13 @@ this.Map = (function (ArrayIterator) {
     }
 
     // Add new entry to new array
-    newArray.push({ key: key, value: value });
+    newArray.push({key: key, value: value});
 
     // Set private array to new array
     this._array = newArray;
   };
 
-  P.remove = function (key) {
+  P.remove = function(key) {
 
     // Copy entries to new array, except entry with matching key
     var array = this._array, newArray = [];
@@ -53,7 +53,7 @@ this.Map = (function (ArrayIterator) {
     this._array = newArray;
   };
 
-  P.has = function (key) {
+  P.has = function(key) {
 
     // Search for matching key
     var array = this._array;
@@ -67,7 +67,7 @@ this.Map = (function (ArrayIterator) {
     return false;
   };
 
-  P.keys = function () {
+  P.keys = function() {
 
     // Copy keys to a new array
     var array = this._array, keys = [];

@@ -1,11 +1,11 @@
-this.EventEmitter = (function (hasOwnProperty) {
+this.EventEmitter = (function(hasOwnProperty) {
   function EventEmitter() {
     this._listeners = {};
   };
 
   EventEmitter.prototype = {};
   var P = EventEmitter.prototype;
-  P.on = function (ev, callback) {
+  P.on = function(ev, callback) {
 
     // Look up listeners
     var listeners;
@@ -30,7 +30,7 @@ this.EventEmitter = (function (hasOwnProperty) {
     this._listeners[ev] = newListeners;
   };
 
-  P.off = function (ev, callback) {
+  P.off = function(ev, callback) {
 
     // Look up listeners
     var listeners;
@@ -53,7 +53,7 @@ this.EventEmitter = (function (hasOwnProperty) {
       delete this._listeners[ev];
   };
 
-  P.fire = function (ev, arg) {
+  P.fire = function(ev, arg) {
 
     // Look up listeners
     var listeners;
@@ -66,7 +66,8 @@ this.EventEmitter = (function (hasOwnProperty) {
     if (typeof arg !== 'undefined') {
       for (var i = 0; i < listeners.length; i++)
         listeners[i](arg);
-    } else {
+    }
+    else {
       for (var i = 0; i < listeners.length; i++)
         listeners[i]();
     }
