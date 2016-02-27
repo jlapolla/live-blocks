@@ -1,5 +1,4 @@
-this.WireConstraint = (function(
-  hasOwnProperty,
+this.WireConstraint = (function(hasOwnProperty,
   Queue,
   Error,
   extendClass,

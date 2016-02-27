@@ -1,5 +1,4 @@
-this.Wire = (function(
-  getUndefined,
+this.Wire = (function(getUndefined,
   hasOwnProperty,
   Queue,
   Error,

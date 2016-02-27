@@ -1,8 +1,10 @@
 {
   "verbose"                           : true,
   "preset"                            : "google",
+  "requireAlignedMultilineParams"     : true,
   "disallowKeywordsOnNewLine"         : [],
   "requireKeywordsOnNewLine"          : ["else"],
+  "disallowMultipleSpaces"            : true,
   "disallowOperatorBeforeLineBreak"   : true,
   "requireOperatorBeforeLineBreak"    : false,
   "requirePaddingNewLinesAfterBlocks" : true,

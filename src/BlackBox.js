@@ -1,12 +1,12 @@
 this.BlackBox = (function(EventEmitter,
-    extendClass,
-    hasOwnProperty,
-    Queue,
-    getUndefined,
-    Map,
-    Set,
-    Error,
-    ArrayIterator) {
+  extendClass,
+  hasOwnProperty,
+  Queue,
+  getUndefined,
+  Map,
+  Set,
+  Error,
+  ArrayIterator) {
 
   var _disconnect = function(pin) {
 
