@@ -55,7 +55,8 @@ describe('multiInheritClass function', function() {
     expect(object.talk()).toBe('I talk the talk');
   });
 
-  it('inherits from the base class and all ancestors of the base class', function() {
+  it('inherits from the base class and all ancestors of the base class',
+  function() {
     // Make Mover class
     function Mover() {
       this._myMove = 'I\'m a mover';

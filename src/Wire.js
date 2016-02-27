@@ -1,4 +1,11 @@
-this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, extendClass, ArrayIterator) {
+this.Wire = (function(
+  getUndefined,
+  hasOwnProperty,
+  Queue,
+  Error,
+  EventEmitter,
+  extendClass,
+  ArrayIterator) {
   function Wire(hash) {
     EventEmitter.call(this);
 
@@ -45,7 +52,12 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
   P.equalTo = function(value) {
     // Compare with ===, but let NaN === NaN be true
-    return value !== value ? this._value !== this._value : value === this._value;
+    if (value !== value) {
+      return this._value !== this._value;
+    }
+    else {
+      return value === this._value;
+    }
   };
 
   P.bind = function(block, pin) {
@@ -53,7 +65,8 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
     var bindings = this._bindings;
 
     // Iterate over bindings and copy to new bindings
-    var newBindings = [], bindingExists;
+    var newBindings = [];
+    var bindingExists;
     for (var i = 0; i < bindings.length; i++) {
       newBindings.push(bindings[i]);
       if (bindings[i].block === block && bindings[i].pin === pin) {
@@ -84,8 +97,10 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
       if (bindings[i].block !== block || bindings[i].pin !== pin) {
         newBindings.push(bindings[i]);
       }
-      else {
-        this.fire('disconnect', {block: bindings[i].block, pin: bindings[i].pin}); // Fire event
+      else { // Fire event
+        this.fire('disconnect', {
+          block: bindings[i].block, pin: bindings[i].pin
+        });
       }
     }
 
@@ -132,7 +147,8 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
         // Check iteration count
         if (iterations++ > maxIterations) {
           this._updating = false;
-          throw new Error('Infinite loop detected: reached ' + maxIterations + ' iterations');
+          throw new Error('Infinite loop detected: reached ' +
+            maxIterations + ' iterations');
         }
 
         // Compare new value to current value
@@ -164,7 +180,8 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
   P.connections = function() {
     // Collect bindings in an array
-    var arr = [], bindings = this._bindings;
+    var arr = [];
+    var bindings = this._bindings;
     for (var i = 0; i < bindings.length; i++) {
       arr.push({block: bindings[i].block, pin: bindings[i].pin});
     }

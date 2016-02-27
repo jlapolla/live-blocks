@@ -39,7 +39,8 @@
           });
         });
 
-        it('does not delete a listener list if any listeners remain', function() {
+        it('does not delete a listener list if any listeners remain',
+        function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -64,7 +65,8 @@
           });
         });
 
-        it('deletes a listener list when the last listener is deregistered', function() {
+        it('deletes a listener list when the last listener is deregistered',
+        function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -87,7 +89,8 @@
           expect(emitter._listeners).toEqual({y: [listeners[0], listeners[2]]});
         });
 
-        it('does nothing when a non-existent listener is deregistered', function() {
+        it('does nothing when a non-existent listener is deregistered',
+        function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -112,7 +115,8 @@
           });
         });
 
-        it('does nothing when a listener is deregistered from an un-watched event', function() {
+        it('does nothing when a listener is deregistered from ' +
+        'an un-watched event', function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -134,7 +138,8 @@
           var emitter = new LiveBlocks[name]();
 
           // Set up listeners
-          var listeners = [], callbackLog = [];
+          var listeners = [];
+          var callbackLog = [];
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
@@ -172,12 +177,14 @@
           expect(callbackLog[1]).toEqual({callback: listeners[2]});
         });
 
-        it('.fire() does nothing when called on an unwatched event', function() {
+        it('.fire() does nothing when called on an unwatched event',
+        function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 
           // Set up listeners
-          var listeners = [], callbackLog = [];
+          var listeners = [];
+          var callbackLog = [];
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
@@ -202,12 +209,14 @@
           expect(callbackLog.length).toBe(0);
         });
 
-        it('.fire() calls each listener once, even if listeners are deregistered during .fire()', function() {
+        it('.fire() calls each listener once, even if listeners ' +
+        'are deregistered during .fire()', function() {
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 
           // Set up listeners
-          var listeners = [], callbackLog = [];
+          var listeners = [];
+          var callbackLog = [];
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {
@@ -245,7 +254,8 @@
           var emitter = new LiveBlocks[name]();
 
           // Set up listeners
-          var listeners = [], callbackLog = [];
+          var listeners = [];
+          var callbackLog = [];
           for (var i = 0; i < 3; i++) {
             listeners.push((function(listeners, i) {
               return function(arg) {

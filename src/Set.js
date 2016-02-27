@@ -11,7 +11,8 @@ this.Set = (function(ArrayIterator) {
   var P = Set.prototype;
   P.add = function(value) {
     // Copy entries to new array, except entry with same value
-    var array = this._array, newArray = [];
+    var array = this._array;
+    var newArray = [];
     for (var i = 0; i < array.length; i++) {
       if (!same(array[i], value)) {
         newArray.push(array[i]);
@@ -27,7 +28,8 @@ this.Set = (function(ArrayIterator) {
 
   P.remove = function(value) {
     // Copy entries to new array, except entry with same value
-    var array = this._array, newArray = [];
+    var array = this._array;
+    var newArray = [];
     for (var i = 0; i < array.length; i++) {
       if (!same(array[i], value)) {
         newArray.push(array[i]);

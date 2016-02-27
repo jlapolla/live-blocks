@@ -10,7 +10,8 @@ describe('BlackBox class', function() {
     return;
   }
 
-  var assertFiniteNumber, floatWire;
+  var assertFiniteNumber;
+  var floatWire;
   beforeEach(function() {
     assertFiniteNumber = (function(isFinite, Error) {
       return function(num) {
@@ -30,11 +31,14 @@ describe('BlackBox class', function() {
           typeof value === 'number' &&
           typeof this._value === 'number' &&
           isFinite(value) &&
-          isFinite(this._value)
-        )
+          isFinite(this._value)) {
           return abs(this._value - value) < epsilon;
+        }
+        else if (value !== value) {
+          return this._value !== this._value;
+        }
         else {
-          return value !== value ? this._value !== this._value : value === this._value;
+          return value === this._value;
         }
       };
 
@@ -333,7 +337,8 @@ describe('BlackBox class', function() {
     }
   });
 
-  it('integration test with Wire class where a wire has multiple connections (adapted from WireConstraint spec)', function() {
+  it('integration test with Wire class where a wire has multiple connections ' +
+  '(adapted from WireConstraint spec)', function() {
     // Update log
     var log = [];
 
@@ -414,7 +419,11 @@ describe('BlackBox class', function() {
     expect(wires[0].value()).toBe(0);
     expect(wires[1].value()).toBe(1);
     expect(wires[2].value()).toBe(2);
-    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
+    expect(log).toEqual([
+      'smaller2bigger',
+      'half2double',
+      'double2half',
+      'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -424,7 +433,11 @@ describe('BlackBox class', function() {
     expect(wires[0].value()).toBe(2);
     expect(wires[1].value()).toBe(3);
     expect(wires[2].value()).toBe(6);
-    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
+    expect(log).toEqual([
+      'smaller2bigger',
+      'half2double',
+      'double2half',
+      'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -434,7 +447,11 @@ describe('BlackBox class', function() {
     expect(wires[0].value()).toBe(-0.5);
     expect(wires[1].value()).toBe(0.5);
     expect(wires[2].value()).toBe(1);
-    expect(log).toEqual(['bigger2smaller', 'smaller2bigger', 'half2double', 'double2half']);
+    expect(log).toEqual([
+      'bigger2smaller',
+      'smaller2bigger',
+      'half2double',
+      'double2half']);
 
     // Clear update log
     log.length = 0;
@@ -444,7 +461,11 @@ describe('BlackBox class', function() {
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(8);
-    expect(log).toEqual(['double2half', 'bigger2smaller', 'smaller2bigger', 'half2double']);
+    expect(log).toEqual([
+      'double2half',
+      'bigger2smaller',
+      'smaller2bigger',
+      'half2double']);
 
     // Clear update log
     log.length = 0;
@@ -462,13 +483,19 @@ describe('BlackBox class', function() {
     expect(wires[0].value()).toBe(1);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(2);
-    expect(log).toEqual(['double2half', 'bigger2smaller', 'smaller2bigger', 'half2double']);
+    expect(log).toEqual([
+      'double2half',
+      'bigger2smaller',
+      'smaller2bigger',
+      'half2double']);
   });
 
-  it('integration test with Wire class where the WireConstraint has multiple inputs and outputs (adapted from WireConstraint)', function() {
+  it('integration test with Wire class where the WireConstraint has multiple ' +
+  'inputs and outputs (adapted from WireConstraint)', function() {
     // Convert rectangular to polar coordinates
     var block = new LiveBlocks.BlackBox((function() {
-      var block = new LiveBlocks.WireConstraint((function(Math, assertFiniteNumber) {
+      var block = new LiveBlocks.WireConstraint(
+      (function(Math, assertFiniteNumber) {
         var atan2 = Math.atan2;
         var cos = Math.cos;
         var sin = Math.sin;
@@ -612,7 +639,8 @@ describe('BlackBox class', function() {
     expect(block.error()).not.toBeUndefined();
   });
 
-  it('integration test with read-only values (adapted from WireConstraint spec)', function() {
+  it('integration test with read-only values (adapted ' +
+  ' from WireConstraint spec)', function() {
     // We will make a flip flop from two cross-coupled NOR gates
     var block = new LiveBlocks.BlackBox((function() {
       // Make two NOR blocks
@@ -1008,7 +1036,9 @@ describe('BlackBox class', function() {
       // Create a block
       var noop = function() {};
 
-      var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+      var block = new LiveBlocks.WireConstraint({
+        functions: {a: noop, b: noop}
+      });
 
       // Create wires
       var wires = [];

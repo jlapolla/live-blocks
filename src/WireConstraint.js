@@ -1,4 +1,10 @@
-this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, EventEmitter, ArrayIterator) {
+this.WireConstraint = (function(
+  hasOwnProperty,
+  Queue,
+  Error,
+  extendClass,
+  EventEmitter,
+  ArrayIterator) {
   var _disconnect = function(pin) {
     // Disconnect from wire, if any
     if (hasOwnProperty(this._wires, pin)) {
@@ -41,7 +47,10 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
   extendClass(EventEmitter, WireConstraint);
   var P = WireConstraint.prototype;
   P.duplicate = function() {
-    return new WireConstraint({functions: this._functions, queue: this._updateQueue.duplicate()});
+    return new WireConstraint({
+      functions: this._functions,
+      queue: this._updateQueue.duplicate()
+    });
   };
 
   P.error = function() {
@@ -99,7 +108,8 @@ this.WireConstraint = (function(hasOwnProperty, Queue, Error, extendClass, Event
     // Main loop
     while (true) {
       // Construct hash of wires and wire values
-      var wires = {}, wireValues = {};
+      var wires = {};
+      var wireValues = {};
       for (var name in this._wires) {
         wires[name] = this._wires[name];
         wireValues[name] = wires[name].value();

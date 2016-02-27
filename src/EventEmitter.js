@@ -16,7 +16,8 @@ this.EventEmitter = (function(hasOwnProperty) {
     }
 
     // Iterate over listeners and copy to newListeners
-    var newListeners = [], listenerExists;
+    var newListeners = [];
+    var listenerExists;
     for (var i = 0; i < listeners.length; i++) {
       newListeners.push(listeners[i]);
       if (listeners[i] === callback) {

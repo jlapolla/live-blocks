@@ -21,7 +21,8 @@ this.Map = (function(ArrayIterator) {
 
   P.put = function(key, value) {
     // Copy entries to new array, except entry with matching key
-    var array = this._array, newArray = [];
+    var array = this._array;
+    var newArray = [];
     for (var i = 0; i < array.length; i++) {
       if (!same(array[i].key, key)) {
         newArray.push(array[i]);
@@ -37,7 +38,8 @@ this.Map = (function(ArrayIterator) {
 
   P.remove = function(key) {
     // Copy entries to new array, except entry with matching key
-    var array = this._array, newArray = [];
+    var array = this._array;
+    var newArray = [];
     for (var i = 0; i < array.length; i++) {
       if (!same(array[i].key, key)) {
         newArray.push(array[i]);
@@ -63,7 +65,8 @@ this.Map = (function(ArrayIterator) {
 
   P.keys = function() {
     // Copy keys to a new array
-    var array = this._array, keys = [];
+    var array = this._array;
+    var keys = [];
     for (var i = 0; i < array.length; i++) {
       keys.push(array[i].key);
     }

@@ -67,7 +67,8 @@ describe('Set class', function() {
     }
   });
 
-  it('value() function returns an iterator which iterates over set values', function() {
+  it('value() function returns an iterator which iterates over set values',
+  function() {
     // Make a set
     var set = new LiveBlocks.Set();
 
