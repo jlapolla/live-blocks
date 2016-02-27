@@ -1,14 +1,17 @@
 'use strict';
 
 describe('Map class', function() {
+
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Map is not exposed
   if (!LiveBlocks.Map) {
+
     return;
   }
 
   it('works with any kind of key', function() {
+
     // Make a map
     var map = new LiveBlocks.Map();
 
@@ -40,11 +43,13 @@ describe('Map class', function() {
 
     // Put values in the map
     for (var name in keys) {
+
       map.put(keys[name], values[name]);
     }
 
     // Positive tests for key existence
     for (var name in keys) {
+
       expect(map.has(keys[name])).toBe(true);
     }
 
@@ -54,6 +59,7 @@ describe('Map class', function() {
 
     // Retrieve values
     for (var name in keys) {
+
       expect(map.get(keys[name])).toBe(values[name]);
     }
 
@@ -74,23 +80,27 @@ describe('Map class', function() {
     delete values.a;
     delete values.b;
     for (var name in removedKeys) {
+
       map.remove(removedKeys[name]);
     }
 
     // Positive test for remaining keys
     for (var name in keys) {
+
       expect(map.has(keys[name])).toBe(true);
       expect(map.get(keys[name])).toBe(values[name]);
     }
 
     // Negative test for removed keys
     for (var name in removedKeys) {
+
       expect(map.has(removedKeys[name])).toBe(false);
       expect(map.get(removedKeys[name])).toBeUndefined();
     }
   });
 
   it('does not record duplicate keys', function() {
+
     // Make a map
     var map = new LiveBlocks.Map();
 
@@ -107,6 +117,7 @@ describe('Map class', function() {
   });
 
   it('keys() function returns an iterator over Map keys', function() {
+
     // Make a map
     var map = new LiveBlocks.Map();
 
@@ -126,6 +137,7 @@ describe('Map class', function() {
 
     // Put keys and values in the map
     for (var name in keys) {
+
       map.put(keys[name], values[name]);
     }
 

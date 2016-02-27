@@ -1,21 +1,27 @@
 'use strict';
 
 describe('BlackBox class', function() {
+
   var host = window;
 
   var LiveBlocks = host.LiveBlocks;
 
   // Skip test if BlackBox is not exposed
   if (!LiveBlocks.BlackBox) {
+
     return;
   }
 
   var assertFiniteNumber;
   var floatWire;
   beforeEach(function() {
+
     assertFiniteNumber = (function(isFinite, Error) {
+
       return function(num) {
+
         if (!(typeof num === 'number' && isFinite(num))) {
+
           throw new Error(num + ' must be a number');
         }
       };
@@ -23,21 +29,26 @@ describe('BlackBox class', function() {
 
     // Create a prototype floating point value wire
     floatWire = new LiveBlocks.Wire((function(Math, isFinite) {
+
       var abs = Math.abs;
       var epsilon = 1e-14;
 
       var equalTo = function(value) {
+
         if (
           typeof value === 'number'
           && typeof this._value === 'number'
           && isFinite(value)
           && isFinite(this._value)) {
+
           return abs(this._value - value) < epsilon;
         }
         else if (value !== value) {
+
           return this._value !== this._value;
         }
         else {
+
           return value === this._value;
         }
       };
@@ -47,15 +58,19 @@ describe('BlackBox class', function() {
   });
 
   it('integration test with multiple internal blocks', function() {
+
     // Create a prototype "plus one" block
     var plusOne = new LiveBlocks.WireConstraint((function(assertFiniteNumber) {
+
       var aToB = function() {
+
         assertFiniteNumber(this.a);
 
         this.b = this.a + 1;
       };
 
       var bToA = function() {
+
         assertFiniteNumber(this.b);
 
         this.a = this.b - 1;
@@ -73,13 +88,16 @@ describe('BlackBox class', function() {
 
     // Create a prototype "times two" block
     var timesTwo = new LiveBlocks.WireConstraint((function(assertFiniteNumber) {
+
       var aToB = function() {
+
         assertFiniteNumber(this.a);
 
         this.b = this.a * 2;
       };
 
       var bToA = function() {
+
         assertFiniteNumber(this.b);
 
         this.a = this.b / 2;
@@ -195,18 +213,24 @@ describe('BlackBox class', function() {
   });
 
   it('integration test with nested BlackBox', function() {
+
     // Make BlackBox prototype with nested BlackBox's
     var proto = new LiveBlocks.BlackBox((function() {
+
       // Make internal BlackBox prototype
       var proto = new LiveBlocks.BlackBox((function() {
+
         // Pass-through wire constraint
         var block = new LiveBlocks.WireConstraint((function() {
+
           // Constraint functions
           var aToB = function() {
+
             this.b = this.a;
           };
 
           var bToA = function() {
+
             this.a = this.b;
           };
 
@@ -223,6 +247,7 @@ describe('BlackBox class', function() {
         // Wires
         var wires = [];
         for (var i = 0; i < 2; i++) {
+
           wires.push(new LiveBlocks.Wire());
         }
 
@@ -243,12 +268,14 @@ describe('BlackBox class', function() {
       // Make internal BlackBox's
       var blocks = [];
       for (var i = 0; i < 2; i++) {
+
         blocks.push(proto.duplicate());
       }
 
       // Make wires
       var wires = [];
       for (var i = 0; i < 3; i++) {
+
         wires.push(new LiveBlocks.Wire());
       }
 
@@ -275,6 +302,7 @@ describe('BlackBox class', function() {
     // Make wires
     var wires = [];
     for (var i = 0; i < 3; i++) {
+
       wires.push(new LiveBlocks.Wire());
     }
 
@@ -293,18 +321,21 @@ describe('BlackBox class', function() {
     // Test stimulus
     wires[0].value(values.a);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.a);
     }
 
     // Test stimulus
     wires[1].value(values.b);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.b);
     }
 
     // Test stimulus
     wires[2].value(values.c);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.c);
     }
 
@@ -321,38 +352,46 @@ describe('BlackBox class', function() {
     // Test stimulus
     wires[0].value(values.a);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.a);
     }
 
     // Test stimulus
     wires[1].value(values.b);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.b);
     }
 
     // Test stimulus
     wires[2].value(values.c);
     for (var i = 0; i < wires.length; i++) {
+
       expect(wires[i].value()).toBe(values.c);
     }
   });
 
   it('integration test with Wire class where a wire has multiple connections '
   + '(adapted from WireConstraint spec)', function() {
+
     // Update log
     var log = [];
 
     // Make black box
     var block = new LiveBlocks.BlackBox((function() {
+
       // Make blocks
       var plusOne = new LiveBlocks.WireConstraint((function() {
+
         // Make constraint functions
         var smaller2bigger = function() {
+
           this.bigger = this.smaller + 1;
           log.push('smaller2bigger');
         };
 
         var bigger2smaller = function() {
+
           this.smaller = this.bigger - 1;
           log.push('bigger2smaller');
         };
@@ -362,13 +401,16 @@ describe('BlackBox class', function() {
       }()));
 
       var timesTwo = new LiveBlocks.WireConstraint((function() {
+
         // Make constraint functions
         var half2double = function() {
+
           this.double = this.half * 2;
           log.push('half2double');
         };
 
         var double2half = function() {
+
           this.half = this.double / 2;
           log.push('double2half');
         };
@@ -380,6 +422,7 @@ describe('BlackBox class', function() {
       // Make wires
       var wires = [];
       for (var i = 0; i < 3; i++) {
+
         wires.push(new LiveBlocks.Wire());
       }
 
@@ -403,6 +446,7 @@ describe('BlackBox class', function() {
     // Make wires
     var wires = [];
     for (var i = 0; i < 3; i++) {
+
       wires.push(new LiveBlocks.Wire());
     }
 
@@ -492,16 +536,20 @@ describe('BlackBox class', function() {
 
   it('integration test with Wire class where the WireConstraint has multiple '
   + 'inputs and outputs (adapted from WireConstraint)', function() {
+
     // Convert rectangular to polar coordinates
     var block = new LiveBlocks.BlackBox((function() {
+
       var block = new LiveBlocks.WireConstraint(
       (function(Math, assertFiniteNumber) {
+
         var atan2 = Math.atan2;
         var cos = Math.cos;
         var sin = Math.sin;
         var sqrt = Math.sqrt;
 
         var rect2polar = function() {
+
           assertFiniteNumber(this.x);
           assertFiniteNumber(this.y);
 
@@ -510,6 +558,7 @@ describe('BlackBox class', function() {
         };
 
         var polar2rect = function() {
+
           assertFiniteNumber(this.r);
           assertFiniteNumber(this.theta);
 
@@ -530,7 +579,9 @@ describe('BlackBox class', function() {
       // Make wires
       var wires = {};
       (function(wireNames) {
+
         for (var i = 0; i < wireNames.length; i++) {
+
           wires[wireNames[i]] = floatWire.duplicate();
         }
       }(['x', 'y', 'r', 'theta']));
@@ -556,7 +607,9 @@ describe('BlackBox class', function() {
     // Make wires
     var wires = {};
     (function(wireNames) {
+
       for (var i = 0; i < wireNames.length; i++) {
+
         wires[wireNames[i]] = floatWire.duplicate();
       }
     }(['x', 'y', 'r', 'theta']));
@@ -570,14 +623,17 @@ describe('BlackBox class', function() {
     // Register logging event listeners
     var log = [];
     block.on('update', function(pin) {
+
       log.push(pin.pin);
     });
 
     block.on('success', function() {
+
       log.push('success');
     });
 
     block.on('error', function() {
+
       log.push('error');
     });
 
@@ -641,11 +697,15 @@ describe('BlackBox class', function() {
 
   it('integration test with read-only values (adapted '
   + ' from WireConstraint spec)', function() {
+
     // We will make a flip flop from two cross-coupled NOR gates
     var block = new LiveBlocks.BlackBox((function() {
+
       // Make two NOR blocks
       var norQ = new LiveBlocks.WireConstraint((function() {
+
         var func = function() {
+
           this.out = !(this.a || this.b);
         };
 
@@ -717,9 +777,12 @@ describe('BlackBox class', function() {
   });
 
   it('duplicates injected queue dependencies', function() {
+
     // Create a fake queue
     var queue2 = {};
-    var queue = {duplicate: function() {return queue2;}};
+    var queue = {duplicate: function() {
+
+    return queue2;}};
 
     // Create a black box
     var block = new LiveBlocks.BlackBox({queue: queue});
@@ -731,19 +794,23 @@ describe('BlackBox class', function() {
   });
 
   it('creates a default queue when no queue is injected', function() {
+
     // Create a black box
     var block = new LiveBlocks.BlackBox();
     expect(block._updateQueue).not.toBeUndefined();
   });
 
   it('disconnects pin from wire before connecting to a new wire', function() {
+
     // Create a black box
     var block = new LiveBlocks.BlackBox({pins: {x: new LiveBlocks.Wire()}});
 
     // Create wires which log their binding events
     var log = [];
     var bindFn = (function(bind) {
+
       return function(block, prop) {
+
         // Log bind call
         log.push({function: 'bind', block: block, prop: prop});
 
@@ -752,7 +819,9 @@ describe('BlackBox class', function() {
       };
     }(LiveBlocks.Wire.prototype.bind));
     var unbindFn = (function(unbind) {
+
       return function(block, prop) {
+
         // Log unbind call
         log.push({function: 'unbind', block: block, prop: prop});
 
@@ -762,6 +831,7 @@ describe('BlackBox class', function() {
     }(LiveBlocks.Wire.prototype.unbind));
     var wires = [];
     for (var i = 0; i < 2; i++) {
+
       // Create wire
       var wire = new LiveBlocks.Wire();
 
@@ -795,8 +865,10 @@ describe('BlackBox class', function() {
   });
 
   it('treats disconnected pin as undefined', function() {
+
     // Create a passthrough block
     var block = new LiveBlocks.BlackBox((function() {
+
       var wire = new LiveBlocks.Wire();
 
       var pins = {
@@ -843,6 +915,7 @@ describe('BlackBox class', function() {
   });
 
   it('throws error when connecting to non-existent pin', function() {
+
     // Create a block with no pins
     var block = new LiveBlocks.BlackBox();
 
@@ -851,19 +924,24 @@ describe('BlackBox class', function() {
 
     // Connect to non-existent pin
     expect(function() {
+
       block.connect('x', wire);
     }).toThrowError('Pin "x" not found');
   });
 
   it('catches exceptions in pin functions', function() {
+
     // Create a block that throws error
 
     var block = new LiveBlocks.BlackBox((function() {
+
       var block = new LiveBlocks.WireConstraint({
         functions: {
           a: function() {
+
             // Throw error if "a" is not a number
             if (typeof this.a !== 'number') {
+
               throw new TypeError('Pin "a" must be a number');
             }
 
@@ -872,8 +950,10 @@ describe('BlackBox class', function() {
           },
 
           b: function() {
+
             // Throw error if "b" is not a number
             if (typeof this.b !== 'number') {
+
               throw new TypeError('Pin "b" must be a number');
             }
 
@@ -921,14 +1001,18 @@ describe('BlackBox class', function() {
   });
 
   it('fires events on update, success, and error', function() {
+
     // Create a black box
     var block = new LiveBlocks.BlackBox((function(TypeError) {
+
       // Create a block that throws error
       var block = new LiveBlocks.WireConstraint({
         functions: {
           a: function() {
+
             // Throw error if "a" is not a number
             if (typeof this.a !== 'number') {
+
               throw new TypeError('Pin "a" must be a number');
             }
 
@@ -937,8 +1021,10 @@ describe('BlackBox class', function() {
           },
 
           b: function() {
+
             // Throw error if "b" is not a number
             if (typeof this.b !== 'number') {
+
               throw new TypeError('Pin "b" must be a number');
             }
 
@@ -970,12 +1056,17 @@ describe('BlackBox class', function() {
     var log = [];
     var listeners = {};
     (function(list) {
+
       for (var i = 0; i < list.length; i++) {
+
         listeners[list[i]] = (function(eventName) {
+
           return function(arg) {
+
             // Create log object
             var obj = {event: eventName};
             if (typeof arg !== 'undefined') {
+
               obj.arg = arg;
             }
 
@@ -1031,8 +1122,10 @@ describe('BlackBox class', function() {
   });
 
   it('fires events on pin connect and disconnect', function() {
+
     // Create a black box
     var block = new LiveBlocks.BlackBox((function() {
+
       // Create a block
       var noop = function() {};
 
@@ -1043,6 +1136,7 @@ describe('BlackBox class', function() {
       // Create wires
       var wires = [];
       for (var i = 0; i < 2; i++) {
+
         wires.push(new LiveBlocks.Wire());
       }
 
@@ -1064,12 +1158,17 @@ describe('BlackBox class', function() {
     var log = [];
     var listeners = {};
     (function(list) {
+
       for (var i = 0; i < list.length; i++) {
+
         listeners[list[i]] = (function(eventName) {
+
           return function(arg) {
+
             // Create log object
             var obj = {event: eventName};
             if (typeof arg !== 'undefined') {
+
               obj.arg = arg;
             }
 
@@ -1083,6 +1182,7 @@ describe('BlackBox class', function() {
     // Create wires
     var wires = [];
     for (var i = 0; i < 2; i++) {
+
       wires.push(new LiveBlocks.Wire());
     }
 
@@ -1140,12 +1240,16 @@ describe('BlackBox class', function() {
   });
 
   it('reports persistent internal errors', function() {
+
     // Create contrived black box to illustrate the problem
     var errorBlock;
     var block = new LiveBlocks.BlackBox((function(Error) {
+
       // Make blocks
       errorBlock = new LiveBlocks.WireConstraint((function(Error) {
+
         var errFunc = function() {
+
           throw new Error('Just because');
         };
 
@@ -1157,14 +1261,19 @@ describe('BlackBox class', function() {
       }(Error)));
 
       var passStringBlock = new LiveBlocks.WireConstraint((function() {
+
         var aToB = function() {
+
           if (typeof this.a === 'string') {
+
             this.b = this.a;
           }
         };
 
         var bToA = function() {
+
           if (typeof this.b === 'string') {
+
             this.a = this.b;
           }
         };
@@ -1219,8 +1328,10 @@ describe('BlackBox class', function() {
   });
 
   it('pins() iterator iterates over pins', function() {
+
     // Create a black box
     var block = new LiveBlocks.BlackBox((function() {
+
       // Create pins hash
       var pins = {
         a: new LiveBlocks.Wire(),

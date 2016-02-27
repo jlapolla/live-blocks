@@ -1,32 +1,39 @@
 'use strict';
 
 describe('extendClass function', function() {
+
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if extendClass is not exposed
   if (!LiveBlocks.extendClass) {
+
     return;
   }
 
   it('extends a class', function() {
+
     // Make Mover class
     function Mover() {
+
       this._myMove = 'I\'m a mover';
     }
 
     Mover.prototype = {};
     Mover.prototype.move = function() {
+
       return this._myMove;
     };
 
     // Make Walker class
     function Walker() {
+
       Mover.call(this);
       this._myWalk = 'I walk the walk';
     }
 
     LiveBlocks.extendClass(Mover, Walker);
     Walker.prototype.walk = function() {
+
       return this._myWalk;
     };
 

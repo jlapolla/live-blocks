@@ -1,17 +1,23 @@
 'use strict';
 
 (function(classNames) {
+
   for (var i = 0; i < classNames.length; i++) {
+
     (function(name) {
+
       describe(name + ' class', function() {
+
         var LiveBlocks = window.LiveBlocks;
 
         // Skip test if "name" is not exposed
         if (!LiveBlocks[name]) {
+
           return;
         }
 
         it('does not register duplicate listeners', function() {
+
           // Create an EventEmitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -41,6 +47,7 @@
 
         it('does not delete a listener list if any listeners remain',
         function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -67,6 +74,7 @@
 
         it('deletes a listener list when the last listener is deregistered',
         function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -91,6 +99,7 @@
 
         it('does nothing when a non-existent listener is deregistered',
         function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -117,6 +126,7 @@
 
         it('does nothing when a listener is deregistered from '
         + 'an un-watched event', function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
           expect(emitter._listeners).toEqual({});
@@ -134,6 +144,7 @@
         });
 
         it('.fire() function calls each listener once', function() {
+
           // Create a emitter
           var emitter = new LiveBlocks[name]();
 
@@ -141,12 +152,17 @@
           var listeners = [];
           var callbackLog = [];
           for (var i = 0; i < 3; i++) {
+
             listeners.push((function(listeners, i) {
+
               return function(arg) {
+
                 if (typeof arg !== 'undefined') {
+
                   callbackLog.push({callback: listeners[i], arg: arg});
                 }
                 else {
+
                   callbackLog.push({callback: listeners[i]});
                 }
               };
@@ -179,6 +195,7 @@
 
         it('.fire() does nothing when called on an unwatched event',
         function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 
@@ -186,12 +203,17 @@
           var listeners = [];
           var callbackLog = [];
           for (var i = 0; i < 3; i++) {
+
             listeners.push((function(listeners, i) {
+
               return function(arg) {
+
                 if (typeof arg !== 'undefined') {
+
                   callbackLog.push({callback: listeners[i], arg: arg});
                 }
                 else {
+
                   callbackLog.push({callback: listeners[i]});
                 }
               };
@@ -211,6 +233,7 @@
 
         it('.fire() calls each listener once, even if listeners '
         + 'are deregistered during .fire()', function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 
@@ -218,12 +241,17 @@
           var listeners = [];
           var callbackLog = [];
           for (var i = 0; i < 3; i++) {
+
             listeners.push((function(listeners, i) {
+
               return function(arg) {
+
                 if (typeof arg !== 'undefined') {
+
                   callbackLog.push({callback: listeners[i], arg: arg});
                 }
                 else {
+
                   callbackLog.push({callback: listeners[i]});
                 }
 
@@ -250,6 +278,7 @@
         });
 
         it('.fire() ignores listeners registered during .fire()', function() {
+
           // Create an emitter
           var emitter = new LiveBlocks[name]();
 
@@ -257,12 +286,17 @@
           var listeners = [];
           var callbackLog = [];
           for (var i = 0; i < 3; i++) {
+
             listeners.push((function(listeners, i) {
+
               return function(arg) {
+
                 if (typeof arg !== 'undefined') {
+
                   callbackLog.push({callback: listeners[i], arg: arg});
                 }
                 else {
+
                   callbackLog.push({callback: listeners[i]});
                 }
 
