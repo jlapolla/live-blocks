@@ -9,4 +9,5 @@
   "disallowPaddingNewlinesInBlocks"   : {"open" : false, "close" : true},
   "requirePaddingNewlinesInBlocks"    : {"open" : true, "close" : false},
   "requireParenthesesAroundIIFE"      : true,
+  "disallowUnusedParams"              : true,
 }

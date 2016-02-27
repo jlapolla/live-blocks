@@ -217,7 +217,7 @@ describe('Wire class', function() {
     // Create some fake blocks
     var values = [];
     var log = [];
-    var update = function(prop) {
+    var update = function() {
 
       log.push(wire.value());
 
