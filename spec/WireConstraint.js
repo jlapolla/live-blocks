@@ -6,15 +6,18 @@ describe('WireConstraint class', function() {
   var LiveBlocks = host.LiveBlocks;
 
   // Skip test if WireConstraint is not exposed
-  if (!LiveBlocks.WireConstraint)
+  if (!LiveBlocks.WireConstraint) {
     return;
+  }
 
-  var assertFiniteNumber, floatWire;
+  var assertFiniteNumber;
+  var floatWire;
   beforeEach(function() {
     assertFiniteNumber = (function(isFinite, Error) {
       return function(num) {
-        if (!(typeof num === 'number' && isFinite(num)))
+        if (!(typeof num === 'number' && isFinite(num))) {
           throw new Error(num + ' must be a number');
+        }
       };
     }(host.isFinite, host.Error));
 
@@ -28,18 +31,23 @@ describe('WireConstraint class', function() {
           typeof value === 'number' &&
           typeof this._value === 'number' &&
           isFinite(value) &&
-          isFinite(this._value)
-        )
+          isFinite(this._value)) {
           return abs(this._value - value) < epsilon;
-        else
-          return value !== value ? this._value !== this._value : value === this._value;
+        }
+        else if (value !== value) {
+          return this._value !== this._value;
+        }
+        else {
+          return value === this._value;
+        }
       };
 
       return {equalTo: equalTo};
     }(host.Math, host.isFinite)));
   });
 
-  it('integration test with Wire class where a wire has multiple connections', function() {
+  it('integration test with Wire class where a wire has multiple connections',
+  function() {
     // Update log
     var log = [];
 
@@ -78,8 +86,9 @@ describe('WireConstraint class', function() {
 
     // Make wires
     var wires = [];
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < 3; i++) {
       wires.push(new LiveBlocks.Wire());
+    }
 
     // Connect block properties to wires
     plusOne.connect('smaller', wires[0]);
@@ -95,7 +104,11 @@ describe('WireConstraint class', function() {
     expect(wires[0].value()).toBe(0);
     expect(wires[1].value()).toBe(1);
     expect(wires[2].value()).toBe(2);
-    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
+    expect(log).toEqual([
+      'smaller2bigger',
+      'half2double',
+      'double2half',
+      'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -105,7 +118,11 @@ describe('WireConstraint class', function() {
     expect(wires[0].value()).toBe(2);
     expect(wires[1].value()).toBe(3);
     expect(wires[2].value()).toBe(6);
-    expect(log).toEqual(['smaller2bigger', 'half2double', 'double2half', 'bigger2smaller']);
+    expect(log).toEqual([
+      'smaller2bigger',
+      'half2double',
+      'double2half',
+      'bigger2smaller']);
 
     // Clear update log
     log.length = 0;
@@ -115,7 +132,10 @@ describe('WireConstraint class', function() {
     expect(wires[0].value()).toBe(-0.5);
     expect(wires[1].value()).toBe(0.5);
     expect(wires[2].value()).toBe(1);
-    expect(log).toEqual(['bigger2smaller', 'smaller2bigger', 'half2double', 'double2half']);
+    expect(log).toEqual(['bigger2smaller',
+      'smaller2bigger',
+      'half2double',
+      'double2half']);
 
     // Clear update log
     log.length = 0;
@@ -125,7 +145,11 @@ describe('WireConstraint class', function() {
     expect(wires[0].value()).toBe(3);
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(8);
-    expect(log).toEqual(['double2half', 'bigger2smaller', 'smaller2bigger', 'half2double']);
+    expect(log).toEqual([
+      'double2half',
+      'bigger2smaller',
+      'smaller2bigger',
+      'half2double']);
 
     // Clear update log
     log.length = 0;
@@ -148,9 +172,11 @@ describe('WireConstraint class', function() {
     expect(log).toEqual(['half2double', 'double2half', 'half2double']);
   });
 
-  it('integration test with Wire class where the WireConstraint has multiple inputs and outputs', function() {
+  it('integration test with Wire class where the WireConstraint' +
+  'has multiple inputs and outputs', function() {
     // Convert rectangular to polar coordinates
-    var block = new LiveBlocks.WireConstraint((function(Math, assertFiniteNumber) {
+    var block = new LiveBlocks.WireConstraint(
+    (function(Math, assertFiniteNumber) {
       var atan2 = Math.atan2;
       var cos = Math.cos;
       var sin = Math.sin;
@@ -185,8 +211,9 @@ describe('WireConstraint class', function() {
     // Make wires
     var wires = {};
     (function(wireNames) {
-      for (var i = 0; i < wireNames.length; i++)
+      for (var i = 0; i < wireNames.length; i++) {
         wires[wireNames[i]] = floatWire.duplicate();
+      }
     }(['x', 'y', 'r', 'theta']));
 
     // Register logging event listeners
@@ -486,8 +513,9 @@ describe('WireConstraint class', function() {
       functions: {
         a: function() {
           // Throw error if "a" is not a number
-          if (typeof this.a !== 'number')
+          if (typeof this.a !== 'number') {
             throw new TypeError('Pin "a" must be a number');
+          }
 
           // Copy "a" to "b"
           this.b = this.a;
@@ -495,8 +523,9 @@ describe('WireConstraint class', function() {
 
         b: function() {
           // Throw error if "b" is not a number
-          if (typeof this.b !== 'number')
+          if (typeof this.b !== 'number') {
             throw new TypeError('Pin "b" must be a number');
+          }
 
           // Copy "b" to "a"
           this.a = this.b;
@@ -529,8 +558,9 @@ describe('WireConstraint class', function() {
       functions: {
         a: function() {
           // Throw error if "a" is not a number
-          if (typeof this.a !== 'number')
+          if (typeof this.a !== 'number') {
             throw new TypeError('Pin "a" must be a number');
+          }
 
           // Copy "a" to "b"
           this.b = this.a;
@@ -538,8 +568,9 @@ describe('WireConstraint class', function() {
 
         b: function() {
           // Throw error if "b" is not a number
-          if (typeof this.b !== 'number')
+          if (typeof this.b !== 'number') {
             throw new TypeError('Pin "b" must be a number');
+          }
 
           // Copy "b" to "a"
           this.a = this.b;
@@ -556,8 +587,9 @@ describe('WireConstraint class', function() {
           return function(arg) {
             // Create log object
             var obj = {event: eventName};
-            if (typeof arg !== 'undefined')
+            if (typeof arg !== 'undefined') {
               obj.arg = arg;
+            }
 
             // Add log object to log
             log.push(obj);
@@ -625,8 +657,9 @@ describe('WireConstraint class', function() {
           return function(arg) {
             // Create log object
             var obj = {event: eventName};
-            if (typeof arg !== 'undefined')
+            if (typeof arg !== 'undefined') {
               obj.arg = arg;
+            }
 
             // Add log object to log
             log.push(obj);
@@ -637,8 +670,9 @@ describe('WireConstraint class', function() {
 
     // Create wires
     var wires = [];
-    for (var i = 0; i < 2; i++)
+    for (var i = 0; i < 2; i++) {
       wires.push(new LiveBlocks.Wire());
+    }
 
     // Register event listeners
     block.on('connect', listeners.connect);
