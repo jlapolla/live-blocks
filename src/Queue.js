@@ -8,11 +8,6 @@ this.Queue = (function(getUndefined) {
 
   Queue.prototype = {};
   var P = Queue.prototype;
-  P.duplicate = function() {
-
-    return new Queue();
-  };
-
   P.push = function(item) {
 
     // Push item onto queue

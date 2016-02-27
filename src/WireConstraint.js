@@ -26,6 +26,7 @@ this.WireConstraint = (function(hasOwnProperty,
     this._pins = {};
     this._wires = {};
     this._updating = false;
+    this._updateQueue = new Queue();
 
     if (typeof hash !== 'undefined') {
 
@@ -37,18 +38,6 @@ this.WireConstraint = (function(hasOwnProperty,
           this._pins[name] = hash.pins[name];
         }
       }
-
-      // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue')) {
-
-        this._updateQueue = hash.queue;
-      }
-    }
-
-    // Set defaults
-    if (!hasOwnProperty(this, '_updateQueue')) {
-
-      this._updateQueue = new Queue();
     }
   }
 
@@ -58,7 +47,6 @@ this.WireConstraint = (function(hasOwnProperty,
 
     return new WireConstraint({
       pins: this._pins,
-      queue: this._updateQueue.duplicate()
     });
   };
 

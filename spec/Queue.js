@@ -10,19 +10,6 @@ describe('Queue class', function() {
     return;
   }
 
-  it('duplicates itself', function() {
-
-    // Create original queue
-    var original = new LiveBlocks.Queue();
-    original.push({});
-
-    // Create duplicate queue
-    var duplicate = original.duplicate();
-    expect(original.peek()).not.toBeUndefined();
-    expect(duplicate.peek()).toBeUndefined();
-    expect(duplicate instanceof LiveBlocks.Queue).toBe(true);
-  });
-
   it('is a forward queue', function() {
 
     // Create items

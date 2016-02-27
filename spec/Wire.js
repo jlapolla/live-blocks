@@ -27,25 +27,6 @@ describe('Wire class', function() {
     expect(duplicate.equalTo).toBe(neverEqual);
   });
 
-  it('duplicates itself with custom queue object', function() {
-
-    // Create fake queue
-    var queue2 = {};
-    var queue = {duplicate: function() {
-
-      return queue2;
-    }};
-
-    // Create a wire
-    var wire = new LiveBlocks.Wire({queue: queue});
-    expect(wire._valueQueue).toBe(queue);
-
-    // Duplicate wire
-    var duplicate = wire.duplicate();
-    expect(duplicate._valueQueue).toBe(queue2);
-    expect(LiveBlocks.hasOwnProperty(duplicate, 'equalTo')).toBe(false);
-  });
-
   it('does not bind duplicate block pins', function() {
 
     // Create a wire

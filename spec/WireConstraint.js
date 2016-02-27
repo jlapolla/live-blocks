@@ -377,24 +377,6 @@ describe('WireConstraint class', function() {
     expect(notQ.value()).toBe(true);
   });
 
-  it('duplicates injected queue dependencies', function() {
-
-    // Create a fake queue
-    var queue2 = {};
-    var queue = {duplicate: function() {
-
-      return queue2;
-    }};
-
-    // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint({queue: queue});
-    expect(wc._updateQueue).toBe(queue);
-
-    // Duplicate wire constraint
-    var duplicate = wc.duplicate();
-    expect(duplicate._updateQueue).toBe(queue2);
-  });
-
   it('duplicates injected pin dependencies', function() {
 
     // Create pin hash

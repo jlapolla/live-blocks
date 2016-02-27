@@ -776,23 +776,6 @@ describe('BlackBox class', function() {
     expect(notQ.value()).toBe(true);
   });
 
-  it('duplicates injected queue dependencies', function() {
-
-    // Create a fake queue
-    var queue2 = {};
-    var queue = {duplicate: function() {
-
-    return queue2;}};
-
-    // Create a black box
-    var block = new LiveBlocks.BlackBox({queue: queue});
-    expect(block._updateQueue).toBe(queue);
-
-    // Duplicate black box
-    var duplicate = block.duplicate();
-    expect(duplicate._updateQueue).toBe(queue2);
-  });
-
   it('creates a default queue when no queue is injected', function() {
 
     // Create a black box

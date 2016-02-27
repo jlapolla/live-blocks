@@ -93,6 +93,7 @@ this.BlackBox = (function(EventEmitter,
     this._updating = false;
     this._internalWires = {};
     this._externalWires = {};
+    this._updateQueue = new Queue();
 
     if (typeof hash !== 'undefined') {
 
@@ -101,18 +102,6 @@ this.BlackBox = (function(EventEmitter,
 
         init.call(this, hash.pins);
       }
-
-      // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue')) {
-
-        this._updateQueue = hash.queue;
-      }
-    }
-
-    // Set defaults
-    if (!hasOwnProperty(this, '_updateQueue')) {
-
-      this._updateQueue = new Queue();
     }
   }
 
@@ -196,7 +185,7 @@ this.BlackBox = (function(EventEmitter,
       }
 
       // Return the new BlackBox
-      return new BlackBox({pins: pins, queue: this._updateQueue.duplicate()});
+      return new BlackBox({pins: pins});
     };
   }());
 

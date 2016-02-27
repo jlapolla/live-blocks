@@ -12,6 +12,7 @@ this.Wire = (function(getUndefined,
 
     this._bindings = [];
     this._updating = false;
+    this._valueQueue = new Queue();
 
     // Process argument
     if (typeof hash !== 'undefined') {
@@ -21,18 +22,6 @@ this.Wire = (function(getUndefined,
 
         this.equalTo = hash.equalTo;
       }
-
-      // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue')) {
-
-        this._valueQueue = hash.queue;
-      }
-    }
-
-    // Set defaults
-    if (!hasOwnProperty(this, '_valueQueue')) {
-
-      this._valueQueue = new Queue();
     }
   }
 
@@ -46,9 +35,7 @@ this.Wire = (function(getUndefined,
   var P = Wire.prototype;
   P.duplicate = function() {
 
-    var hash = {
-      queue: this._valueQueue.duplicate(),
-    };
+    var hash = {};
 
     if (hasOwnProperty(this, 'equalTo')) {
 
