@@ -1,6 +1,7 @@
 {
-  "verbose"                   : true,
-  "preset"                    : "google",
-  "disallowKeywordsOnNewLine" : [],
-  "requireKeywordsOnNewLine"  : ["else"],
+  "verbose"                         : true,
+  "preset"                          : "google",
+  "disallowKeywordsOnNewLine"       : [],
+  "requireKeywordsOnNewLine"        : ["else"],
+  "disallowPaddingNewlinesInBlocks" : true,
 }

@@ -1,7 +1,6 @@
 'use strict';
 
 describe('multiInheritClass function', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if multiInheritClass is not exposed
@@ -9,7 +8,6 @@ describe('multiInheritClass function', function() {
     return;
 
   it('fakes multiple inheritance in Javascript', function() {
-
     // Make Walker class
     function Walker() {
       this._myWalk = 'I walk the walk';
@@ -57,7 +55,6 @@ describe('multiInheritClass function', function() {
   });
 
   it('inherits from the base class and all ancestors of the base class', function() {
-
     // Make Mover class
     function Mover() {
       this._myMove = 'I\'m a mover';

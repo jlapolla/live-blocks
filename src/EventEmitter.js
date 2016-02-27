@@ -6,7 +6,6 @@ this.EventEmitter = (function(hasOwnProperty) {
   EventEmitter.prototype = {};
   var P = EventEmitter.prototype;
   P.on = function(ev, callback) {
-
     // Look up listeners
     var listeners;
     if (hasOwnProperty(this._listeners, ev))
@@ -31,7 +30,6 @@ this.EventEmitter = (function(hasOwnProperty) {
   };
 
   P.off = function(ev, callback) {
-
     // Look up listeners
     var listeners;
     if (hasOwnProperty(this._listeners, ev))
@@ -54,7 +52,6 @@ this.EventEmitter = (function(hasOwnProperty) {
   };
 
   P.fire = function(ev, arg) {
-
     // Look up listeners
     var listeners;
     if (hasOwnProperty(this._listeners, ev))

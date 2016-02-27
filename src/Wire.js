@@ -1,6 +1,5 @@
 this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, extendClass, ArrayIterator) {
   function Wire(hash) {
-
     EventEmitter.call(this);
 
     this._bindings = [];
@@ -8,7 +7,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
     // Process argument
     if (typeof hash !== 'undefined') {
-
       // Add equalTo function if supplied
       if (hasOwnProperty(hash, 'equalTo'))
         this.equalTo = hash.equalTo;
@@ -25,14 +23,12 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
   var maxIterations = 1000;
   Wire.setMaxIterations = function(iterations) {
-
     maxIterations = iterations;
   };
 
   extendClass(EventEmitter, Wire);
   var P = Wire.prototype;
   P.duplicate = function() {
-
     var hash = {
       queue: this._valueQueue.duplicate(),
     };
@@ -44,13 +40,11 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
 
   P.equalTo = function(value) {
-
     // Compare with ===, but let NaN === NaN be true
     return value !== value ? this._value !== this._value : value === this._value;
   };
 
   P.bind = function(block, pin) {
-
     // Get bindings list
     var bindings = this._bindings;
 
@@ -64,7 +58,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
     // Add new binding if not exists
     if (!bindingExists) {
-
       // Add binding
       newBindings.push({block: block, pin: pin});
 
@@ -77,7 +70,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
 
   P.unbind = function(block, pin) {
-
     // Get bindings list
     var bindings = this._bindings;
 
@@ -95,7 +87,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
 
   P.notify = function() {
-
     // Get bindings list
     var bindings = this._bindings;
 
@@ -105,16 +96,13 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
 
   P.value = function(newValue) {
-
     if (!arguments.length)
       return this._value; // We are getting the value
     else {
-
       // We are setting a new value
 
       // Check updating flag
       if (this._updating) {
-
         // Add new value to queue and return
 
         // Don't add the same value to the queue
@@ -130,17 +118,14 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
       // Main loop
       var iterations = 1;
       while (true) {
-
         // Check iteration count
         if (iterations++ > maxIterations) {
-
           this._updating = false;
           throw new Error('Infinite loop detected: reached ' + maxIterations + ' iterations');
         }
 
         // Compare new value to current value
         if (!this.equalTo(newValue)) {
-
           // Set new value
           this._value = newValue;
 
@@ -153,7 +138,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
 
         // Process value queue
         if (this._valueQueue.isEmpty()) {
-
           // Unset updating flag and return
           this._updating = false;
           return;
@@ -167,7 +151,6 @@ this.Wire = (function(getUndefined, hasOwnProperty, Queue, Error, EventEmitter, 
   };
 
   P.connections = function() {
-
     // Collect bindings in an array
     var arr = [], bindings = this._bindings;
     for (var i = 0; i < bindings.length; i++)

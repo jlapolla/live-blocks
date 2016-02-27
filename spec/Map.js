@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Map class', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Map is not exposed
@@ -9,7 +8,6 @@ describe('Map class', function() {
     return;
 
   it('works with any kind of key', function() {
-
     // Make a map
     var map = new LiveBlocks.Map();
 
@@ -88,7 +86,6 @@ describe('Map class', function() {
   });
 
   it('does not record duplicate keys', function() {
-
     // Make a map
     var map = new LiveBlocks.Map();
 
@@ -105,7 +102,6 @@ describe('Map class', function() {
   });
 
   it('keys() function returns an iterator over Map keys', function() {
-
     // Make a map
     var map = new LiveBlocks.Map();
 

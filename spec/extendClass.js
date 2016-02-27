@@ -1,7 +1,6 @@
 'use strict';
 
 describe('extendClass function', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if extendClass is not exposed
@@ -9,7 +8,6 @@ describe('extendClass function', function() {
     return;
 
   it('extends a class', function() {
-
     // Make Mover class
     function Mover() {
       this._myMove = 'I\'m a mover';

@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Set class', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Set is not exposed
@@ -9,7 +8,6 @@ describe('Set class', function() {
     return;
 
   it('works with any kind of value', function() {
-
     // Make a set
     var set = new LiveBlocks.Set();
 
@@ -64,7 +62,6 @@ describe('Set class', function() {
   });
 
   it('value() function returns an iterator which iterates over set values', function() {
-
     // Make a set
     var set = new LiveBlocks.Set();
 

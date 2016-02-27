@@ -1,7 +1,6 @@
 'use strict';
 
 describe('ArrayIterator class', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if ArrayIterator is not exposed
@@ -9,7 +8,6 @@ describe('ArrayIterator class', function() {
     return;
 
   it('iterates over an array', function() {
-
     // Make an array iterator
     var it = new LiveBlocks.ArrayIterator(['a', undefined, 'c']);
 

@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Queue class', function() {
-
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Queue is not exposed
@@ -9,7 +8,6 @@ describe('Queue class', function() {
     return;
 
   it('duplicates itself', function() {
-
     // Create original queue
     var original = new LiveBlocks.Queue();
     original.push({});
@@ -22,7 +20,6 @@ describe('Queue class', function() {
   });
 
   it('is a forward queue', function() {
-
     // Create items
     var items = [{}, {}, {}];
 
@@ -66,7 +63,6 @@ describe('Queue class', function() {
   });
 
   it('handles "undefined" items', function() {
-
     // Make a queue
     var queue = new LiveBlocks.Queue();
 
