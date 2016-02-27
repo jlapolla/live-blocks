@@ -335,7 +335,7 @@ describe('Wire class', function() {
     // Create a block
     var noop = function() {};
 
-    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+    var block = new LiveBlocks.WireConstraint({pins: {a: noop, b: noop}});
 
     // Register event listeners
     wire.on('connect', listeners.connect);
@@ -415,12 +415,12 @@ describe('Wire class', function() {
         this.b = !this.a;
       };
 
-      var functions = {
+      var pins = {
         a: aToB,
         b: aToB,
       };
 
-      return {functions: functions};
+      return {pins: pins};
     }()));
 
     // Create blocks
@@ -458,7 +458,7 @@ describe('Wire class', function() {
 
     for (var i = 0; i < 3; i++) {
 
-      blocks.push(new LiveBlocks.WireConstraint({functions: {a: noop}}));
+      blocks.push(new LiveBlocks.WireConstraint({pins: {a: noop}}));
     }
 
     // Create a wire

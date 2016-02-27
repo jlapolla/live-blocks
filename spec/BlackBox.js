@@ -76,13 +76,13 @@ describe('BlackBox class', function() {
         this.a = this.b - 1;
       };
 
-      var functions = {
+      var pins = {
         a: aToB,
         b: bToA,
       };
 
       return {
-        functions: functions,
+        pins: pins,
       };
     }(assertFiniteNumber)));
 
@@ -103,13 +103,13 @@ describe('BlackBox class', function() {
         this.a = this.b / 2;
       };
 
-      var functions = {
+      var pins = {
         a: aToB,
         b: bToA,
       };
 
       return {
-        functions: functions,
+        pins: pins,
       };
     }(assertFiniteNumber)));
 
@@ -235,13 +235,13 @@ describe('BlackBox class', function() {
           };
 
           // Functions hash
-          var functions = {
+          var pins = {
             a: aToB,
             b: bToA,
           };
 
           // Return
-          return {functions: functions};
+          return {pins: pins};
         }()));
 
         // Wires
@@ -397,7 +397,7 @@ describe('BlackBox class', function() {
         };
 
         // Return function hash
-        return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
+        return {pins: {bigger: bigger2smaller, smaller: smaller2bigger}};
       }()));
 
       var timesTwo = new LiveBlocks.WireConstraint((function() {
@@ -416,7 +416,7 @@ describe('BlackBox class', function() {
         };
 
         // Return function hash
-        return {functions: {half: half2double, double: double2half}};
+        return {pins: {half: half2double, double: double2half}};
       }()));
 
       // Make wires
@@ -566,14 +566,14 @@ describe('BlackBox class', function() {
           this.y = this.r * sin(this.theta);
         };
 
-        var functions = {
+        var pins = {
           x: rect2polar,
           y: rect2polar,
           r: polar2rect,
           theta: polar2rect,
         };
 
-        return {functions: functions};
+        return {pins: pins};
       }(host.Math, assertFiniteNumber)));
 
       // Make wires
@@ -709,13 +709,13 @@ describe('BlackBox class', function() {
           this.out = !(this.a || this.b);
         };
 
-        var functions = {
+        var pins = {
           a: func,
           b: func,
           out: func,
         };
 
-        return {functions: functions};
+        return {pins: pins};
       }()));
 
       var norNotQ = norQ.duplicate();
@@ -936,7 +936,7 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function() {
 
       var block = new LiveBlocks.WireConstraint({
-        functions: {
+        pins: {
           a: function() {
 
             // Throw error if "a" is not a number
@@ -1007,7 +1007,7 @@ describe('BlackBox class', function() {
 
       // Create a block that throws error
       var block = new LiveBlocks.WireConstraint({
-        functions: {
+        pins: {
           a: function() {
 
             // Throw error if "a" is not a number
@@ -1130,7 +1130,7 @@ describe('BlackBox class', function() {
       var noop = function() {};
 
       var block = new LiveBlocks.WireConstraint({
-        functions: {a: noop, b: noop}
+        pins: {a: noop, b: noop}
       });
 
       // Create wires
@@ -1253,11 +1253,11 @@ describe('BlackBox class', function() {
           throw new Error('Just because');
         };
 
-        var functions = {
+        var pins = {
           x: errFunc,
         };
 
-        return {functions: functions};
+        return {pins: pins};
       }(Error)));
 
       var passStringBlock = new LiveBlocks.WireConstraint((function() {
@@ -1278,12 +1278,12 @@ describe('BlackBox class', function() {
           }
         };
 
-        var functions = {
+        var pins = {
           a: aToB,
           b: bToA,
         };
 
-        return {functions: functions};
+        return {pins: pins};
       }()));
 
       // Make wires

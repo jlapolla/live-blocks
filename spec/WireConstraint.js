@@ -79,8 +79,8 @@ describe('WireConstraint class', function() {
         log.push('bigger2smaller');
       };
 
-      // Return function hash
-      return {functions: {bigger: bigger2smaller, smaller: smaller2bigger}};
+      // Return pin hash
+      return {pins: {bigger: bigger2smaller, smaller: smaller2bigger}};
     }()));
 
     var timesTwo = new LiveBlocks.WireConstraint((function() {
@@ -98,8 +98,8 @@ describe('WireConstraint class', function() {
         log.push('double2half');
       };
 
-      // Return function hash
-      return {functions: {half: half2double, double: double2half}};
+      // Return pin hash
+      return {pins: {half: half2double, double: double2half}};
     }()));
 
     // Make wires
@@ -221,14 +221,14 @@ describe('WireConstraint class', function() {
         this.y = this.r * sin(this.theta);
       };
 
-      var functions = {
+      var pins = {
         x: rect2polar,
         y: rect2polar,
         r: polar2rect,
         theta: polar2rect,
       };
 
-      return {functions: functions};
+      return {pins: pins};
     }(host.Math, assertFiniteNumber)));
 
     // Make wires
@@ -334,13 +334,13 @@ describe('WireConstraint class', function() {
         this.out = !(this.a || this.b);
       };
 
-      var functions = {
+      var pins = {
         a: func,
         b: func,
         out: func,
       };
 
-      return {functions: functions};
+      return {pins: pins};
     }()));
 
     var norNotQ = norQ.duplicate();
@@ -395,24 +395,24 @@ describe('WireConstraint class', function() {
     expect(duplicate._updateQueue).toBe(queue2);
   });
 
-  it('duplicates injected function dependencies', function() {
+  it('duplicates injected pin dependencies', function() {
 
-    // Create function hash
-    var fnHash = {
+    // Create pin hash
+    var pinHash = {
       a: function() {},
 
       b: function() {},
     };
 
     // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint({functions: fnHash});
-    expect(wc._functions).not.toBe(fnHash);
-    expect(wc._functions).toEqual(fnHash);
+    var wc = new LiveBlocks.WireConstraint({pins: pinHash});
+    expect(wc._pins).not.toBe(pinHash);
+    expect(wc._pins).toEqual(pinHash);
 
     // Duplicate wire constraint
     var duplicate = wc.duplicate();
-    expect(duplicate._functions).not.toBe(wc._functions);
-    expect(duplicate._functions).toEqual(fnHash);
+    expect(duplicate._pins).not.toBe(wc._pins);
+    expect(duplicate._pins).toEqual(pinHash);
   });
 
   it('creates a default queue when no queue is injected', function() {
@@ -425,7 +425,7 @@ describe('WireConstraint class', function() {
   it('disconnects pin from wire before connecting to a new wire', function() {
 
     // Create a block
-    var block = new LiveBlocks.WireConstraint({functions: {x: function() {}}});
+    var block = new LiveBlocks.WireConstraint({pins: {x: function() {}}});
 
     // Create wires which log their binding events
     var log = [];
@@ -490,7 +490,7 @@ describe('WireConstraint class', function() {
 
     // Create a passthrough block
     var block = new LiveBlocks.WireConstraint({
-      functions: {
+      pins: {
         a: function() {
 
           // Copy "a" to "b"
@@ -559,7 +559,7 @@ describe('WireConstraint class', function() {
 
     // Create a block that throws error
     var block = new LiveBlocks.WireConstraint({
-      functions: {
+      pins: {
         a: function() {
 
           // Throw error if "a" is not a number
@@ -609,7 +609,7 @@ describe('WireConstraint class', function() {
 
     // Create a block that throws error
     var block = new LiveBlocks.WireConstraint({
-      functions: {
+      pins: {
         a: function() {
 
           // Throw error if "a" is not a number
@@ -710,7 +710,7 @@ describe('WireConstraint class', function() {
     // Create a block
     var noop = function() {};
 
-    var block = new LiveBlocks.WireConstraint({functions: {a: noop, b: noop}});
+    var block = new LiveBlocks.WireConstraint({pins: {a: noop, b: noop}});
 
     // Create logging event listeners
     var log = [];
@@ -797,8 +797,8 @@ describe('WireConstraint class', function() {
 
       var noop = function() {};
 
-      var functions = {a: noop, b: noop};
-      return {functions: functions};
+      var pins = {a: noop, b: noop};
+      return {pins: pins};
     }()));
 
     // Create wires
