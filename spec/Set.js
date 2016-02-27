@@ -1,20 +1,22 @@
 'use strict';
 
-describe('Set class', function () {
+describe('Set class', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if Set is not exposed
-  if (!LiveBlocks.Set)
-    return;
+  if (!LiveBlocks.Set) {
 
-  it('works with any kind of value', function () {
+    return;
+  }
+
+  it('works with any kind of value', function() {
 
     // Make a set
     var set = new LiveBlocks.Set();
 
     // Make NaN
-    var nan = 1 / (function () {}());
+    var nan = 1 / (function() {}());
 
     expect(nan === nan).toBe(false); // Make sure we have an actual NaN value
 
@@ -22,7 +24,7 @@ describe('Set class', function () {
     var values = {
       a: nan,
       b: {},
-      c: function () {},
+      c: function() {},
 
       d: 'x',
       e: undefined,
@@ -30,19 +32,23 @@ describe('Set class', function () {
     };
 
     // Put values in the set
-    for (var name in values)
+    for (var name in values) {
+
       set.add(values[name]);
+    }
 
     // Add duplicate value
     set.add(values.b);
 
     // Positive tests for value existence
-    for (var name in values)
+    for (var name in values) {
+
       expect(set.has(values[name])).toBe(true);
+    }
 
     // Negative test for value existence
     expect(set.has({})).toBe(false);
-    expect(set.has(function () {})).toBe(false);
+    expect(set.has(function() {})).toBe(false);
 
     // Remove some values
     var removedValues = {
@@ -51,19 +57,26 @@ describe('Set class', function () {
     };
     delete values.a;
     delete values.b;
-    for (var name in removedValues)
+    for (var name in removedValues) {
+
       set.remove(removedValues[name]);
+    }
 
     // Positive test for remaining values
-    for (var name in values)
+    for (var name in values) {
+
       expect(set.has(values[name])).toBe(true);
+    }
 
     // Negative test for removed values
-    for (var name in removedValues)
+    for (var name in removedValues) {
+
       expect(set.has(removedValues[name])).toBe(false);
+    }
   });
 
-  it('value() function returns an iterator which iterates over set values', function () {
+  it('value() function returns an iterator which iterates over set values',
+  function() {
 
     // Make a set
     var set = new LiveBlocks.Set();
@@ -75,8 +88,10 @@ describe('Set class', function () {
     };
 
     // Put values in the set
-    for (var name in values)
+    for (var name in values) {
+
       set.add(values[name]);
+    }
 
     // Get set iterator
     var it = set.values();
@@ -119,7 +134,7 @@ describe('Set class', function () {
     expect(it.peek().value).toBeUndefined();
 
     var value = it.next();
-    expect(value).toEqual({ done: true });
+    expect(value).toEqual({done: true});
   });
 });
 

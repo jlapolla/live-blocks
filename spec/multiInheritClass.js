@@ -1,44 +1,52 @@
 'use strict';
 
-describe('multiInheritClass function', function () {
+describe('multiInheritClass function', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if multiInheritClass is not exposed
-  if (!LiveBlocks.multiInheritClass)
-    return;
+  if (!LiveBlocks.multiInheritClass) {
 
-  it('fakes multiple inheritance in Javascript', function () {
+    return;
+  }
+
+  it('fakes multiple inheritance in Javascript', function() {
 
     // Make Walker class
     function Walker() {
+
       this._myWalk = 'I walk the walk';
     }
 
     Walker.prototype = {};
-    Walker.prototype.walk = function () {
+    Walker.prototype.walk = function() {
+
       return this._myWalk;
     };
 
     // Make Talker class
     function Talker() {
+
       this._myTalk = 'I talk the talk';
     }
 
     Talker.prototype = {};
-    Talker.prototype.talk = function () {
+    Talker.prototype.talk = function() {
+
       return this._myTalk;
     };
 
     // Make WalkerAndTalker class
     function WalkerAndTalker() {
+
       Walker.call(this);
       Talker.call(this);
     }
 
     LiveBlocks.extendClass(Walker, WalkerAndTalker);
     LiveBlocks.multiInheritClass(Talker, WalkerAndTalker);
-    WalkerAndTalker.prototype.walkAndTalk = function () {
+    WalkerAndTalker.prototype.walkAndTalk = function() {
+
       return this.walk() + ' and ' + this.talk();
     };
 
@@ -56,48 +64,57 @@ describe('multiInheritClass function', function () {
     expect(object.talk()).toBe('I talk the talk');
   });
 
-  it('inherits from the base class and all ancestors of the base class', function () {
+  it('inherits from the base class and all ancestors of the base class',
+  function() {
 
     // Make Mover class
     function Mover() {
-      this._myMove = "I'm a mover";
+
+      this._myMove = 'I\'m a mover';
     }
 
     Mover.prototype = {};
-    Mover.prototype.move = function () {
+    Mover.prototype.move = function() {
+
       return this._myMove;
     };
 
     // Make Walker class
     function Walker() {
+
       Mover.call(this);
       this._myWalk = 'I walk the walk';
     }
 
     LiveBlocks.extendClass(Mover, Walker);
-    Walker.prototype.walk = function () {
+    Walker.prototype.walk = function() {
+
       return this._myWalk;
     };
 
     // Make Talker class
     function Talker() {
+
       this._myTalk = 'I talk the talk';
     }
 
     Talker.prototype = {};
-    Talker.prototype.talk = function () {
+    Talker.prototype.talk = function() {
+
       return this._myTalk;
     };
 
     // Make WalkerAndTalker class
     function WalkerAndTalker() {
+
       Talker.call(this);
       Walker.call(this);
     }
 
     LiveBlocks.extendClass(Talker, WalkerAndTalker);
     LiveBlocks.multiInheritClass(Walker, WalkerAndTalker);
-    WalkerAndTalker.prototype.walkAndTalk = function () {
+    WalkerAndTalker.prototype.walkAndTalk = function() {
+
       return this.walk() + ' and ' + this.talk();
     };
 
@@ -114,7 +131,7 @@ describe('multiInheritClass function', function () {
     expect(object.walkAndTalk()).toBe('I walk the walk and I talk the talk');
     expect(object.talk()).toBe('I talk the talk');
     expect(object.walk()).toBe('I walk the walk');
-    expect(object.move()).toBe("I'm a mover");
+    expect(object.move()).toBe('I\'m a mover');
   });
 });
 

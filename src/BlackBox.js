@@ -1,5 +1,14 @@
-this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, getUndefined, Map, Set, Error, ArrayIterator) {
-  var _disconnect = function (pin) {
+this.BlackBox = (function(EventEmitter,
+  extendClass,
+  hasOwnProperty,
+  Queue,
+  getUndefined,
+  Map,
+  Set,
+  Error,
+  ArrayIterator) {
+
+  var _disconnect = function(pin) {
 
     // Disconnect from wire, if any
     if (hasOwnProperty(this._externalWires, pin)) {
@@ -9,15 +18,16 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
       delete this._externalWires[pin];
 
       // Fire disconnect event
-      this.fire('disconnect', { pin: pin, wire: wire });
+      this.fire('disconnect', {pin: pin, wire: wire});
     }
   };
 
-  var init = (function () {
+  var init = (function() {
 
-    var processWire, processBlock;
+    var processWire;
+    var processBlock;
 
-    processWire = function (wire, wireSet, blockSet) {
+    processWire = function(wire, wireSet, blockSet) {
 
       // Check if this wire has already been processed
       if (!wireSet.has(wire)) {
@@ -28,12 +38,14 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
 
         // Process all blocks connected to the wire
         var it = wire.connections();
-        while (!it.peek().done)
+        while (!it.peek().done) {
+
           processBlock(it.next().value.block, wireSet, blockSet);
+        }
       }
     };
 
-    processBlock = function (block, wireSet, blockSet) {
+    processBlock = function(block, wireSet, blockSet) {
 
       // Check if this block has already been processed
       if (!blockSet.has(block)) {
@@ -44,12 +56,14 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
 
         // Process all wires connected to the block
         var it = block.pins();
-        while (!it.peek().done)
+        while (!it.peek().done) {
+
           processWire(it.next().value.wire, wireSet, blockSet);
+        }
       }
     };
 
-    return function (pins) {
+    return function(pins) {
 
       // Create wire set and block set
       // These collect all wires and blocks in the network
@@ -83,31 +97,40 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
     if (typeof hash !== 'undefined') {
 
       // Add pins if supplied
-      if (hasOwnProperty(hash, 'pins'))
+      if (hasOwnProperty(hash, 'pins')) {
+
         init.call(this, hash.pins);
+      }
 
       // Add queue if supplied
-      if (hasOwnProperty(hash, 'queue'))
+      if (hasOwnProperty(hash, 'queue')) {
+
         this._updateQueue = hash.queue;
+      }
     }
 
     // Set defaults
-    if (!hasOwnProperty(this, '_updateQueue'))
+    if (!hasOwnProperty(this, '_updateQueue')) {
+
       this._updateQueue = new Queue();
+    }
   }
 
   extendClass(EventEmitter, BlackBox);
   var P = BlackBox.prototype;
-  P.duplicate = (function () {
+  P.duplicate = (function() {
 
-    var processWire, processBlock;
+    var processWire;
+    var processBlock;
 
-    processWire = function (wire, wireMap, blockMap) {
+    processWire = function(wire, wireMap, blockMap) {
 
       // Check if this wire has already been processed
       var duplicate = wireMap.get(wire);
-      if (duplicate)
+      if (duplicate) {
+
         return duplicate;
+      }
 
       // Wire has not been processed
       // Duplicate the wire
@@ -118,19 +141,23 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
 
       // Process all blocks connected to the wire
       var it = wire.connections();
-      while (!it.peek().done)
+      while (!it.peek().done) {
+
         processBlock(it.next().value.block, wireMap, blockMap);
+      }
 
       // Return duplicate wire
       return duplicate;
     };
 
-    processBlock = function (block, wireMap, blockMap) {
+    processBlock = function(block, wireMap, blockMap) {
 
       // Check if this block has already been processed
       var duplicate = blockMap.get(block);
-      if (duplicate)
+      if (duplicate) {
+
         return duplicate;
+      }
 
       // Block has not been processed
       // Duplicate the block
@@ -154,7 +181,7 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
       return duplicate;
     };
 
-    return function () {
+    return function() {
 
       // Create wire map and block map
       // These map wires and blocks in the original circuit to their duplicates
@@ -163,15 +190,17 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
 
       // Construct pins hash for the new BlackBox
       var pins = {};
-      for (var pin in this._internalWires)
+      for (var pin in this._internalWires) {
+
         pins[pin] = processWire(this._internalWires[pin], wireMap, blockMap);
+      }
 
       // Return the new BlackBox
-      return new BlackBox({ pins: pins, queue: this._updateQueue.duplicate() });
+      return new BlackBox({pins: pins, queue: this._updateQueue.duplicate()});
     };
   }());
 
-  P.error = function () {
+  P.error = function() {
 
     // Iterate through blocks and check for errors
     var it = this._innerBlockSet.values();
@@ -181,19 +210,23 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
       var block = it.peek().value;
 
       // Check block for error
-      if (block.error())
+      if (block.error()) {
+
         return block.error();
+      }
 
       // Move to next block
       it.next();
     }
   };
 
-  P.connect = function (pin, wire) {
+  P.connect = function(pin, wire) {
 
     // Throw error if pin does not exist
-    if (!hasOwnProperty(this._internalWires, pin))
+    if (!hasOwnProperty(this._internalWires, pin)) {
+
       throw new Error('Pin "' + pin + '" not found');
+    }
 
     // Do nothing if the pin is already connected to the wire
     if (this._externalWires[pin] !== wire) {
@@ -208,14 +241,14 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
       wire.bind(this, pin);
 
       // Fire connect event
-      this.fire('connect', { pin: pin, wire: wire });
+      this.fire('connect', {pin: pin, wire: wire});
 
       // Process wire value
       this.update(pin);
     }
   };
 
-  P.disconnect = function (pin) {
+  P.disconnect = function(pin) {
 
     // Disconnect from wire, if any
     _disconnect.call(this, pin);
@@ -224,7 +257,7 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
     this.update(pin);
   };
 
-  P.update = function (pin) {
+  P.update = function(pin) {
 
     // A connected wire value changed
 
@@ -234,39 +267,53 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
       // Add update to queue and return
       this._updateQueue.push(pin);
       return;
-    } else
+    }
+    else {
+
       this._updating = true; // Set updating flag
+    }
 
     // Main loop
     while (true) {
 
       // Defensive copy internal and external wires
-      var internalWires = {}, externalWires = {};
+      var internalWires = {};
+      var externalWires = {};
       for (var name in this._internalWires) {
 
         // Copy internal wire
         internalWires[name] = this._internalWires[name];
 
         // Copy external wire, if exists
-        if (this._externalWires[name])
+        if (this._externalWires[name]) {
+
           externalWires[name] = this._externalWires[name];
+        }
       }
 
       // Get updated pin value
       var value;
-      if (externalWires[pin])
+      if (externalWires[pin]) {
+
         value = externalWires[pin].value();
-      else
+      }
+      else {
+
         value = getUndefined();
+      }
 
       // Fire update event
-      this.fire('update', { pin: pin, value: value });
+      this.fire('update', {pin: pin, value: value});
 
       // Copy updated pin value to internal wire
-      if (externalWires[pin])
+      if (externalWires[pin]) {
+
         internalWires[pin].value(externalWires[pin].value());
-      else
+      }
+      else {
+
         internalWires[pin].value(getUndefined());
+      }
 
       // Handle successful run
       if (!this.error()) {
@@ -277,11 +324,16 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
         // Copy values from internal wires to external wires
         for (var name in internalWires) {
 
-          if (externalWires[name])
+          if (externalWires[name]) {
+
             externalWires[name].value(internalWires[name].value());
+          }
         }
-      } else
+      }
+      else {
+
         this.fire('error', this.error()); // Fire event
+      }
 
       // Proces update queue
       if (this._updateQueue.isEmpty()) {
@@ -289,19 +341,24 @@ this.BlackBox = (function (EventEmitter, extendClass, hasOwnProperty, Queue, get
         // Unset updating flag and return
         this._updating = false;
         return;
-      } else
+      }
+      else {
+
         pin = this._updateQueue.next(); // Get next updated pin from queue
+      }
 
       // Restart loop
     }
   };
 
-  P.pins = function () {
+  P.pins = function() {
 
     // Collect pins in an array
     var arr = [];
-    for (var pin in this._internalWires)
-      arr.push({ pin: pin, wire: this._externalWires[pin] });
+    for (var pin in this._internalWires) {
+
+      arr.push({pin: pin, wire: this._externalWires[pin]});
+    }
 
     // Return array iterator
     return new ArrayIterator(arr);

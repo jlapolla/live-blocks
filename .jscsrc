@@ -1,11 +1,15 @@
 {
-  "preset" : "airbnb",
-  "disallowMultipleVarDecl" : false,
-  "maximumLineLength" : {
-    "value" : 100,
-    "allExcept" : [
-      "urlComments",
-      "functionSignature"
-    ]
-  }
+  "verbose"                           : true,
+  "preset"                            : "google",
+  "requireAlignedMultilineParams"     : true,
+  "disallowKeywordsOnNewLine"         : [],
+  "requireKeywordsOnNewLine"          : ["else"],
+  "disallowMultipleSpaces"            : true,
+  "disallowOperatorBeforeLineBreak"   : true,
+  "requireOperatorBeforeLineBreak"    : false,
+  "requirePaddingNewLinesAfterBlocks" : true,
+  "disallowPaddingNewlinesInBlocks"   : {"open" : false, "close" : true},
+  "requirePaddingNewlinesInBlocks"    : {"open" : true, "close" : false},
+  "requireParenthesesAroundIIFE"      : true,
+  "disallowUnusedParams"              : true,
 }

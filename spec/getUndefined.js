@@ -1,14 +1,16 @@
 'use strict';
 
-describe('getUndefined function', function () {
+describe('getUndefined function', function() {
 
   var LiveBlocks = window.LiveBlocks;
 
   // Skip test if getUndefined is not exposed
-  if (!LiveBlocks.getUndefined)
-    return;
+  if (!LiveBlocks.getUndefined) {
 
-  it('returns the primitive value "undefined"', function () {
+    return;
+  }
+
+  it('returns the primitive value "undefined"', function() {
 
     // Call getUndefined()
     expect(LiveBlocks.getUndefined()).toBeUndefined();
