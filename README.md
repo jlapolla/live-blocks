@@ -22,7 +22,7 @@ pin to "bar", we expect the value on the *upper* pin to be "BAR".
 
 A wire's job is to connect pins, and store a value. Multiple pins can connect
 to the same wire, and all of the pins connected to a wire share the same common
-value. Conversely, a pin *cannot* be connected to multiple wires, because each
+value. In contrast, a pin *cannot* be connected to multiple wires, because each
 pin must get its value from one and only one wire. A pin that is not connected
 to any wire is called a **floating** pin. Floating pins can cause unpredictable
 results, so we recommend that you connect each pin to a wire, even if you don't
@@ -167,7 +167,7 @@ var block3 = superBlock.duplicate();
 
 // Wire up BlackBox as needed...
 block2.connect('rawString', new LiveBlocks.Wire());
-block2.connect('formattedSTring', new LiveBlocks.Wire());
+block2.connect('formattedString', new LiveBlocks.Wire());
 ```
 
 First we wire up our blocks to create the network we want to black box. Then we
