@@ -1,9 +1,8 @@
 # LiveBlocks
 
-LiveBlocks is a JavaScript library that makes it easy to create complex models
-(the *M* in *MVC*). The declarative nature of LiveBlocks lets you focus on
-*what* your model should do, instead of worrying about *how* your model should
-do it.
+LiveBlocks is a JavaScript library that helps you create smart models (the *M*
+in *MVC*). The declarative nature of LiveBlocks lets you focus on *what* your
+model should do, instead of worrying about *how* your model should do it.
 
 ## Overview
 
@@ -41,7 +40,7 @@ var upperToLower = function() {
   if (typeof this.upper === 'string') {
 
     this.upper = this.upper.toUpperCase();
-    this.lower = this.lower.toLowerCase();
+    this.lower = this.upper.toLowerCase();
   }
   else {
 
@@ -55,7 +54,7 @@ var lowerToUpper = function() {
   if (typeof this.lower === 'string') {
 
     this.lower = this.lower.toLowerCase();
-    this.upper = this.upper.toUpperCase();
+    this.upper = this.lower.toUpperCase();
   }
   else {
 
@@ -63,7 +62,7 @@ var lowerToUpper = function() {
   }
 };
 
-// Map pins to update functions and create the block
+// Map pins to update functions and create the WireConstraint
 var upperToLowerBlock = new LiveBlocks.WireConstraint({
   pins: {
     upper: upperToLower,
