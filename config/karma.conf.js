@@ -27,6 +27,8 @@ module.exports = function(config) {
       'test/EventEmitter.js',
       'test/Wire.js',
       'test/WireConstraint.js',
+      'test/SynchronousBlock.js',
+      'test/Clock.js',
       'test/BlackBox.js',
       'spec/*.js'
     ],
