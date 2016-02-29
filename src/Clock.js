@@ -1,4 +1,4 @@
-this.Clock = (function(EventEmitter, Set, extendClass){
+this.Clock = (function(EventEmitter, Set, extendClass) {
 
   function Clock() {
 
@@ -47,7 +47,7 @@ this.Clock = (function(EventEmitter, Set, extendClass){
 
     // Return iterator over blocks
     return this._bindings.values();
-  }
+  };
 
   return Clock;
 }(this.EventEmitter, this.Set, this.extendClass));

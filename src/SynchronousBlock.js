@@ -29,7 +29,7 @@ this.SynchronousBlock = (function(EventEmitter,
       do: this._do,
       pins: this._pins,
     });
-  }
+  };
 
   P.error = function() {
 
@@ -83,7 +83,7 @@ this.SynchronousBlock = (function(EventEmitter,
 
     // Create array of pins
     var pins = [];
-    for (var pin in this._wires) {
+    for (var pin in this._pins) {
 
       pins.push({pin: pin, wire: this._wires[pin]});
     }
@@ -119,21 +119,21 @@ this.SynchronousBlock = (function(EventEmitter,
       // Fire set clock event
       this.fire('setClock', {clock: clock});
     }
-  }
+  };
 
   P.unsetClock = function() {
 
-      // Unbind from old clock if any
-      if (hasOwnProperty(this, '_clock')) {
+    // Unbind from old clock if any
+    if (hasOwnProperty(this, '_clock')) {
 
-        var clock = this._clock;
-        clock.unbind(this);
-        delete this._clock;
+      var clock = this._clock;
+      clock.unbind(this);
+      delete this._clock;
 
-        // Fire unset clock event
-        this.fire('unsetClock', {clock: clock});
-      }
-  }
+      // Fire unset clock event
+      this.fire('unsetClock', {clock: clock});
+    }
+  };
 
   P.tick = function() {
 
@@ -196,7 +196,7 @@ this.SynchronousBlock = (function(EventEmitter,
       // Clear this._nextValues
       delete this._nextValues;
     }
-  }
+  };
 
   return SynchronousBlock;
 }(this.EventEmitter,
