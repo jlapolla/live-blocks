@@ -367,6 +367,53 @@ describe('SynchronousBlock class', function() {
     expect(log[0].arg.wire).toBe(wires[1]);
   });
 
+  it('update() function does nothing', function() {
+
+    // Make ramp block
+    var block = new LiveBlocks
+    .SynchronousBlock((function(assertFiniteNumber) {
+
+      var doFunc = function() {
+
+        assertFiniteNumber(this.output);
+        this.output = this.output + 1;
+      };
+
+      var pins = {
+        output: true,
+      };
+
+      return {
+        do: doFunc,
+        pins: pins,
+      };
+    }(assertFiniteNumber)));
+
+    // Make a wire
+    var wire = new LiveBlocks.Wire({initialValue: 0});
+
+    // Connect block to wire
+    block.connect('output', wire);
+
+    // Make a clock
+    var clock = new LiveBlocks.Clock();
+
+    // Set clock on blocks
+    block.clock(clock);
+
+    // Test stimulus
+    block.update();
+    expect(wire.value()).toBe(0);
+
+    // Test stimulus
+    clock.tickTock();
+    expect(wire.value()).toBe(1);
+
+    // Test stimulus
+    block.update();
+    expect(wire.value()).toBe(1);
+  });
+
   it('pins() iterator iterates over block pins', function() {
 
     // Make a block
@@ -549,6 +596,107 @@ describe('SynchronousBlock class', function() {
     expect(wire.value()).toBe(2);
   });
 
-  xit('fires "tick", "tock", and "error" events', function() {});
+  it('fires "tick", "tock", and "error" events', function() {
+
+    // Make ramp block
+    var block = new LiveBlocks
+    .SynchronousBlock((function(assertFiniteNumber) {
+
+      var doFunc = function() {
+
+        assertFiniteNumber(this.output);
+        this.output = this.output + 1;
+      };
+
+      var pins = {
+        output: true,
+      };
+
+      return {
+        do: doFunc,
+        pins: pins,
+      };
+    }(assertFiniteNumber)));
+
+    // Make a wire
+    var wire = new LiveBlocks.Wire({initialValue: 0});
+
+    // Connect block to wire
+    block.connect('output', wire);
+
+    // Make a clock
+    var clock = new LiveBlocks.Clock();
+
+    // Set clock on blocks
+    block.clock(clock);
+
+    // Create logging event listeners
+    var log = [];
+    var listeners = {};
+    (function(list) {
+
+      // For each event name
+      for (var i = 0; i < list.length; i++) {
+
+        // Make event listener
+        listeners[list[i]] = (function(eventName) {
+
+          return function(arg) {
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== 'undefined') {
+
+              obj.arg = arg;
+            }
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+
+        // Register event listener
+        block.on(list[i], listeners[list[i]]);
+      }
+    }(['tick', 'tock', 'error']));
+
+    // Check initial condition
+    expect(log.length).toBe(0);
+
+    // Test stimulus
+    clock.tickTock();
+    expect(wire.value()).toBe(1);
+    expect(log.length).toBe(2);
+    expect(log[0]).toEqual({event: 'tick'});
+    expect(log[1]).toEqual({event: 'tock'});
+
+    // Clear log
+    log.length = 0;
+
+    // Set invalid value on wire
+    wire.value('a');
+    expect(log.length).toBe(0);
+
+    // Test stimulus
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0]).toEqual({event: 'tick'});
+    expect(log[1].event).toBe('error');
+    expect(log[1].arg.message).toBe('a must be a number');
+
+    // Clear log
+    log.length = 0;
+
+    // Set valid value on wire
+    wire.value(3);
+    expect(log.length).toBe(0);
+
+    // Test stimulus
+    clock.tickTock();
+    expect(wire.value()).toBe(4);
+    expect(log.length).toBe(2);
+    expect(log[0]).toEqual({event: 'tick'});
+    expect(log[1]).toEqual({event: 'tock'});
+  });
 });
 
