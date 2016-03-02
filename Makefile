@@ -10,6 +10,8 @@ $(eval $(d)order += $(d)src/Map.js)
 $(eval $(d)order += $(d)src/EventEmitter.js)
 $(eval $(d)order += $(d)src/Wire.js)
 $(eval $(d)order += $(d)src/WireConstraint.js)
+$(eval $(d)order += $(d)src/SynchronousBlock.js)
+$(eval $(d)order += $(d)src/Clock.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
 
 # Source files wrapped in "test" IIFE
