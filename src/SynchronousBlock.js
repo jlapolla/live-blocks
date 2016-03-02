@@ -115,9 +115,6 @@ this.SynchronousBlock = (function(EventEmitter,
 
       // Bind to clock
       clock.bind(this);
-
-      // Fire set clock event
-      this.fire('setClock', {clock: clock});
     }
   };
 
@@ -129,9 +126,6 @@ this.SynchronousBlock = (function(EventEmitter,
       var clock = this._clock;
       clock.unbind(this);
       delete this._clock;
-
-      // Fire unset clock event
-      this.fire('unsetClock', {clock: clock});
     }
   };
 

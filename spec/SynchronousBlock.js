@@ -480,7 +480,7 @@ describe('SynchronousBlock class', function() {
     expect(it.peek().value.wire).toBeUndefined();
   });
 
-  it('clock() and unsetClock() functions trigger events', function() {
+  it('clock() and unsetClock() work', function() {
 
     // Make a block
     var block = new LiveBlocks.SynchronousBlock((function() {
@@ -500,36 +500,6 @@ describe('SynchronousBlock class', function() {
       };
     }()));
 
-    // Create logging event listeners
-    var log = [];
-    var listeners = {};
-    (function(list) {
-
-      for (var i = 0; i < list.length; i++) {
-
-        listeners[list[i]] = (function(eventName) {
-
-          return function(arg) {
-
-            // Create log object
-            var obj = {event: eventName};
-            if (typeof arg !== 'undefined') {
-
-              obj.arg = arg;
-            }
-
-            // Add log object to log
-            log.push(obj);
-          };
-        }(list[i]));
-      }
-    }(['setClock', 'unsetClock']));
-
-    // Register event listeners
-    block.on('setClock', listeners.setClock);
-    block.on('unsetClock', listeners.unsetClock);
-    expect(log.length).toBe(0);
-
     // Make some clocks
     var clocks = [];
     for (var i = 0; i < 2; i++) {
@@ -545,18 +515,11 @@ describe('SynchronousBlock class', function() {
 
     // Test stimulus
     block.clock(clocks[0]);
-    expect(log.length).toBe(1);
-    expect(log[0].event).toBe('setClock');
-    expect(log[0].arg.clock).toBe(clocks[0]);
     expect(wire.value()).toBe(0);
     expect(block.clock()).toBe(clocks[0]);
 
-    // Clear log
-    log.length = 0;
-
     // Test stimulus (redundant)
     block.clock(clocks[0]);
-    expect(log.length).toBe(0);
 
     // Block should only respond to clock 0
     clocks[0].tickTock();
@@ -566,15 +529,7 @@ describe('SynchronousBlock class', function() {
 
     // Test stimulus
     block.clock(clocks[1]);
-    expect(log.length).toBe(2);
-    expect(log[0].event).toBe('unsetClock');
-    expect(log[0].arg.clock).toBe(clocks[0]);
-    expect(log[1].event).toBe('setClock');
-    expect(log[1].arg.clock).toBe(clocks[1]);
     expect(block.clock()).toBe(clocks[1]);
-
-    // Clear log
-    log.length = 0;
 
     // Block should only respond to clock 1
     clocks[0].tickTock();
@@ -584,9 +539,6 @@ describe('SynchronousBlock class', function() {
 
     // Test stimulus
     block.unsetClock();
-    expect(log.length).toBe(1);
-    expect(log[0].event).toBe('unsetClock');
-    expect(log[0].arg.clock).toBe(clocks[1]);
     expect(block.clock()).toBeUndefined();
 
     // Block should not respond to either clock
