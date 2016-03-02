@@ -60,7 +60,7 @@ describe('BlackBox class', function() {
   it('integration test with multiple internal blocks', function() {
 
     // Create a prototype "plus one" block
-    var plusOne = new LiveBlocks.WireConstraint((function(assertFiniteNumber) {
+    var plusOne = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
 
       var aToB = function() {
 
@@ -87,7 +87,7 @@ describe('BlackBox class', function() {
     }(assertFiniteNumber)));
 
     // Create a prototype "times two" block
-    var timesTwo = new LiveBlocks.WireConstraint((function(assertFiniteNumber) {
+    var timesTwo = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
 
       var aToB = function() {
 
@@ -221,7 +221,7 @@ describe('BlackBox class', function() {
       var proto = new LiveBlocks.BlackBox((function() {
 
         // Pass-through wire constraint
-        var block = new LiveBlocks.WireConstraint((function() {
+        var block = new LiveBlocks.ImmediateBlock((function() {
 
           // Constraint functions
           var aToB = function() {
@@ -372,7 +372,7 @@ describe('BlackBox class', function() {
   });
 
   it('integration test with Wire class where a wire has multiple connections '
-  + '(adapted from WireConstraint spec)', function() {
+  + '(adapted from ImmediateBlock spec)', function() {
 
     // Update log
     var log = [];
@@ -381,7 +381,7 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function() {
 
       // Make blocks
-      var plusOne = new LiveBlocks.WireConstraint((function() {
+      var plusOne = new LiveBlocks.ImmediateBlock((function() {
 
         // Make constraint functions
         var smaller2bigger = function() {
@@ -400,7 +400,7 @@ describe('BlackBox class', function() {
         return {pins: {bigger: bigger2smaller, smaller: smaller2bigger}};
       }()));
 
-      var timesTwo = new LiveBlocks.WireConstraint((function() {
+      var timesTwo = new LiveBlocks.ImmediateBlock((function() {
 
         // Make constraint functions
         var half2double = function() {
@@ -534,13 +534,13 @@ describe('BlackBox class', function() {
       'half2double']);
   });
 
-  it('integration test with Wire class where the WireConstraint has multiple '
-  + 'inputs and outputs (adapted from WireConstraint)', function() {
+  it('integration test with Wire class where the ImmediateBlock has multiple '
+  + 'inputs and outputs (adapted from ImmediateBlock)', function() {
 
     // Convert rectangular to polar coordinates
     var block = new LiveBlocks.BlackBox((function() {
 
-      var block = new LiveBlocks.WireConstraint(
+      var block = new LiveBlocks.ImmediateBlock(
       (function(Math, assertFiniteNumber) {
 
         var atan2 = Math.atan2;
@@ -696,13 +696,13 @@ describe('BlackBox class', function() {
   });
 
   it('integration test with read-only values (adapted '
-  + ' from WireConstraint spec)', function() {
+  + ' from ImmediateBlock spec)', function() {
 
     // We will make a flip flop from two cross-coupled NOR gates
     var block = new LiveBlocks.BlackBox((function() {
 
       // Make two NOR blocks
-      var norQ = new LiveBlocks.WireConstraint((function() {
+      var norQ = new LiveBlocks.ImmediateBlock((function() {
 
         var func = function() {
 
@@ -911,7 +911,7 @@ describe('BlackBox class', function() {
 
     var block = new LiveBlocks.BlackBox((function() {
 
-      var block = new LiveBlocks.WireConstraint({
+      var block = new LiveBlocks.ImmediateBlock({
         pins: {
           a: function() {
 
@@ -982,7 +982,7 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function(TypeError) {
 
       // Create a block that throws error
-      var block = new LiveBlocks.WireConstraint({
+      var block = new LiveBlocks.ImmediateBlock({
         pins: {
           a: function() {
 
@@ -1105,7 +1105,7 @@ describe('BlackBox class', function() {
       // Create a block
       var noop = function() {};
 
-      var block = new LiveBlocks.WireConstraint({
+      var block = new LiveBlocks.ImmediateBlock({
         pins: {a: noop, b: noop}
       });
 
@@ -1222,7 +1222,7 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function(Error) {
 
       // Make blocks
-      errorBlock = new LiveBlocks.WireConstraint((function(Error) {
+      errorBlock = new LiveBlocks.ImmediateBlock((function(Error) {
 
         var errFunc = function() {
 
@@ -1236,7 +1236,7 @@ describe('BlackBox class', function() {
         return {pins: pins};
       }(Error)));
 
-      var passStringBlock = new LiveBlocks.WireConstraint((function() {
+      var passStringBlock = new LiveBlocks.ImmediateBlock((function() {
 
         var aToB = function() {
 

@@ -1,4 +1,4 @@
-this.WireConstraint = (function(hasOwnProperty,
+this.ImmediateBlock = (function(hasOwnProperty,
   Queue,
   Error,
   extendClass,
@@ -19,7 +19,7 @@ this.WireConstraint = (function(hasOwnProperty,
     }
   };
 
-  function WireConstraint(hash) {
+  function ImmediateBlock(hash) {
 
     EventEmitter.call(this);
 
@@ -34,11 +34,11 @@ this.WireConstraint = (function(hasOwnProperty,
     }
   }
 
-  extendClass(EventEmitter, WireConstraint);
-  var P = WireConstraint.prototype;
+  extendClass(EventEmitter, ImmediateBlock);
+  var P = ImmediateBlock.prototype;
   P.duplicate = function() {
 
-    return new WireConstraint({
+    return new ImmediateBlock({
       pins: this._pins,
     });
   };
@@ -170,7 +170,7 @@ this.WireConstraint = (function(hasOwnProperty,
     return new ArrayIterator(pins);
   };
 
-  return WireConstraint;
+  return ImmediateBlock;
 }(this.hasOwnProperty,
   this.Queue,
   host.Error,

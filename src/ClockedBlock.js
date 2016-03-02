@@ -1,10 +1,10 @@
-this.SynchronousBlock = (function(EventEmitter,
+this.ClockedBlock = (function(EventEmitter,
   extendClass,
   hasOwnProperty,
   getUndefined,
   ArrayIterator) {
 
-  function SynchronousBlock(hash) {
+  function ClockedBlock(hash) {
 
     EventEmitter.call(this);
 
@@ -21,11 +21,11 @@ this.SynchronousBlock = (function(EventEmitter,
     }
   }
 
-  extendClass(EventEmitter, SynchronousBlock);
-  var P = SynchronousBlock.prototype;
+  extendClass(EventEmitter, ClockedBlock);
+  var P = ClockedBlock.prototype;
   P.duplicate = function() {
 
-    return new SynchronousBlock({
+    return new ClockedBlock({
       do: this._do,
       pins: this._pins,
     });
@@ -192,7 +192,7 @@ this.SynchronousBlock = (function(EventEmitter,
     }
   };
 
-  return SynchronousBlock;
+  return ClockedBlock;
 }(this.EventEmitter,
   this.extendClass,
   this.hasOwnProperty,

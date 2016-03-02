@@ -1,13 +1,13 @@
 'use strict';
 
-describe('SynchronousBlock class', function() {
+describe('ClockedBlock class', function() {
 
   var host = window;
 
   var LiveBlocks = host.LiveBlocks;
 
-  // Skip test if SynchronousBlock is not exposed
-  if (!LiveBlocks.SynchronousBlock) {
+  // Skip test if ClockedBlock is not exposed
+  if (!LiveBlocks.ClockedBlock) {
 
     return;
   }
@@ -61,7 +61,7 @@ describe('SynchronousBlock class', function() {
 
     // Make ramp block
     var rampBlock = new LiveBlocks
-    .SynchronousBlock((function(assertFiniteNumber) {
+    .ClockedBlock((function(assertFiniteNumber) {
 
       var doFunc = function() {
 
@@ -81,7 +81,7 @@ describe('SynchronousBlock class', function() {
 
     // Make an integrator block
     var integratorBlock = new LiveBlocks
-    .SynchronousBlock((function(assertFiniteNumber) {
+    .ClockedBlock((function(assertFiniteNumber) {
 
       var doFunc = function() {
 
@@ -174,7 +174,7 @@ describe('SynchronousBlock class', function() {
     };
 
     // Create a synchronous block
-    var block = new LiveBlocks.SynchronousBlock({
+    var block = new LiveBlocks.ClockedBlock({
       do: doFunc,
       pins: pins,
     });
@@ -192,7 +192,7 @@ describe('SynchronousBlock class', function() {
   it('catches exceptions in the "do" function', function() {
 
     // Make ramp block
-    var block = new LiveBlocks.SynchronousBlock((function(assertFiniteNumber) {
+    var block = new LiveBlocks.ClockedBlock((function(assertFiniteNumber) {
 
       var doFunc = function() {
 
@@ -248,7 +248,7 @@ describe('SynchronousBlock class', function() {
   it('throws error when connecting to a non-existent pin', function() {
 
     // Make a block
-    var block = new LiveBlocks.SynchronousBlock((function() {
+    var block = new LiveBlocks.ClockedBlock((function() {
 
       var pins = {
         'output': true,
@@ -275,7 +275,7 @@ describe('SynchronousBlock class', function() {
   it('fires events on pin connect and disconnect', function() {
 
     // Make a block
-    var block = new LiveBlocks.SynchronousBlock((function() {
+    var block = new LiveBlocks.ClockedBlock((function() {
 
       var pins = {
         a: true,
@@ -371,7 +371,7 @@ describe('SynchronousBlock class', function() {
 
     // Make ramp block
     var block = new LiveBlocks
-    .SynchronousBlock((function(assertFiniteNumber) {
+    .ClockedBlock((function(assertFiniteNumber) {
 
       var doFunc = function() {
 
@@ -417,7 +417,7 @@ describe('SynchronousBlock class', function() {
   it('pins() iterator iterates over block pins', function() {
 
     // Make a block
-    var block = new LiveBlocks.SynchronousBlock((function() {
+    var block = new LiveBlocks.ClockedBlock((function() {
 
       var pins = {
         a: true,
@@ -483,7 +483,7 @@ describe('SynchronousBlock class', function() {
   it('clock() and unsetClock() work', function() {
 
     // Make a block
-    var block = new LiveBlocks.SynchronousBlock((function() {
+    var block = new LiveBlocks.ClockedBlock((function() {
 
       var doFunc = function() {
 
@@ -552,7 +552,7 @@ describe('SynchronousBlock class', function() {
 
     // Make ramp block
     var block = new LiveBlocks
-    .SynchronousBlock((function(assertFiniteNumber) {
+    .ClockedBlock((function(assertFiniteNumber) {
 
       var doFunc = function() {
 
