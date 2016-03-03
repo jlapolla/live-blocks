@@ -63,15 +63,16 @@ describe('ClockedBlock class', function() {
     var rampBlock = new LiveBlocks
     .ClockedBlock((function(assertFiniteNumber) {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        assertFiniteNumber(this.output);
-        this.output = this.output + 1;
+        assertFiniteNumber(input.output);
+        output.output = input.output + 1;
+
+        // Assign to an undefined pin, just to test robustness
+        output.noexist = input.output * 2;
       };
 
-      var pins = {
-        output: true,
-      };
+      var pins = ['output'];
 
       return {
         do: doFunc,
@@ -83,18 +84,15 @@ describe('ClockedBlock class', function() {
     var integratorBlock = new LiveBlocks
     .ClockedBlock((function(assertFiniteNumber) {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        assertFiniteNumber(this.input);
-        assertFiniteNumber(this.output);
+        assertFiniteNumber(input.input);
+        assertFiniteNumber(input.output);
 
-        this.output = this.input + this.output;
+        output.output = input.input + input.output;
       };
 
-      var pins = {
-        input: false,
-        output: true,
-      };
+      var pins = ['input', 'output'];
 
       return {
         do: doFunc,
@@ -168,10 +166,7 @@ describe('ClockedBlock class', function() {
     // Create do function and pins definition hash
     var doFunc = function() {};
 
-    var pins = {
-      a: {},
-      b: undefined,
-    };
+    var pins = ['a', 'b'];
 
     // Create a synchronous block
     var block = new LiveBlocks.ClockedBlock({
@@ -179,13 +174,15 @@ describe('ClockedBlock class', function() {
       pins: pins,
     });
     expect(block._pins).not.toBe(pins);
-    expect(block._pins).toEqual({a: true, b: false});
+    expect(block._pins.a).toBe(block._pins);
+    expect(block._pins.b).toBe(block._pins);
     expect(block._do).toBe(doFunc);
 
     // Duplicate synchronous block
     var duplicate = block.duplicate();
     expect(duplicate._pins).not.toBe(block._pins);
-    expect(duplicate._pins).toEqual({a: true, b: false});
+    expect(duplicate._pins.a).toBe(duplicate._pins);
+    expect(duplicate._pins.b).toBe(duplicate._pins);
     expect(duplicate._do).toBe(doFunc);
   });
 
@@ -194,15 +191,13 @@ describe('ClockedBlock class', function() {
     // Make ramp block
     var block = new LiveBlocks.ClockedBlock((function(assertFiniteNumber) {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        assertFiniteNumber(this.output);
-        this.output = this.output + 1;
+        assertFiniteNumber(input.output);
+        output.output = input.output + 1;
       };
 
-      var pins = {
-        output: true,
-      };
+      var pins = ['output'];
 
       return {
         do: doFunc,
@@ -250,9 +245,7 @@ describe('ClockedBlock class', function() {
     // Make a block
     var block = new LiveBlocks.ClockedBlock((function() {
 
-      var pins = {
-        'output': true,
-      };
+      var pins = ['output'];
 
       return {pins: pins};
     }()));
@@ -277,10 +270,7 @@ describe('ClockedBlock class', function() {
     // Make a block
     var block = new LiveBlocks.ClockedBlock((function() {
 
-      var pins = {
-        a: true,
-        b: true,
-      };
+      var pins = ['a', 'b'];
 
       return {pins: pins};
     }()));
@@ -373,15 +363,13 @@ describe('ClockedBlock class', function() {
     var block = new LiveBlocks
     .ClockedBlock((function(assertFiniteNumber) {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        assertFiniteNumber(this.output);
-        this.output = this.output + 1;
+        assertFiniteNumber(input.output);
+        output.output = input.output + 1;
       };
 
-      var pins = {
-        output: true,
-      };
+      var pins = ['output'];
 
       return {
         do: doFunc,
@@ -419,10 +407,7 @@ describe('ClockedBlock class', function() {
     // Make a block
     var block = new LiveBlocks.ClockedBlock((function() {
 
-      var pins = {
-        a: true,
-        b: true,
-      };
+      var pins = ['a', 'b'];
 
       return {pins: pins};
     }()));
@@ -485,14 +470,12 @@ describe('ClockedBlock class', function() {
     // Make a block
     var block = new LiveBlocks.ClockedBlock((function() {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        this.output = this.output + 1;
+        output.output = input.output + 1;
       };
 
-      var pins = {
-        output: true,
-      };
+      var pins = ['output'];
 
       return {
         do: doFunc,
@@ -554,15 +537,13 @@ describe('ClockedBlock class', function() {
     var block = new LiveBlocks
     .ClockedBlock((function(assertFiniteNumber) {
 
-      var doFunc = function() {
+      var doFunc = function(input, output) {
 
-        assertFiniteNumber(this.output);
-        this.output = this.output + 1;
+        assertFiniteNumber(input.output);
+        output.output = input.output + 1;
       };
 
-      var pins = {
-        output: true,
-      };
+      var pins = ['output'];
 
       return {
         do: doFunc,
