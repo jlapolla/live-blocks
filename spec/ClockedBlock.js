@@ -59,6 +59,9 @@ describe('ClockedBlock class', function() {
 
   it('integration test with Clock class', function() {
 
+    // Used to capture "this" in "do" function
+    var thisArg = true;
+
     // Make ramp block
     var rampBlock = new LiveBlocks
     .ClockedBlock((function(assertFiniteNumber) {
@@ -70,6 +73,9 @@ describe('ClockedBlock class', function() {
 
         // Assign to an undefined pin, just to test robustness
         output.noexist = input.output * 2;
+
+        // Copy out "this"
+        thisArg = this;
       };
 
       var pins = ['output'];
@@ -159,6 +165,9 @@ describe('ClockedBlock class', function() {
     clock.tickTock();
     expect(wires.ramp.value()).toBe(0);
     expect(wires.integral.value()).toBe(0);
+
+    // Check that "this" is undefined in "do" function
+    expect(thisArg).toBeUndefined();
   });
 
   it('duplicates injected dependencies', function() {

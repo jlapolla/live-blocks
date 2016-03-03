@@ -60,6 +60,9 @@ describe('ImmediateBlock class', function() {
   it('integration test with Wire class where a wire has multiple connections',
   function() {
 
+    // Used to capture "this" in pin functions
+    var thisArg = true;
+
     // Update log
     var log = [];
 
@@ -71,6 +74,9 @@ describe('ImmediateBlock class', function() {
 
         output.bigger = input.smaller + 1;
         log.push('smaller2bigger');
+
+        // Copy out "this"
+        thisArg = this;
       };
 
       var bigger2smaller = function(input, output) {
@@ -189,6 +195,9 @@ describe('ImmediateBlock class', function() {
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(2);
     expect(log).toEqual(['half2double', 'double2half', 'half2double']);
+
+    // Verify that "this" is undefined in pin functions
+    expect(thisArg).toBeUndefined();
   });
 
   it('integration test with Wire class where the ImmediateBlock'
