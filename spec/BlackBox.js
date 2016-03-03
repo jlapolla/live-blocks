@@ -62,18 +62,18 @@ describe('BlackBox class', function() {
     // Create a prototype "plus one" block
     var plusOne = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
 
-      var aToB = function() {
+      var aToB = function(input, output) {
 
-        assertFiniteNumber(this.a);
+        assertFiniteNumber(input.a);
 
-        this.b = this.a + 1;
+        output.b = input.a + 1;
       };
 
-      var bToA = function() {
+      var bToA = function(input, output) {
 
-        assertFiniteNumber(this.b);
+        assertFiniteNumber(input.b);
 
-        this.a = this.b - 1;
+        output.a = input.b - 1;
       };
 
       var pins = {
@@ -89,18 +89,18 @@ describe('BlackBox class', function() {
     // Create a prototype "times two" block
     var timesTwo = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
 
-      var aToB = function() {
+      var aToB = function(input, output) {
 
-        assertFiniteNumber(this.a);
+        assertFiniteNumber(input.a);
 
-        this.b = this.a * 2;
+        output.b = input.a * 2;
       };
 
-      var bToA = function() {
+      var bToA = function(input, output) {
 
-        assertFiniteNumber(this.b);
+        assertFiniteNumber(input.b);
 
-        this.a = this.b / 2;
+        output.a = input.b / 2;
       };
 
       var pins = {
@@ -224,14 +224,14 @@ describe('BlackBox class', function() {
         var block = new LiveBlocks.ImmediateBlock((function() {
 
           // Constraint functions
-          var aToB = function() {
+          var aToB = function(input, output) {
 
-            this.b = this.a;
+            output.b = input.a;
           };
 
-          var bToA = function() {
+          var bToA = function(input, output) {
 
-            this.a = this.b;
+            output.a = input.b;
           };
 
           // Functions hash
@@ -384,15 +384,15 @@ describe('BlackBox class', function() {
       var plusOne = new LiveBlocks.ImmediateBlock((function() {
 
         // Make constraint functions
-        var smaller2bigger = function() {
+        var smaller2bigger = function(input, output) {
 
-          this.bigger = this.smaller + 1;
+          output.bigger = input.smaller + 1;
           log.push('smaller2bigger');
         };
 
-        var bigger2smaller = function() {
+        var bigger2smaller = function(input, output) {
 
-          this.smaller = this.bigger - 1;
+          output.smaller = input.bigger - 1;
           log.push('bigger2smaller');
         };
 
@@ -403,15 +403,15 @@ describe('BlackBox class', function() {
       var timesTwo = new LiveBlocks.ImmediateBlock((function() {
 
         // Make constraint functions
-        var half2double = function() {
+        var half2double = function(input, output) {
 
-          this.double = this.half * 2;
+          output.double = input.half * 2;
           log.push('half2double');
         };
 
-        var double2half = function() {
+        var double2half = function(input, output) {
 
-          this.half = this.double / 2;
+          output.half = input.double / 2;
           log.push('double2half');
         };
 
@@ -548,22 +548,22 @@ describe('BlackBox class', function() {
         var sin = Math.sin;
         var sqrt = Math.sqrt;
 
-        var rect2polar = function() {
+        var rect2polar = function(input, output) {
 
-          assertFiniteNumber(this.x);
-          assertFiniteNumber(this.y);
+          assertFiniteNumber(input.x);
+          assertFiniteNumber(input.y);
 
-          this.r = sqrt(this.x * this.x + this.y * this.y);
-          this.theta = atan2(this.y, this.x);
+          output.r = sqrt(input.x * input.x + input.y * input.y);
+          output.theta = atan2(input.y, input.x);
         };
 
-        var polar2rect = function() {
+        var polar2rect = function(input, output) {
 
-          assertFiniteNumber(this.r);
-          assertFiniteNumber(this.theta);
+          assertFiniteNumber(input.r);
+          assertFiniteNumber(input.theta);
 
-          this.x = this.r * cos(this.theta);
-          this.y = this.r * sin(this.theta);
+          output.x = input.r * cos(input.theta);
+          output.y = input.r * sin(input.theta);
         };
 
         var pins = {
@@ -704,9 +704,9 @@ describe('BlackBox class', function() {
       // Make two NOR blocks
       var norQ = new LiveBlocks.ImmediateBlock((function() {
 
-        var func = function() {
+        var func = function(input, output) {
 
-          this.out = !(this.a || this.b);
+          output.out = !(input.a || input.b);
         };
 
         var pins = {
@@ -913,28 +913,28 @@ describe('BlackBox class', function() {
 
       var block = new LiveBlocks.ImmediateBlock({
         pins: {
-          a: function() {
+          a: function(input, output) {
 
             // Throw error if "a" is not a number
-            if (typeof this.a !== 'number') {
+            if (typeof input.a !== 'number') {
 
               throw new TypeError('Pin "a" must be a number');
             }
 
             // Copy "a" to "b"
-            this.b = this.a;
+            output.b = input.a;
           },
 
-          b: function() {
+          b: function(input, output) {
 
             // Throw error if "b" is not a number
-            if (typeof this.b !== 'number') {
+            if (typeof input.b !== 'number') {
 
               throw new TypeError('Pin "b" must be a number');
             }
 
             // Copy "b" to "a"
-            this.a = this.b;
+            output.a = input.b;
           },
         },
       });
@@ -984,28 +984,28 @@ describe('BlackBox class', function() {
       // Create a block that throws error
       var block = new LiveBlocks.ImmediateBlock({
         pins: {
-          a: function() {
+          a: function(input, output) {
 
             // Throw error if "a" is not a number
-            if (typeof this.a !== 'number') {
+            if (typeof input.a !== 'number') {
 
               throw new TypeError('Pin "a" must be a number');
             }
 
             // Copy "a" to "b"
-            this.b = this.a;
+            output.b = input.a;
           },
 
-          b: function() {
+          b: function(input, output) {
 
             // Throw error if "b" is not a number
-            if (typeof this.b !== 'number') {
+            if (typeof input.b !== 'number') {
 
               throw new TypeError('Pin "b" must be a number');
             }
 
             // Copy "b" to "a"
-            this.a = this.b;
+            output.a = input.b;
           },
         },
       });
@@ -1238,19 +1238,19 @@ describe('BlackBox class', function() {
 
       var passStringBlock = new LiveBlocks.ImmediateBlock((function() {
 
-        var aToB = function() {
+        var aToB = function(input, output) {
 
-          if (typeof this.a === 'string') {
+          if (typeof input.a === 'string') {
 
-            this.b = this.a;
+            output.b = input.a;
           }
         };
 
-        var bToA = function() {
+        var bToA = function(input, output) {
 
-          if (typeof this.b === 'string') {
+          if (typeof input.b === 'string') {
 
-            this.a = this.b;
+            output.a = input.b;
           }
         };
 

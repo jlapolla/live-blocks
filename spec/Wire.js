@@ -452,9 +452,9 @@ describe('Wire class', function() {
     // Create prototype NOT block
     var not = new LiveBlocks.ImmediateBlock((function() {
 
-      var aToB = function() {
+      var aToB = function(input, output) {
 
-        this.b = !this.a;
+        output.b = input.a;
       };
 
       var pins = {

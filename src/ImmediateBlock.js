@@ -121,25 +121,26 @@ this.ImmediateBlock = (function(hasOwnProperty,
       // Execute pin function in a try block
       try {
 
-        // Call function on wire values hash
-        this._pins[pin].call(wireValues);
+        // Call pin function on wireValues and outputs hash
+        var outputs = {};
+        var fn = this._pins[pin];
+        fn(wireValues, outputs);
         delete this._lastError;
         this.fire('success');
+
+        // Send new wire values to wires
+        for (var name in wires) {
+
+          if (hasOwnProperty(outputs, name)) {
+
+            wires[name].value(outputs[name]);
+          }
+        }
       }
       catch (e) {
 
         this._lastError = e;
         this.fire('error', e);
-      }
-
-      // Handle successful run
-      if (!hasOwnProperty(this, '_lastError')) {
-
-        // Send new wire values to wires
-        for (var name in wires) {
-
-          wires[name].value(wireValues[name]);
-        }
       }
 
       // Proces update queue
