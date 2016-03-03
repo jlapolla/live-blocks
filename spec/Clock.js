@@ -30,7 +30,7 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.SynchronousBlock({
+    blocks[0] = new LiveBlocks.ClockedBlock({
       do: function() {},
 
       pins: {
@@ -124,7 +124,7 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.SynchronousBlock({
+    blocks[0] = new LiveBlocks.ClockedBlock({
       do: function() {},
 
       pins: {
@@ -224,7 +224,7 @@ describe('Clock class', function() {
     var clock = new LiveBlocks.Clock();
 
     // Make some synchronous blocks
-    var block = new LiveBlocks.SynchronousBlock({
+    var block = new LiveBlocks.ClockedBlock({
       do: function() {},
 
       pins: {
@@ -282,7 +282,7 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.SynchronousBlock({
+    blocks[0] = new LiveBlocks.ClockedBlock({
       do: function() {},
 
       pins: {

@@ -1,13 +1,13 @@
 'use strict';
 
-describe('WireConstraint class', function() {
+describe('ImmediateBlock class', function() {
 
   var host = window;
 
   var LiveBlocks = host.LiveBlocks;
 
-  // Skip test if WireConstraint is not exposed
-  if (!LiveBlocks.WireConstraint) {
+  // Skip test if ImmediateBlock is not exposed
+  if (!LiveBlocks.ImmediateBlock) {
 
     return;
   }
@@ -60,22 +60,28 @@ describe('WireConstraint class', function() {
   it('integration test with Wire class where a wire has multiple connections',
   function() {
 
+    // Used to capture "this" in pin functions
+    var thisArg = true;
+
     // Update log
     var log = [];
 
     // Make blocks
-    var plusOne = new LiveBlocks.WireConstraint((function() {
+    var plusOne = new LiveBlocks.ImmediateBlock((function() {
 
       // Make constraint functions
-      var smaller2bigger = function() {
+      var smaller2bigger = function(input, output) {
 
-        this.bigger = this.smaller + 1;
+        output.bigger = input.smaller + 1;
         log.push('smaller2bigger');
+
+        // Copy out "this"
+        thisArg = this;
       };
 
-      var bigger2smaller = function() {
+      var bigger2smaller = function(input, output) {
 
-        this.smaller = this.bigger - 1;
+        output.smaller = input.bigger - 1;
         log.push('bigger2smaller');
       };
 
@@ -83,18 +89,18 @@ describe('WireConstraint class', function() {
       return {pins: {bigger: bigger2smaller, smaller: smaller2bigger}};
     }()));
 
-    var timesTwo = new LiveBlocks.WireConstraint((function() {
+    var timesTwo = new LiveBlocks.ImmediateBlock((function() {
 
       // Make constraint functions
-      var half2double = function() {
+      var half2double = function(input, output) {
 
-        this.double = this.half * 2;
+        output.double = input.half * 2;
         log.push('half2double');
       };
 
-      var double2half = function() {
+      var double2half = function(input, output) {
 
-        this.half = this.double / 2;
+        output.half = input.double / 2;
         log.push('double2half');
       };
 
@@ -189,13 +195,16 @@ describe('WireConstraint class', function() {
     expect(wires[1].value()).toBe(4);
     expect(wires[2].value()).toBe(2);
     expect(log).toEqual(['half2double', 'double2half', 'half2double']);
+
+    // Verify that "this" is undefined in pin functions
+    expect(thisArg).toBeUndefined();
   });
 
-  it('integration test with Wire class where the WireConstraint'
+  it('integration test with Wire class where the ImmediateBlock'
   + 'has multiple inputs and outputs', function() {
 
     // Convert rectangular to polar coordinates
-    var block = new LiveBlocks.WireConstraint(
+    var block = new LiveBlocks.ImmediateBlock(
     (function(Math, assertFiniteNumber) {
 
       var atan2 = Math.atan2;
@@ -203,22 +212,22 @@ describe('WireConstraint class', function() {
       var sin = Math.sin;
       var sqrt = Math.sqrt;
 
-      var rect2polar = function() {
+      var rect2polar = function(input, output) {
 
-        assertFiniteNumber(this.x);
-        assertFiniteNumber(this.y);
+        assertFiniteNumber(input.x);
+        assertFiniteNumber(input.y);
 
-        this.r = sqrt(this.x * this.x + this.y * this.y);
-        this.theta = atan2(this.y, this.x);
+        output.r = sqrt(input.x * input.x + input.y * input.y);
+        output.theta = atan2(input.y, input.x);
       };
 
-      var polar2rect = function() {
+      var polar2rect = function(input, output) {
 
-        assertFiniteNumber(this.r);
-        assertFiniteNumber(this.theta);
+        assertFiniteNumber(input.r);
+        assertFiniteNumber(input.theta);
 
-        this.x = this.r * cos(this.theta);
-        this.y = this.r * sin(this.theta);
+        output.x = input.r * cos(input.theta);
+        output.y = input.r * sin(input.theta);
       };
 
       var pins = {
@@ -327,11 +336,11 @@ describe('WireConstraint class', function() {
     // We will make a flip flop from two cross-coupled NOR gates
 
     // Make two NOR blocks
-    var norQ = new LiveBlocks.WireConstraint((function() {
+    var norQ = new LiveBlocks.ImmediateBlock((function() {
 
-      var func = function() {
+      var func = function(input, output) {
 
-        this.out = !(this.a || this.b);
+        output.out = !(input.a || input.b);
       };
 
       var pins = {
@@ -387,7 +396,7 @@ describe('WireConstraint class', function() {
     };
 
     // Create a wire constraint
-    var wc = new LiveBlocks.WireConstraint({pins: pinHash});
+    var wc = new LiveBlocks.ImmediateBlock({pins: pinHash});
     expect(wc._pins).not.toBe(pinHash);
     expect(wc._pins).toEqual(pinHash);
 
@@ -400,7 +409,7 @@ describe('WireConstraint class', function() {
   it('disconnects pin from wire before connecting to a new wire', function() {
 
     // Create a block
-    var block = new LiveBlocks.WireConstraint({pins: {x: function() {}}});
+    var block = new LiveBlocks.ImmediateBlock({pins: {x: function() {}}});
 
     // Create wires which log their binding events
     var log = [];
@@ -464,18 +473,18 @@ describe('WireConstraint class', function() {
   it('treats disconnected pin as undefined', function() {
 
     // Create a passthrough block
-    var block = new LiveBlocks.WireConstraint({
+    var block = new LiveBlocks.ImmediateBlock({
       pins: {
-        a: function() {
+        a: function(input, output) {
 
           // Copy "a" to "b"
-          this.b = this.a;
+          output.b = input.a;
         },
 
-        b: function() {
+        b: function(input, output) {
 
           // Copy "b" to "a"
-          this.a = this.b;
+          output.a = input.b;
         },
       },
     });
@@ -518,7 +527,7 @@ describe('WireConstraint class', function() {
   it('throws error when connecting to non-existent pin', function() {
 
     // Create a block with no pins
-    var block = new LiveBlocks.WireConstraint({});
+    var block = new LiveBlocks.ImmediateBlock({});
 
     // Create a wire
     var wire = new LiveBlocks.Wire();
@@ -533,30 +542,30 @@ describe('WireConstraint class', function() {
   it('catches exceptions in pin functions', function() {
 
     // Create a block that throws error
-    var block = new LiveBlocks.WireConstraint({
+    var block = new LiveBlocks.ImmediateBlock({
       pins: {
-        a: function() {
+        a: function(input, output) {
 
           // Throw error if "a" is not a number
-          if (typeof this.a !== 'number') {
+          if (typeof input.a !== 'number') {
 
             throw new TypeError('Pin "a" must be a number');
           }
 
           // Copy "a" to "b"
-          this.b = this.a;
+          output.b = input.a;
         },
 
-        b: function() {
+        b: function(input, output) {
 
           // Throw error if "b" is not a number
-          if (typeof this.b !== 'number') {
+          if (typeof input.b !== 'number') {
 
             throw new TypeError('Pin "b" must be a number');
           }
 
           // Copy "b" to "a"
-          this.a = this.b;
+          output.a = input.b;
         },
       },
     });
@@ -583,30 +592,30 @@ describe('WireConstraint class', function() {
   it('fires events on update, success, and error', function() {
 
     // Create a block that throws error
-    var block = new LiveBlocks.WireConstraint({
+    var block = new LiveBlocks.ImmediateBlock({
       pins: {
-        a: function() {
+        a: function(input, output) {
 
           // Throw error if "a" is not a number
-          if (typeof this.a !== 'number') {
+          if (typeof input.a !== 'number') {
 
             throw new TypeError('Pin "a" must be a number');
           }
 
           // Copy "a" to "b"
-          this.b = this.a;
+          output.b = input.a;
         },
 
-        b: function() {
+        b: function(input, output) {
 
           // Throw error if "b" is not a number
-          if (typeof this.b !== 'number') {
+          if (typeof input.b !== 'number') {
 
             throw new TypeError('Pin "b" must be a number');
           }
 
           // Copy "b" to "a"
-          this.a = this.b;
+          output.a = input.b;
         },
       },
     });
@@ -685,7 +694,7 @@ describe('WireConstraint class', function() {
     // Create a block
     var noop = function() {};
 
-    var block = new LiveBlocks.WireConstraint({pins: {a: noop, b: noop}});
+    var block = new LiveBlocks.ImmediateBlock({pins: {a: noop, b: noop}});
 
     // Create logging event listeners
     var log = [];
@@ -768,7 +777,7 @@ describe('WireConstraint class', function() {
   it('pins() iterator iterates over block pins', function() {
 
     // Create a block that throws error
-    var block = new LiveBlocks.WireConstraint((function() {
+    var block = new LiveBlocks.ImmediateBlock((function() {
 
       var noop = function() {};
 

@@ -377,7 +377,7 @@ describe('Wire class', function() {
     // Create a block
     var noop = function() {};
 
-    var block = new LiveBlocks.WireConstraint({pins: {a: noop, b: noop}});
+    var block = new LiveBlocks.ImmediateBlock({pins: {a: noop, b: noop}});
 
     // Register event listeners
     wire.on('connect', listeners.connect);
@@ -450,11 +450,11 @@ describe('Wire class', function() {
   it('handles wire contention issues', function() {
 
     // Create prototype NOT block
-    var not = new LiveBlocks.WireConstraint((function() {
+    var not = new LiveBlocks.ImmediateBlock((function() {
 
-      var aToB = function() {
+      var aToB = function(input, output) {
 
-        this.b = !this.a;
+        output.b = input.a;
       };
 
       var pins = {
@@ -500,7 +500,7 @@ describe('Wire class', function() {
 
     for (var i = 0; i < 3; i++) {
 
-      blocks.push(new LiveBlocks.WireConstraint({pins: {a: noop}}));
+      blocks.push(new LiveBlocks.ImmediateBlock({pins: {a: noop}}));
     }
 
     // Create a wire

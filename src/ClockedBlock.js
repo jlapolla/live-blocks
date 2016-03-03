@@ -1,10 +1,10 @@
-this.SynchronousBlock = (function(EventEmitter,
+this.ClockedBlock = (function(EventEmitter,
   extendClass,
   hasOwnProperty,
   getUndefined,
   ArrayIterator) {
 
-  function SynchronousBlock(hash) {
+  function ClockedBlock(hash) {
 
     EventEmitter.call(this);
 
@@ -13,21 +13,25 @@ this.SynchronousBlock = (function(EventEmitter,
     this._do = hash.do;
 
     // Record pins
-    for (var name in hash.pins) {
+    for (var i = 0; i < hash.pins.length; i++) {
 
-      // If pin is truthy, it's an output
-      // Otherwise it's an input
-      this._pins[name] = !!hash.pins[name];
+      this._pins[hash.pins[i]] = this._pins;
     }
   }
 
-  extendClass(EventEmitter, SynchronousBlock);
-  var P = SynchronousBlock.prototype;
+  extendClass(EventEmitter, ClockedBlock);
+  var P = ClockedBlock.prototype;
   P.duplicate = function() {
 
-    return new SynchronousBlock({
+    var pinsArray = [];
+    for (var name in this._pins) {
+
+      pinsArray.push(name);
+    }
+
+    return new ClockedBlock({
       do: this._do,
-      pins: this._pins,
+      pins: pinsArray,
     });
   };
 
@@ -144,10 +148,12 @@ this.SynchronousBlock = (function(EventEmitter,
     // Execute do function in a try block
     try {
 
-      // Call do function on wire values hash
-      this._do.call(wireValues);
+      // Call do function on wire values and outputs hash
+      var fn = this._do;
+      var outputs = {};
+      fn(wireValues, outputs);
       delete this._lastError;
-      this._nextValues = wireValues;
+      this._nextValues = outputs;
     }
     catch (e) {
 
@@ -170,18 +176,10 @@ this.SynchronousBlock = (function(EventEmitter,
         wires[name] = this._wires[name];
       }
 
-      // Defensive copy hash of pins
-      var pins = {};
-      for (var name in this._pins) {
-
-        pins[name] = this._pins[name];
-      }
-
       // Send new wire values to wires
-      for (var name in wires) {
+      for (var name in this._nextValues) {
 
-        // Pin is considered an output if it is truthy
-        if (pins[name]) {
+        if (hasOwnProperty(wires, name)) {
 
           wires[name].value(this._nextValues[name]);
         }
@@ -192,7 +190,7 @@ this.SynchronousBlock = (function(EventEmitter,
     }
   };
 
-  return SynchronousBlock;
+  return ClockedBlock;
 }(this.EventEmitter,
   this.extendClass,
   this.hasOwnProperty,

@@ -1,4 +1,4 @@
-this.WireConstraint = (function(hasOwnProperty,
+this.ImmediateBlock = (function(hasOwnProperty,
   Queue,
   Error,
   extendClass,
@@ -19,7 +19,7 @@ this.WireConstraint = (function(hasOwnProperty,
     }
   };
 
-  function WireConstraint(hash) {
+  function ImmediateBlock(hash) {
 
     EventEmitter.call(this);
 
@@ -34,11 +34,11 @@ this.WireConstraint = (function(hasOwnProperty,
     }
   }
 
-  extendClass(EventEmitter, WireConstraint);
-  var P = WireConstraint.prototype;
+  extendClass(EventEmitter, ImmediateBlock);
+  var P = ImmediateBlock.prototype;
   P.duplicate = function() {
 
-    return new WireConstraint({
+    return new ImmediateBlock({
       pins: this._pins,
     });
   };
@@ -121,25 +121,26 @@ this.WireConstraint = (function(hasOwnProperty,
       // Execute pin function in a try block
       try {
 
-        // Call function on wire values hash
-        this._pins[pin].call(wireValues);
+        // Call pin function on wireValues and outputs hash
+        var outputs = {};
+        var fn = this._pins[pin];
+        fn(wireValues, outputs);
         delete this._lastError;
         this.fire('success');
+
+        // Send new wire values to wires
+        for (var name in wires) {
+
+          if (hasOwnProperty(outputs, name)) {
+
+            wires[name].value(outputs[name]);
+          }
+        }
       }
       catch (e) {
 
         this._lastError = e;
         this.fire('error', e);
-      }
-
-      // Handle successful run
-      if (!hasOwnProperty(this, '_lastError')) {
-
-        // Send new wire values to wires
-        for (var name in wires) {
-
-          wires[name].value(wireValues[name]);
-        }
       }
 
       // Proces update queue
@@ -170,7 +171,7 @@ this.WireConstraint = (function(hasOwnProperty,
     return new ArrayIterator(pins);
   };
 
-  return WireConstraint;
+  return ImmediateBlock;
 }(this.hasOwnProperty,
   this.Queue,
   host.Error,
