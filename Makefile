@@ -11,6 +11,7 @@ $(eval $(d)order += $(d)src/EventEmitter.js)
 $(eval $(d)order += $(d)src/Wire.js)
 $(eval $(d)order += $(d)src/ImmediateBlock.js)
 $(eval $(d)order += $(d)src/ClockedBlock.js)
+$(eval $(d)order += $(d)src/TimedBlock.js)
 $(eval $(d)order += $(d)src/Clock.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
 

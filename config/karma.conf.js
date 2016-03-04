@@ -28,6 +28,7 @@ module.exports = function(config) {
       'test/Wire.js',
       'test/ImmediateBlock.js',
       'test/ClockedBlock.js',
+      'test/TimedBlock.js',
       'test/Clock.js',
       'test/BlackBox.js',
       'spec/*.js'
