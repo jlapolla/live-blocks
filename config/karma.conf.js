@@ -30,6 +30,7 @@ module.exports = function(config) {
       'test/ClockedBlock.js',
       'test/TimedBlock.js',
       'test/Clock.js',
+      'test/ManualTimer.js',
       'test/BlackBox.js',
       'spec/*.js'
     ],
