@@ -175,7 +175,7 @@ this.TimedBlock = (function(EventEmitter,
 
       for (var name in this._previousValues) {
 
-        if (!hasOwnProperty(inputs, name)) {
+        if (!hasOwnProperty(input, name)) {
 
           // A wire was disconnected since we last ran
           change = true;
@@ -197,17 +197,17 @@ this.TimedBlock = (function(EventEmitter,
 
         // Call do function on input, output, and previous values
         var fn = this._do;
-        var outputs = {};
-        this._tickRequested = !!fn(inputs, outputs, this._previousValues);
+        var output = {};
+        this._tickRequested = !!fn(input, output, this._previousValues);
         delete this._lastError;
-        this._nextValues = outputs;
+        this._nextValues = output;
 
-        // N.b. inputs is probably untouched, so we need to overlay the outputs
-        // on inputs to arrive at our new previous values.
+        // N.b. input is probably untouched, so we need to overlay the output
+        // on input to arrive at our new previous values.
 
-        // inputs may have been changed if it contains mutable objects. But if
-        // the "do" function changes inputs or previous, then there's nothing
-        // we can do to stop that. If it changes a mutable object in inputs or
+        // input may have been changed if it contains mutable objects. But if
+        // the "do" function changes input or previous, then there's nothing
+        // we can do to stop that. If it changes a mutable object in input or
         // previous, it may have changed the mutable object held by the wire
         // itself, without the wire's knowledge. There is nothing we can do
         // about this. It's up to the circuit designer to ensure that nothing
@@ -215,12 +215,12 @@ this.TimedBlock = (function(EventEmitter,
         // "do" function.
 
         // Record previous values
-        for (var name in outputs) {
+        for (var name in output) {
 
-          inputs[name] = outputs[name];
+          input[name] = output[name];
         }
 
-        this._previousValues = inputs;
+        this._previousValues = input;
 
         // Schedule new tick if tick requested
         if (this._tickRequested) {
