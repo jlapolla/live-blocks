@@ -184,7 +184,7 @@ this.TimedBlock = (function(EventEmitter,
     }
 
     // Run tick event if change or tick was explicitly requested
-    if (change || this._tickRequested) {
+    if (change || this._tickRequested || this._lastError) {
 
       // Fire tick event
       this.fire('tick');
