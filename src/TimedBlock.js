@@ -121,12 +121,6 @@ this.TimedBlock = (function(EventEmitter,
 
       // We are setting a new timer
 
-      // Do nothing if we are already using this timer
-      if (this._timer === timer) {
-
-        return;
-      }
-
       // Unset old timer if any
       this.unsetTimer();
 
@@ -149,8 +143,6 @@ this.TimedBlock = (function(EventEmitter,
     var input = {};
     for (var name in this._wires) {
 
-      var value = this._wires[name].value();
-
       // Check for change
       if (hasOwnProperty(this._previousValues, name)
         && this._wires[name].equalTo(this._previousValues[name])) {
@@ -166,7 +158,7 @@ this.TimedBlock = (function(EventEmitter,
         change = true;
 
         // Get value directly from the wire
-        input[name] = value;
+        input[name] = this._wires[name].value();
       }
     }
 
@@ -217,7 +209,10 @@ this.TimedBlock = (function(EventEmitter,
         // Record previous values
         for (var name in output) {
 
-          input[name] = output[name];
+          if (hasOwnProperty(input, name)) {
+
+            input[name] = output[name];
+          }
         }
 
         this._previousValues = input;
