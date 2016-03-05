@@ -171,7 +171,7 @@ this.TimedBlock = (function(EventEmitter,
     }
 
     // Check previous values for changes
-    if (!change) {
+    if (!(change || this._tickRequested)) {
 
       for (var name in this._previousValues) {
 
