@@ -451,7 +451,7 @@ describe('TimedBlock class', function() {
   it('fires events on pin connect and disconnect', function() {
 
     // Create a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function() {};
 
@@ -551,7 +551,7 @@ describe('TimedBlock class', function() {
   it('throws error on connect to non-existent pin', function() {
 
     // Create a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function() {};
 
@@ -612,7 +612,7 @@ describe('TimedBlock class', function() {
   it('pins() iterator iterates over pins', function() {
 
     // Create a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function() {};
 
@@ -669,7 +669,7 @@ describe('TimedBlock class', function() {
   function() {
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function() {};
 
@@ -896,7 +896,7 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function(input, output, previous) {
 
@@ -908,10 +908,12 @@ describe('TimedBlock class', function() {
 
           logObj.input[name] = input[name];
         }
+
         for (var name in previous) {
 
           logObj.previous[name] = previous[name];
         }
+
         log.push(logObj);
 
         output.a = input.a.toUpperCase();
@@ -932,7 +934,7 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make a wire that ignores case in strings
-    var wire = new LiveBlocks.Wire((function(){
+    var wire = new LiveBlocks.Wire((function() {
 
       // Grab the default equalTo function
       var defaultEqualTo = new LiveBlocks.Wire().equalTo;
@@ -1013,7 +1015,7 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function(input, output, previous) {
 
@@ -1025,10 +1027,12 @@ describe('TimedBlock class', function() {
 
           logObj.input[name] = input[name];
         }
+
         for (var name in previous) {
 
           logObj.previous[name] = previous[name];
         }
+
         log.push(logObj);
       };
 
@@ -1139,7 +1143,7 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function(input, output, previous) {
 
@@ -1151,10 +1155,12 @@ describe('TimedBlock class', function() {
 
           logObj.input[name] = input[name];
         }
+
         for (var name in previous) {
 
           logObj.previous[name] = previous[name];
         }
+
         log.push(logObj);
 
         output.a = 'a';
@@ -1235,7 +1241,7 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function(input, output, previous) {
 
@@ -1247,10 +1253,12 @@ describe('TimedBlock class', function() {
 
           logObj.input[name] = input[name];
         }
+
         for (var name in previous) {
 
           logObj.previous[name] = previous[name];
         }
+
         log.push(logObj);
 
         output.a = 'a';
@@ -1305,7 +1313,7 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
       var doFunc = function(input, output, previous) {
 
@@ -1317,10 +1325,12 @@ describe('TimedBlock class', function() {
 
           logObj.input[name] = input[name];
         }
+
         for (var name in previous) {
 
           logObj.previous[name] = previous[name];
         }
+
         log.push(logObj);
 
         output.a = 'a';
@@ -1384,9 +1394,9 @@ describe('TimedBlock class', function() {
     var log = [];
 
     // Make a block
-    var block = new LiveBlocks.TimedBlock((function(){
+    var block = new LiveBlocks.TimedBlock((function() {
 
-      var doFunc = function(input, output, previous) {
+      var doFunc = function(input, output) {
 
         log.push(this);
 
