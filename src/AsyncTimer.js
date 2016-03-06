@@ -72,35 +72,45 @@ this.AsyncTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
     }
   };
 
-  P.enable = function() {
+  P.enabled = function(newValue) {
 
-    // Set enabled flag
-    this._enabled = true;
+    if (arguments.length) {
 
-    // Set timeout if no timeout exists and we have scheduled blocks
-    if (!(hasOwnProperty(this, '_timeoutId')
-      || this._set.values().peek().done)) {
+      // We are setting the value
+      if (newValue) {
 
-      this._timeoutId = setTimeout(this._tickTock);
+        // We are enabling the timer
+
+        // Set enabled flag
+        this._enabled = true;
+
+        // Set timeout if no timeout exists and we have scheduled blocks
+        if (!(hasOwnProperty(this, '_timeoutId')
+          || this._set.values().peek().done)) {
+
+          this._timeoutId = setTimeout(this._tickTock);
+        }
+      }
+      else {
+
+        // We are disabling the timer
+
+        // Reset enabled flag
+        this._enabled = false;
+
+        // Clear any existing timeout
+        if (hasOwnProperty(this, '_timeoutId')) {
+
+          clearTimeout(this._timeoutId);
+          delete this._timeoutId;
+        }
+      }
     }
-  };
+    else {
 
-  P.disable = function() {
-
-    // Reset enabled flag
-    this._enabled = false;
-
-    // Clear any existing timeout
-    if (hasOwnProperty(this, '_timeoutId')) {
-
-      clearTimeout(this._timeoutId);
-      delete this._timeoutId;
+      // We are getting the value
+      return this._enabled;
     }
-  };
-
-  P.enabled = function() {
-
-    return this._enabled;
   };
 
   return AsyncTimer;
