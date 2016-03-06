@@ -14,6 +14,7 @@ $(eval $(d)order += $(d)src/ClockedBlock.js)
 $(eval $(d)order += $(d)src/TimedBlock.js)
 $(eval $(d)order += $(d)src/Clock.js)
 $(eval $(d)order += $(d)src/ManualTimer.js)
+$(eval $(d)order += $(d)src/AsyncTimer.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
 
 # Source files wrapped in "test" IIFE
