@@ -39,6 +39,20 @@ this.ManualTimer = (function(Set) {
     this._set.add(block);
   };
 
+  P.cancel = function(block) {
+
+    if (arguments.length) {
+
+      // We are cancelling a single block
+      this._set.remove(block);
+    }
+    else {
+
+      // We are cancelling all blocks
+      this._set = new Set();
+    }
+  };
+
   return ManualTimer;
 }(this.Set));
 

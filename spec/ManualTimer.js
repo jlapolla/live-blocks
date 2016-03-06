@@ -245,5 +245,81 @@ describe('ManualTimer class', function() {
     timer.tickTock();
     expect(log.length).toBe(0);
   });
+
+  it('cancel() cancels a single block, or all blocks', function() {
+
+    // Make a timer
+    var timer = new LiveBlocks.ManualTimer();
+
+    // Make a log
+    var log = [];
+
+    // Make fake block functions;
+    var schedule = function() {
+
+      timer.schedule(this);
+    };
+
+    var tick = function() {
+
+      log.push({event: 'tick', object: this});
+    };
+
+    var tock = function() {
+
+      log.push({event: 'tock', object: this});
+    };
+
+    // Make some fake blocks
+    var block = [];
+    for (var i = 0; i < 2; i++) {
+
+      block.push({
+        schedule: schedule,
+        tick: tick,
+        tock: tock,
+      });
+    }
+
+    // Tick timer
+    timer.tickTock();
+    expect(log.length).toBe(0);
+
+    // Schedule both blocks
+    block[0].schedule();
+    block[1].schedule();
+
+    // Cancel all blocks
+    timer.cancel();
+    timer.cancel(); // Call twice for robustness
+
+    // Tick timer
+    timer.tickTock();
+    expect(log.length).toBe(0);
+
+    // Schedule both blocks
+    block[0].schedule();
+    block[1].schedule();
+
+    // Cancel block 0
+    timer.cancel(block[0]);
+    timer.cancel(block[0]); // Call twice for robustness
+
+    // Try to cancel an unscheduled block, for robustness testing
+    timer.cancel({});
+
+    // Tick timer
+    timer.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('tick');
+    expect(log[0].object).toBe(block[1]);
+    expect(log[1].event).toBe('tock');
+    expect(log[1].object).toBe(block[1]);
+    log.length = 0;
+
+    // Tick timer
+    timer.tickTock();
+    expect(log.length).toBe(0);
+  });
 });
 
