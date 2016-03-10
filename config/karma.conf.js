@@ -32,6 +32,7 @@ module.exports = function(config) {
       'test/Clock.js',
       'test/ManualTimer.js',
       'test/AsyncTimer.js',
+      'test/IntervalTimer.js',
       'test/BlackBox.js',
       'spec/*.js'
     ],
