@@ -28,7 +28,11 @@ module.exports = function(config) {
       'test/Wire.js',
       'test/ImmediateBlock.js',
       'test/ClockedBlock.js',
+      'test/TimedBlock.js',
       'test/Clock.js',
+      'test/ManualTimer.js',
+      'test/AsyncTimer.js',
+      'test/IntervalTimer.js',
       'test/BlackBox.js',
       'spec/*.js'
     ],
