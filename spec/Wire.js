@@ -111,7 +111,7 @@ describe('Wire class', function() {
     wire.bind(blocks[0], '1');
     wire.bind(blocks[1], '0');
     wire.bind(blocks[1], '1');
-    wire.value(true);
+    wire.notify();
     expect(log.length).toBe(4);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].pin).toBe('0');
@@ -127,7 +127,7 @@ describe('Wire class', function() {
 
     // Bind duplicate block pin to wire
     wire.bind(blocks[0], '0');
-    wire.value(false);
+    wire.notify();
     expect(log.length).toBe(4);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].pin).toBe('0');
@@ -162,7 +162,7 @@ describe('Wire class', function() {
     wire.bind(blocks[0], '1');
     wire.bind(blocks[1], '0');
     wire.bind(blocks[1], '1');
-    wire.value(true);
+    wire.notify();
     expect(log.length).toBe(4);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].pin).toBe('0');
@@ -178,7 +178,7 @@ describe('Wire class', function() {
 
     // Unbind block pin
     wire.unbind(blocks[0], '0');
-    wire.value(false);
+    wire.notify();
     expect(log.length).toBe(3);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].pin).toBe('1');
@@ -194,7 +194,7 @@ describe('Wire class', function() {
     wire.unbind(blocks[0], '0');
     wire.unbind(blocks[0], 'a');
     wire.unbind({}, '1');
-    wire.value(true);
+    wire.notify();
     expect(log.length).toBe(3);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].pin).toBe('1');
@@ -228,7 +228,7 @@ describe('Wire class', function() {
     wire.bind(blocks[0], '0');
     wire.bind(blocks[1], '1');
     wire.bind(blocks[2], '2');
-    wire.value(true);
+    wire.notify();
     expect(log.length).toBe(3);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].prop).toBe('0');
@@ -241,7 +241,7 @@ describe('Wire class', function() {
     log.length = 0;
 
     // Notify again
-    wire.value(false);
+    wire.notify();
     expect(log.length).toBe(3);
     expect(log[0].block).toBe(blocks[0]);
     expect(log[0].prop).toBe('0');

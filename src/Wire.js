@@ -6,18 +6,6 @@ this.Wire = (function(getUndefined,
   extendClass,
   ArrayIterator) {
 
-  var _notify = function() {
-
-    // Get bindings list
-    var bindings = this._bindings;
-
-    // Update each bound block
-    for (var i = 0; i < bindings.length; i++) {
-
-      bindings[i].block.update(bindings[i].pin);
-    }
-  };
-
   function Wire(hash) {
 
     EventEmitter.call(this);
@@ -151,6 +139,18 @@ this.Wire = (function(getUndefined,
     this._bindings = newBindings;
   };
 
+  P.notify = function() {
+
+    // Get bindings list
+    var bindings = this._bindings;
+
+    // Update each bound block
+    for (var i = 0; i < bindings.length; i++) {
+
+      bindings[i].block.update(bindings[i].pin);
+    }
+  };
+
   P.value = function(newValue) {
 
     if (!arguments.length) {
@@ -202,7 +202,7 @@ this.Wire = (function(getUndefined,
           this.fire('value', newValue);
 
           // Notify bound blocks
-          _notify.call(this);
+          this.notify();
         }
 
         // Process value queue
