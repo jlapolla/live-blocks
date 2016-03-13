@@ -21,20 +21,6 @@ this.ClockedBlock = (function(EventEmitter,
 
   extendClass(EventEmitter, ClockedBlock);
   var P = ClockedBlock.prototype;
-  P.duplicate = function() {
-
-    var pinsArray = [];
-    for (var name in this._pins) {
-
-      pinsArray.push(name);
-    }
-
-    return new ClockedBlock({
-      do: this._do,
-      pins: pinsArray,
-    });
-  };
-
   P.error = function() {
 
     return this._lastError;
