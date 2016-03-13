@@ -342,23 +342,27 @@ describe('ImmediateBlock class', function() {
     // We will make a flip flop from two cross-coupled NOR gates
 
     // Make two NOR blocks
-    var norQ = new LiveBlocks.ImmediateBlock((function() {
+    var norFactory = ((function() {
 
       var func = function(input, output) {
 
         output.out = !(input.a || input.b);
       };
 
-      var pins = {
-        a: func,
-        b: func,
-        out: func,
-      };
+      return function() {
 
-      return {pins: pins};
+        var pins = {
+          a: func,
+          b: func,
+          out: func,
+        };
+
+        return new LiveBlocks.ImmediateBlock({pins: pins});
+      };
     }()));
 
-    var norNotQ = norQ.duplicate();
+    var norQ = norFactory();
+    var norNotQ = norFactory();
 
     // Make some wires
     var R = new LiveBlocks.Wire();
@@ -390,26 +394,6 @@ describe('ImmediateBlock class', function() {
     expect(S.value()).toBe(false);
     expect(Q.value()).toBe(false);
     expect(notQ.value()).toBe(true);
-  });
-
-  it('duplicates injected pin dependencies', function() {
-
-    // Create pin hash
-    var pinHash = {
-      a: function() {},
-
-      b: function() {},
-    };
-
-    // Create a wire constraint
-    var wc = new LiveBlocks.ImmediateBlock({pins: pinHash});
-    expect(wc._pins).not.toBe(pinHash);
-    expect(wc._pins).toEqual(pinHash);
-
-    // Duplicate wire constraint
-    var duplicate = wc.duplicate();
-    expect(duplicate._pins).not.toBe(wc._pins);
-    expect(duplicate._pins).toEqual(pinHash);
   });
 
   it('disconnects pin from wire before connecting to a new wire', function() {

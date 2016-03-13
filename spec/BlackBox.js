@@ -66,7 +66,7 @@ describe('BlackBox class', function() {
   it('integration test with multiple internal blocks', function() {
 
     // Create a prototype "plus one" block
-    var plusOne = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
+    var plusOneFactory = ((function(assertFiniteNumber) {
 
       var aToB = function(input, output) {
 
@@ -82,18 +82,19 @@ describe('BlackBox class', function() {
         output.a = input.b - 1;
       };
 
-      var pins = {
-        a: aToB,
-        b: bToA,
-      };
+      return function() {
 
-      return {
-        pins: pins,
+        var pins = {
+          a: aToB,
+          b: bToA,
+        };
+
+        return new LiveBlocks.ImmediateBlock({pins: pins});
       };
     }(assertFiniteNumber)));
 
     // Create a prototype "times two" block
-    var timesTwo = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
+    var timesTwoFactory = ((function(assertFiniteNumber) {
 
       var aToB = function(input, output) {
 
@@ -109,20 +110,21 @@ describe('BlackBox class', function() {
         output.a = input.b / 2;
       };
 
-      var pins = {
-        a: aToB,
-        b: bToA,
-      };
+      return function() {
 
-      return {
-        pins: pins,
+        var pins = {
+          a: aToB,
+          b: bToA,
+        };
+
+        return new LiveBlocks.ImmediateBlock({pins: pins});
       };
     }(assertFiniteNumber)));
 
     // Create blocks and wires
     var blocks = {
-      plusOne: plusOne.duplicate(),
-      timesTwo: timesTwo.duplicate(),
+      plusOne: plusOneFactory(),
+      timesTwo: timesTwoFactory(),
     };
     var wires = {
       low: floatWireFactory(),
@@ -665,23 +667,27 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function() {
 
       // Make two NOR blocks
-      var norQ = new LiveBlocks.ImmediateBlock((function() {
+      var norFactory = ((function() {
 
         var func = function(input, output) {
 
           output.out = !(input.a || input.b);
         };
 
-        var pins = {
-          a: func,
-          b: func,
-          out: func,
-        };
+        return function() {
 
-        return {pins: pins};
+          var pins = {
+            a: func,
+            b: func,
+            out: func,
+          };
+
+          return new LiveBlocks.ImmediateBlock({pins: pins});
+        };
       }()));
 
-      var norNotQ = norQ.duplicate();
+      var norQ = norFactory();
+      var norNotQ = norFactory();
 
       // Make some wires
       var R = new LiveBlocks.Wire();

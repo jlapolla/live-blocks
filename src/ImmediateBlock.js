@@ -36,13 +36,6 @@ this.ImmediateBlock = (function(hasOwnProperty,
 
   extendClass(EventEmitter, ImmediateBlock);
   var P = ImmediateBlock.prototype;
-  P.duplicate = function() {
-
-    return new ImmediateBlock({
-      pins: this._pins,
-    });
-  };
-
   P.error = function() {
 
     return this._lastError;
