@@ -23,11 +23,6 @@ this.Wire = (function(getUndefined,
 
   extendClass(EventEmitter, Wire);
   var P = Wire.prototype;
-  P.duplicate = function() {
-
-    return new Wire();
-  };
-
   P.equalTo = function(value) {
 
     // Compare with ===, but let NaN === NaN be true

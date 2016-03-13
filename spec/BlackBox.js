@@ -146,9 +146,9 @@ describe('BlackBox class', function() {
     });
 
     // Connect BlackBox to new wires
-    wires.low1 = wires.low.duplicate();
-    wires.med1 = wires.med.duplicate();
-    wires.high1 = wires.high.duplicate();
+    wires.low1 = floatWireFactory();
+    wires.med1 = floatWireFactory();
+    wires.high1 = floatWireFactory();
     blocks.blackBox1.connect('low', wires.low1);
     blocks.blackBox1.connect('med', wires.med1);
     blocks.blackBox1.connect('high', wires.high1);
@@ -1227,7 +1227,7 @@ describe('BlackBox class', function() {
 
       // Make wires
       var wireA = new LiveBlocks.Wire();
-      var wireB = wireA.duplicate();
+      var wireB = new LiveBlocks.Wire();
 
       // Connect blocks to wires
       passStringBlock.connect('a', wireA);
