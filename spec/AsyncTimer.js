@@ -16,18 +16,6 @@ describe('AsyncTimer class', function() {
     setTimeout = window.setTimeout;
   });
 
-  it('duplicates itself', function() {
-
-    // Make a timer
-    var original = new LiveBlocks.AsyncTimer();
-    expect(original instanceof LiveBlocks.AsyncTimer).toBe(true);
-
-    // Duplicate
-    var duplicate = original.duplicate();
-    expect(duplicate).not.toBe(original);
-    expect(duplicate instanceof LiveBlocks.AsyncTimer).toBe(true);
-  });
-
   it('tickTock() calls tick() once on each scheduled block, then calls tock()',
   function(done) {
 
