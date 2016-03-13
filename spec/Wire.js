@@ -27,45 +27,6 @@ describe('Wire class', function() {
     expect(duplicate.equalTo).toBe(neverEqual);
   });
 
-  it('duplicates initial value functions', function() {
-
-    // Create initial value function
-    var initialValueFunction = function() {
-
-      return {a: 1};
-    };
-
-    // Create a wire
-    var wire = new LiveBlocks.Wire({
-      initialValueFunction: initialValueFunction
-    });
-    expect(wire.value()).toEqual({a: 1});
-
-    // Store the wire's initial value
-    var wireInitialValue = wire.value();
-
-    // Change the wire's value
-    wire.value(true);
-    expect(wire.value()).toBe(true);
-
-    // Duplicate wire
-    var duplicate = wire.duplicate();
-    expect(duplicate.value()).toEqual({a: 1});
-
-    // Store the duplicate's initial value
-    var duplicateInitialValue = duplicate.value();
-
-    // Change the duplicate's value
-    duplicate.value(false);
-    expect(duplicate.value()).toBe(false);
-
-    // Wire's initial value is not the same object as duplicate's initial value
-    expect(wireInitialValue).toEqual({a: 1});
-    expect(duplicateInitialValue).toEqual({a: 1});
-    expect(wireInitialValue).toEqual(duplicateInitialValue);
-    expect(wireInitialValue).not.toBe(duplicateInitialValue);
-  });
-
   it('does not bind duplicate block pins', function() {
 
     // Create a wire
