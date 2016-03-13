@@ -97,11 +97,7 @@ this.ClockedBlock = (function(EventEmitter,
 
   P.clock = function(clock) {
 
-    if (!arguments.length) {
-
-      return this._clock; // We are getting the clock
-    }
-    else {
+    if (arguments.length) {
 
       // We are setting a new clock
 
@@ -119,6 +115,10 @@ this.ClockedBlock = (function(EventEmitter,
 
       // Bind to clock
       clock.bind(this);
+    }
+    else {
+
+      return this._clock; // We are getting the clock
     }
   };
 

@@ -113,11 +113,7 @@ this.TimedBlock = (function(EventEmitter,
 
   P.timer = function(timer) {
 
-    if (!arguments.length) {
-
-      return this._timer; // We are getting the timer
-    }
-    else {
+    if (arguments.length) {
 
       // We are setting a new timer
 
@@ -126,6 +122,10 @@ this.TimedBlock = (function(EventEmitter,
 
       // Record new timer
       this._timer = timer;
+    }
+    else {
+
+      return this._timer; // We are getting the timer
     }
   };
 

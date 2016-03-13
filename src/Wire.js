@@ -153,11 +153,7 @@ this.Wire = (function(getUndefined,
 
   P.value = function(newValue) {
 
-    if (!arguments.length) {
-
-      return this._value; // We are getting the value
-    }
-    else {
+    if (arguments.length) {
 
       // We are setting a new value
 
@@ -219,6 +215,10 @@ this.Wire = (function(getUndefined,
 
         // Restart loop
       }
+    }
+    else {
+
+      return this._value; // We are getting the value
     }
   };
 
