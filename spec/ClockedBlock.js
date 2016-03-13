@@ -13,7 +13,6 @@ describe('ClockedBlock class', function() {
   }
 
   var assertFiniteNumber;
-  var floatWire;
   beforeEach(function() {
 
     assertFiniteNumber = (function(isFinite, Error) {
@@ -26,35 +25,6 @@ describe('ClockedBlock class', function() {
         }
       };
     }(host.isFinite, host.Error));
-
-    // Create a prototype floating point value wire
-    floatWire = new LiveBlocks.Wire((function(Math, isFinite) {
-
-      var abs = Math.abs;
-      var epsilon = 1e-14;
-
-      var equalTo = function(value) {
-
-        if (
-          typeof value === 'number'
-          && typeof this._value === 'number'
-          && isFinite(value)
-          && isFinite(this._value)) {
-
-          return abs(this._value - value) < epsilon;
-        }
-        else if (value !== value) {
-
-          return this._value !== this._value;
-        }
-        else {
-
-          return value === this._value;
-        }
-      };
-
-      return {equalTo: equalTo};
-    }(host.Math, host.isFinite)));
   });
 
   it('integration test with Clock class', function() {
