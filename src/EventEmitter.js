@@ -90,7 +90,7 @@ this.EventEmitter = (function(hasOwnProperty) {
     }
 
     // Call each callback
-    if (typeof arg !== 'undefined') {
+    if (arguments.length > 1) {
 
       for (var i = 0; i < listeners.length; i++) {
 

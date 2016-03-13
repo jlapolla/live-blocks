@@ -15,7 +15,7 @@ this.Wire = (function(getUndefined,
     this._valueQueue = new Queue();
 
     // Process argument
-    if (typeof hash !== 'undefined') {
+    if (arguments.length) {
 
       // Add equalTo function if supplied
       if (hasOwnProperty(hash, 'equalTo')) {
