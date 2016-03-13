@@ -47,11 +47,6 @@ this.IntervalTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
 
   IntervalTimer.prototype = {};
   var P = IntervalTimer.prototype;
-  P.duplicate = function() {
-
-    return new IntervalTimer();
-  };
-
   P.schedule = function(block) {
 
     this._set.add(block);
