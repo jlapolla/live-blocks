@@ -27,28 +27,6 @@ describe('Wire class', function() {
     expect(duplicate.equalTo).toBe(neverEqual);
   });
 
-  it('duplicates initial values', function() {
-
-    // Create initial value
-    var initialValue = {};
-
-    // Create a wire
-    var wire = new LiveBlocks.Wire({initialValue: initialValue});
-    expect(wire.value()).toBe(initialValue);
-
-    // Change the wire's value
-    wire.value(true);
-    expect(wire.value()).toBe(true);
-
-    // Duplicate wire
-    var duplicate = wire.duplicate();
-    expect(duplicate.value()).toBe(initialValue);
-
-    // Change the duplicate's value
-    duplicate.value(false);
-    expect(duplicate.value()).toBe(false);
-  });
-
   it('duplicates initial value functions', function() {
 
     // Create initial value function

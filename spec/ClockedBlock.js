@@ -78,9 +78,13 @@ describe('ClockedBlock class', function() {
 
     // Make wires
     var wires = {
-      ramp: new LiveBlocks.Wire({initialValue: 0}),
-      integral: new LiveBlocks.Wire({initialValue: 0}),
+      ramp: new LiveBlocks.Wire(),
+      integral: new LiveBlocks.Wire(),
     };
+
+    // Set initial values
+    wires.ramp.value(0);
+    wires.integral.value(0);
 
     // Connect blocks to wires
     rampBlock.connect('output', wires.ramp);
@@ -357,7 +361,8 @@ describe('ClockedBlock class', function() {
     }(assertFiniteNumber)));
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect block to wire
     block.connect('output', wire);
@@ -470,7 +475,8 @@ describe('ClockedBlock class', function() {
     }
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect wire to block
     block.connect('output', wire);
@@ -531,7 +537,8 @@ describe('ClockedBlock class', function() {
     }(assertFiniteNumber)));
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect block to wire
     block.connect('output', wire);

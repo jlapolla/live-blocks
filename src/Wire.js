@@ -23,13 +23,6 @@ this.Wire = (function(getUndefined,
         this.equalTo = hash.equalTo;
       }
 
-      // Add initial value if supplied
-      if (hasOwnProperty(hash, 'initialValue')) {
-
-        this._initialValue = hash.initialValue;
-        this._value = hash.initialValue;
-      }
-
       // Add initial value function if supplied
       if (hasOwnProperty(hash, 'initialValueFunction')) {
 
@@ -54,11 +47,6 @@ this.Wire = (function(getUndefined,
     if (hasOwnProperty(this, 'equalTo')) {
 
       hash.equalTo = this.equalTo;
-    }
-
-    if (hasOwnProperty(this, '_initialValue')) {
-
-      hash.initialValue = this._initialValue;
     }
 
     if (hasOwnProperty(this, '_initialValueFunction')) {

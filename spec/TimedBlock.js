@@ -120,10 +120,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 1});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(1);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -379,10 +385,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 4});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(4);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -832,10 +844,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 4});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(4);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -954,9 +972,9 @@ describe('TimedBlock class', function() {
 
       return {
         equalTo: equalTo,
-        initialValue: 'a',
       };
     }()));
+    wire.value('a');
 
     // Connect block to wire
     block.connect('a', wire);
