@@ -7,11 +7,6 @@ this.Clock = (function(Set) {
 
   Clock.prototype = {};
   var P = Clock.prototype;
-  P.duplicate = function() {
-
-    return new Clock();
-  };
-
   P.tickTock = function() {
 
     // Get iterator over blocks

@@ -10,18 +10,6 @@ describe('Clock class', function() {
     return;
   }
 
-  it('duplicates itself', function() {
-
-    // Make a clock
-    var original = new LiveBlocks.Clock();
-    expect(original instanceof LiveBlocks.Clock).toBe(true);
-
-    // Duplicate
-    var duplicate = original.duplicate();
-    expect(duplicate).not.toBe(original);
-    expect(duplicate instanceof LiveBlocks.Clock).toBe(true);
-  });
-
   it('tickTock() calls tick() on all bound blocks, then calls tock()',
   function() {
 
