@@ -1,13 +1,11 @@
-this.Clock = (function(EventEmitter, Set, extendClass) {
+this.Clock = (function(Set) {
 
   function Clock() {
-
-    EventEmitter.call(this);
 
     this._bindings = new Set();
   }
 
-  extendClass(EventEmitter, Clock);
+  Clock.prototype = {};
   var P = Clock.prototype;
   P.duplicate = function() {
 
@@ -50,5 +48,5 @@ this.Clock = (function(EventEmitter, Set, extendClass) {
   };
 
   return Clock;
-}(this.EventEmitter, this.Set, this.extendClass));
+}(this.Set));
 
