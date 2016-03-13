@@ -952,7 +952,7 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make a wire that ignores case in strings
-    var wire = new LiveBlocks.Wire((function() {
+    var wire = ((function() {
 
       // Grab the default equalTo function
       var defaultEqualTo = new LiveBlocks.Wire().equalTo;
@@ -970,9 +970,10 @@ describe('TimedBlock class', function() {
         }
       };
 
-      return {
-        equalTo: equalTo,
-      };
+      // Override equalTo function
+      var wire = new LiveBlocks.Wire();
+      wire.equalTo = equalTo;
+      return wire;
     }()));
     wire.value('a');
 

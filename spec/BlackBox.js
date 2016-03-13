@@ -13,7 +13,7 @@ describe('BlackBox class', function() {
   }
 
   var assertFiniteNumber;
-  var floatWire;
+  var floatWireFactory;
   beforeEach(function() {
 
     assertFiniteNumber = (function(isFinite, Error) {
@@ -28,7 +28,7 @@ describe('BlackBox class', function() {
     }(host.isFinite, host.Error));
 
     // Create a prototype floating point value wire
-    floatWire = new LiveBlocks.Wire((function(Math, isFinite) {
+    floatWireFactory = ((function(Math, isFinite) {
 
       var abs = Math.abs;
       var epsilon = 1e-14;
@@ -53,7 +53,13 @@ describe('BlackBox class', function() {
         }
       };
 
-      return {equalTo: equalTo};
+      return function() {
+
+        // Override equalTo function
+        var wire = new LiveBlocks.Wire();
+        wire.equalTo = equalTo;
+        return wire;
+      };
     }(host.Math, host.isFinite)));
   });
 
@@ -119,9 +125,9 @@ describe('BlackBox class', function() {
       timesTwo: timesTwo.duplicate(),
     };
     var wires = {
-      low: floatWire.duplicate(),
-      med: floatWire.duplicate(),
-      high: floatWire.duplicate(),
+      low: floatWireFactory(),
+      med: floatWireFactory(),
+      high: floatWireFactory(),
     };
 
     // Connect blocks and wires
@@ -582,7 +588,7 @@ describe('BlackBox class', function() {
 
         for (var i = 0; i < wireNames.length; i++) {
 
-          wires[wireNames[i]] = floatWire.duplicate();
+          wires[wireNames[i]] = floatWireFactory();
         }
       }(['x', 'y', 'r', 'theta']));
 
@@ -610,7 +616,7 @@ describe('BlackBox class', function() {
 
       for (var i = 0; i < wireNames.length; i++) {
 
-        wires[wireNames[i]] = floatWire.duplicate();
+        wires[wireNames[i]] = floatWireFactory();
       }
     }(['x', 'y', 'r', 'theta']));
 

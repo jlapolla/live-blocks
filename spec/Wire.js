@@ -10,23 +10,6 @@ describe('Wire class', function() {
     return;
   }
 
-  it('duplicates injected equalTo dependencies', function() {
-
-    // Create equalTo function
-    var neverEqual = function() {
-
-      return false;
-    };
-
-    // Create a wire
-    var wire = new LiveBlocks.Wire({equalTo: neverEqual});
-    expect(wire.equalTo).toBe(neverEqual);
-
-    // Duplicate wire
-    var duplicate = wire.duplicate();
-    expect(duplicate.equalTo).toBe(neverEqual);
-  });
-
   it('does not bind duplicate block pins', function() {
 
     // Create a wire

@@ -6,23 +6,13 @@ this.Wire = (function(getUndefined,
   extendClass,
   ArrayIterator) {
 
-  function Wire(hash) {
+  function Wire() {
 
     EventEmitter.call(this);
 
     this._bindings = [];
     this._updating = false;
     this._valueQueue = new Queue();
-
-    // Process argument
-    if (arguments.length) {
-
-      // Add equalTo function if supplied
-      if (hasOwnProperty(hash, 'equalTo')) {
-
-        this.equalTo = hash.equalTo;
-      }
-    }
   }
 
   var maxIterations = 1000;
@@ -35,14 +25,7 @@ this.Wire = (function(getUndefined,
   var P = Wire.prototype;
   P.duplicate = function() {
 
-    var hash = {};
-
-    if (hasOwnProperty(this, 'equalTo')) {
-
-      hash.equalTo = this.equalTo;
-    }
-
-    return new Wire(hash);
+    return new Wire();
   };
 
   P.equalTo = function(value) {
