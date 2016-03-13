@@ -59,7 +59,7 @@ describe('ImmediateBlock class', function() {
         var wire = new LiveBlocks.Wire();
         wire.equalTo = equalTo;
         return wire;
-      }
+      };
     }(host.Math, host.isFinite)));
   });
 

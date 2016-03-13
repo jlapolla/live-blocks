@@ -975,6 +975,7 @@ describe('TimedBlock class', function() {
       wire.equalTo = equalTo;
       return wire;
     }()));
+
     wire.value('a');
 
     // Connect block to wire
