@@ -251,47 +251,6 @@ describe('TimedBlock class', function() {
     }
   });
 
-  it('duplicates injected "do" function', function() {
-
-    // Make a "do" function
-    var doFunc = function() {};
-
-    // Make a block
-    var block = new LiveBlocks.TimedBlock({
-      do: doFunc,
-      pins: [],
-    });
-    expect(block._do).toBe(doFunc);
-
-    // Duplicate the block
-    var duplicate = block.duplicate();
-    expect(duplicate._do).toBe(doFunc);
-  });
-
-  it('duplicates injected pins array', function() {
-
-    // Make a "do" function
-    var doFunc = function() {};
-
-    // Make a block
-    var block = new LiveBlocks.TimedBlock({
-      do: doFunc,
-      pins: ['a', 'b'],
-    });
-    var it = block.pins();
-    expect(it.next().value).toEqual({pin: 'a', wire: undefined});
-    expect(it.next().value).toEqual({pin: 'b', wire: undefined});
-    expect(it.next().value).toBeUndefined();
-
-    // Duplicate the block
-    var duplicate = block.duplicate();
-    it = duplicate.pins();
-    expect(duplicate._pins).not.toBe(block._pins);
-    expect(it.next().value).toEqual({pin: 'a', wire: undefined});
-    expect(it.next().value).toEqual({pin: 'b', wire: undefined});
-    expect(it.next().value).toBeUndefined();
-  });
-
   it('catches errors in "do" function', function() {
 
     // Make a ramp block
