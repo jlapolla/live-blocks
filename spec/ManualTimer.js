@@ -10,18 +10,6 @@ describe('ManualTimer class', function() {
     return;
   }
 
-  it('duplicates iteslf', function() {
-
-    // Make a timer
-    var original = new LiveBlocks.ManualTimer();
-    expect(original instanceof LiveBlocks.ManualTimer).toBe(true);
-
-    // Duplicate
-    var duplicate = original.duplicate();
-    expect(duplicate).not.toBe(original);
-    expect(duplicate instanceof LiveBlocks.ManualTimer).toBe(true);
-  });
-
   it('tickTock() calls tick() once on each scheduled block, then calls tock()',
   function() {
 

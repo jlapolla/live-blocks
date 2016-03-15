@@ -78,9 +78,13 @@ describe('ClockedBlock class', function() {
 
     // Make wires
     var wires = {
-      ramp: new LiveBlocks.Wire({initialValue: 0}),
-      integral: new LiveBlocks.Wire({initialValue: 0}),
+      ramp: new LiveBlocks.Wire(),
+      integral: new LiveBlocks.Wire(),
     };
+
+    // Set initial values
+    wires.ramp.value(0);
+    wires.integral.value(0);
 
     // Connect blocks to wires
     rampBlock.connect('output', wires.ramp);
@@ -138,31 +142,6 @@ describe('ClockedBlock class', function() {
 
     // Check that "this" is undefined in "do" function
     expect(thisArg).toBeUndefined();
-  });
-
-  it('duplicates injected dependencies', function() {
-
-    // Create do function and pins definition hash
-    var doFunc = function() {};
-
-    var pins = ['a', 'b'];
-
-    // Create a synchronous block
-    var block = new LiveBlocks.ClockedBlock({
-      do: doFunc,
-      pins: pins,
-    });
-    expect(block._pins).not.toBe(pins);
-    expect(block._pins.a).toBe(block._pins);
-    expect(block._pins.b).toBe(block._pins);
-    expect(block._do).toBe(doFunc);
-
-    // Duplicate synchronous block
-    var duplicate = block.duplicate();
-    expect(duplicate._pins).not.toBe(block._pins);
-    expect(duplicate._pins.a).toBe(duplicate._pins);
-    expect(duplicate._pins.b).toBe(duplicate._pins);
-    expect(duplicate._do).toBe(doFunc);
   });
 
   it('catches exceptions in the "do" function', function() {
@@ -357,7 +336,8 @@ describe('ClockedBlock class', function() {
     }(assertFiniteNumber)));
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect block to wire
     block.connect('output', wire);
@@ -470,7 +450,8 @@ describe('ClockedBlock class', function() {
     }
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect wire to block
     block.connect('output', wire);
@@ -531,7 +512,8 @@ describe('ClockedBlock class', function() {
     }(assertFiniteNumber)));
 
     // Make a wire
-    var wire = new LiveBlocks.Wire({initialValue: 0});
+    var wire = new LiveBlocks.Wire();
+    wire.value(0);
 
     // Connect block to wire
     block.connect('output', wire);

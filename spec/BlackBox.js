@@ -13,7 +13,7 @@ describe('BlackBox class', function() {
   }
 
   var assertFiniteNumber;
-  var floatWire;
+  var floatWireFactory;
   beforeEach(function() {
 
     assertFiniteNumber = (function(isFinite, Error) {
@@ -28,7 +28,7 @@ describe('BlackBox class', function() {
     }(host.isFinite, host.Error));
 
     // Create a prototype floating point value wire
-    floatWire = new LiveBlocks.Wire((function(Math, isFinite) {
+    floatWireFactory = ((function(Math, isFinite) {
 
       var abs = Math.abs;
       var epsilon = 1e-14;
@@ -53,14 +53,20 @@ describe('BlackBox class', function() {
         }
       };
 
-      return {equalTo: equalTo};
+      return function() {
+
+        // Override equalTo function
+        var wire = new LiveBlocks.Wire();
+        wire.equalTo = equalTo;
+        return wire;
+      };
     }(host.Math, host.isFinite)));
   });
 
   it('integration test with multiple internal blocks', function() {
 
     // Create a prototype "plus one" block
-    var plusOne = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
+    var plusOneFactory = ((function(assertFiniteNumber) {
 
       var aToB = function(input, output) {
 
@@ -76,18 +82,19 @@ describe('BlackBox class', function() {
         output.a = input.b - 1;
       };
 
-      var pins = {
-        a: aToB,
-        b: bToA,
-      };
+      return function() {
 
-      return {
-        pins: pins,
+        var pins = {
+          a: aToB,
+          b: bToA,
+        };
+
+        return new LiveBlocks.ImmediateBlock({pins: pins});
       };
     }(assertFiniteNumber)));
 
     // Create a prototype "times two" block
-    var timesTwo = new LiveBlocks.ImmediateBlock((function(assertFiniteNumber) {
+    var timesTwoFactory = ((function(assertFiniteNumber) {
 
       var aToB = function(input, output) {
 
@@ -103,25 +110,26 @@ describe('BlackBox class', function() {
         output.a = input.b / 2;
       };
 
-      var pins = {
-        a: aToB,
-        b: bToA,
-      };
+      return function() {
 
-      return {
-        pins: pins,
+        var pins = {
+          a: aToB,
+          b: bToA,
+        };
+
+        return new LiveBlocks.ImmediateBlock({pins: pins});
       };
     }(assertFiniteNumber)));
 
     // Create blocks and wires
     var blocks = {
-      plusOne: plusOne.duplicate(),
-      timesTwo: timesTwo.duplicate(),
+      plusOne: plusOneFactory(),
+      timesTwo: timesTwoFactory(),
     };
     var wires = {
-      low: floatWire.duplicate(),
-      med: floatWire.duplicate(),
-      high: floatWire.duplicate(),
+      low: floatWireFactory(),
+      med: floatWireFactory(),
+      high: floatWireFactory(),
     };
 
     // Connect blocks and wires
@@ -140,23 +148,12 @@ describe('BlackBox class', function() {
     });
 
     // Connect BlackBox to new wires
-    wires.low1 = wires.low.duplicate();
-    wires.med1 = wires.med.duplicate();
-    wires.high1 = wires.high.duplicate();
+    wires.low1 = floatWireFactory();
+    wires.med1 = floatWireFactory();
+    wires.high1 = floatWireFactory();
     blocks.blackBox1.connect('low', wires.low1);
     blocks.blackBox1.connect('med', wires.med1);
     blocks.blackBox1.connect('high', wires.high1);
-
-    // Duplicate BlackBox
-    blocks.blackBox2 = blocks.blackBox1.duplicate();
-
-    // Connect duplicate BlackBox to new wires
-    wires.low2 = wires.low.duplicate();
-    wires.med2 = wires.med.duplicate();
-    wires.high2 = wires.high.duplicate();
-    blocks.blackBox2.connect('low', wires.low2);
-    blocks.blackBox2.connect('med', wires.med2);
-    blocks.blackBox2.connect('high', wires.high2);
 
     // Test stimulus
     wires.med1.value(3);
@@ -166,40 +163,6 @@ describe('BlackBox class', function() {
     expect(wires.low1.equalTo(2)).toBe(true);
     expect(wires.med1.equalTo(3)).toBe(true);
     expect(wires.high1.equalTo(6)).toBe(true);
-    expect(wires.low2.value()).toBeUndefined();
-    expect(wires.med2.value()).toBeUndefined();
-    expect(wires.high2.value()).toBeUndefined();
-
-    // Test stimulus
-    wires.med2.value(4);
-    expect(wires.low.equalTo(2)).toBe(true);
-    expect(wires.med.equalTo(3)).toBe(true);
-    expect(wires.high.equalTo(6)).toBe(true);
-    expect(wires.low1.equalTo(2)).toBe(true);
-    expect(wires.med1.equalTo(3)).toBe(true);
-    expect(wires.high1.equalTo(6)).toBe(true);
-    expect(wires.low2.equalTo(3)).toBe(true);
-    expect(wires.med2.equalTo(4)).toBe(true);
-    expect(wires.high2.equalTo(8)).toBe(true);
-
-    // Test stimulus
-    wires.low2.value(4);
-    expect(wires.low.equalTo(2)).toBe(true);
-    expect(wires.med.equalTo(3)).toBe(true);
-    expect(wires.high.equalTo(6)).toBe(true);
-    expect(wires.low1.equalTo(2)).toBe(true);
-    expect(wires.med1.equalTo(3)).toBe(true);
-    expect(wires.high1.equalTo(6)).toBe(true);
-    expect(wires.low2.equalTo(4)).toBe(true);
-    expect(wires.med2.equalTo(5)).toBe(true);
-    expect(wires.high2.equalTo(10)).toBe(true);
-
-    // Test stimulus
-    wires.med2.value('a');
-    expect(wires.low2.equalTo(4)).toBe(true);
-    expect(wires.med2.equalTo('a')).toBe(true);
-    expect(wires.high2.equalTo(10)).toBe(true);
-    expect(blocks.blackBox2.error()).not.toBeUndefined();
 
     // Test stimulus
     blocks.blackBox1.disconnect('low');
@@ -215,89 +178,91 @@ describe('BlackBox class', function() {
   it('integration test with nested BlackBox', function() {
 
     // Make BlackBox prototype with nested BlackBox's
-    var proto = new LiveBlocks.BlackBox((function() {
+    var protoFactory = ((function() {
 
       // Make internal BlackBox prototype
-      var proto = new LiveBlocks.BlackBox((function() {
+      var protoFactory = ((function() {
 
-        // Pass-through wire constraint
-        var block = new LiveBlocks.ImmediateBlock((function() {
+        // ImmediateBlock constraint functions
+        var aToB = function(input, output) {
 
-          // Constraint functions
-          var aToB = function(input, output) {
+          output.b = input.a;
+        };
 
-            output.b = input.a;
-          };
+        var bToA = function(input, output) {
 
-          var bToA = function(input, output) {
+          output.a = input.b;
+        };
 
-            output.a = input.b;
-          };
+        return function() {
 
-          // Functions hash
+          // Pass-through wire constraint
+          var block = new LiveBlocks.ImmediateBlock({
+            pins: {
+              a: aToB,
+              b: bToA,
+            },
+          });
+
+          // Wires
+          var wires = [];
+          for (var i = 0; i < 2; i++) {
+
+            wires.push(new LiveBlocks.Wire());
+          }
+
+          // Connect block to wires
+          block.connect('a', wires[0]);
+          block.connect('b', wires[1]);
+
+          // Create BlackBox pins hash
           var pins = {
-            a: aToB,
-            b: bToA,
+            a: wires[0],
+            b: wires[1],
           };
 
-          // Return
-          return {pins: pins};
-        }()));
+          // Return BlackBox
+          return new LiveBlocks.BlackBox({pins: pins});
+        };
+      }()));
 
-        // Wires
-        var wires = [];
+      return function() {
+
+        // Make internal BlackBox's
+        var blocks = [];
         for (var i = 0; i < 2; i++) {
+
+          blocks.push(protoFactory());
+        }
+
+        // Make wires
+        var wires = [];
+        for (var i = 0; i < 3; i++) {
 
           wires.push(new LiveBlocks.Wire());
         }
 
-        // Connect block to wires
-        block.connect('a', wires[0]);
-        block.connect('b', wires[1]);
+        // Connect internal BlackBox's to wires
+        blocks[0].connect('a', wires[0]);
+        blocks[0].connect('b', wires[1]);
+        blocks[1].connect('a', wires[1]);
+        blocks[1].connect('b', wires[2]);
 
-        // Create BlackBox pins hash
+        // Make pins hash
         var pins = {
           a: wires[0],
           b: wires[1],
+          c: wires[2],
         };
 
-        // Return
-        return {pins: pins};
-      }()));
-
-      // Make internal BlackBox's
-      var blocks = [];
-      for (var i = 0; i < 2; i++) {
-
-        blocks.push(proto.duplicate());
-      }
-
-      // Make wires
-      var wires = [];
-      for (var i = 0; i < 3; i++) {
-
-        wires.push(new LiveBlocks.Wire());
-      }
-
-      // Connect internal BlackBox's to wires
-      blocks[0].connect('a', wires[0]);
-      blocks[0].connect('b', wires[1]);
-      blocks[1].connect('a', wires[1]);
-      blocks[1].connect('b', wires[2]);
-
-      // Make pins hash
-      var pins = {
-        a: wires[0],
-        b: wires[1],
-        c: wires[2],
+        // Return BlackBox
+        return new LiveBlocks.BlackBox({pins: pins});
       };
-
-      // Return
-      return {pins: pins};
     }()));
 
     // Duplicate prototype
-    var block = proto.duplicate();
+    var proto = protoFactory();
+    var block = protoFactory();
 
     // Make wires
     var wires = [];
@@ -582,7 +547,7 @@ describe('BlackBox class', function() {
 
         for (var i = 0; i < wireNames.length; i++) {
 
-          wires[wireNames[i]] = floatWire.duplicate();
+          wires[wireNames[i]] = floatWireFactory();
         }
       }(['x', 'y', 'r', 'theta']));
 
@@ -610,7 +575,7 @@ describe('BlackBox class', function() {
 
       for (var i = 0; i < wireNames.length; i++) {
 
-        wires[wireNames[i]] = floatWire.duplicate();
+        wires[wireNames[i]] = floatWireFactory();
       }
     }(['x', 'y', 'r', 'theta']));
 
@@ -702,23 +667,27 @@ describe('BlackBox class', function() {
     var block = new LiveBlocks.BlackBox((function() {
 
       // Make two NOR blocks
-      var norQ = new LiveBlocks.ImmediateBlock((function() {
+      var norFactory = ((function() {
 
         var func = function(input, output) {
 
           output.out = !(input.a || input.b);
         };
 
-        var pins = {
-          a: func,
-          b: func,
-          out: func,
-        };
+        return function() {
 
-        return {pins: pins};
+          var pins = {
+            a: func,
+            b: func,
+            out: func,
+          };
+
+          return new LiveBlocks.ImmediateBlock({pins: pins});
+        };
       }()));
 
-      var norNotQ = norQ.duplicate();
+      var norQ = norFactory();
+      var norNotQ = norFactory();
 
       // Make some wires
       var R = new LiveBlocks.Wire();
@@ -1264,7 +1233,7 @@ describe('BlackBox class', function() {
 
       // Make wires
       var wireA = new LiveBlocks.Wire();
-      var wireB = wireA.duplicate();
+      var wireB = new LiveBlocks.Wire();
 
       // Connect blocks to wires
       passStringBlock.connect('a', wireA);

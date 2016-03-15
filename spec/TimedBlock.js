@@ -120,10 +120,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 1});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(1);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -245,47 +251,6 @@ describe('TimedBlock class', function() {
     }
   });
 
-  it('duplicates injected "do" function', function() {
-
-    // Make a "do" function
-    var doFunc = function() {};
-
-    // Make a block
-    var block = new LiveBlocks.TimedBlock({
-      do: doFunc,
-      pins: [],
-    });
-    expect(block._do).toBe(doFunc);
-
-    // Duplicate the block
-    var duplicate = block.duplicate();
-    expect(duplicate._do).toBe(doFunc);
-  });
-
-  it('duplicates injected pins array', function() {
-
-    // Make a "do" function
-    var doFunc = function() {};
-
-    // Make a block
-    var block = new LiveBlocks.TimedBlock({
-      do: doFunc,
-      pins: ['a', 'b'],
-    });
-    var it = block.pins();
-    expect(it.next().value).toEqual({pin: 'a', wire: undefined});
-    expect(it.next().value).toEqual({pin: 'b', wire: undefined});
-    expect(it.next().value).toBeUndefined();
-
-    // Duplicate the block
-    var duplicate = block.duplicate();
-    it = duplicate.pins();
-    expect(duplicate._pins).not.toBe(block._pins);
-    expect(it.next().value).toEqual({pin: 'a', wire: undefined});
-    expect(it.next().value).toEqual({pin: 'b', wire: undefined});
-    expect(it.next().value).toBeUndefined();
-  });
-
   it('catches errors in "do" function', function() {
 
     // Make a ramp block
@@ -379,10 +344,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 4});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(4);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -832,10 +803,16 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make wires
-    var input = new LiveBlocks.Wire({initialValue: 0});
-    var output = new LiveBlocks.Wire({initialValue: 0});
-    var steps = new LiveBlocks.Wire({initialValue: 4});
-    var stepsLeft = new LiveBlocks.Wire({initialValue: 0});
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+    var steps = new LiveBlocks.Wire();
+    var stepsLeft = new LiveBlocks.Wire();
+
+    // Set initial values
+    input.value(0);
+    output.value(0);
+    steps.value(4);
+    stepsLeft.value(0);
 
     // Connect wires to block
     block.connect('input', input);
@@ -934,7 +911,7 @@ describe('TimedBlock class', function() {
     block.timer(timer);
 
     // Make a wire that ignores case in strings
-    var wire = new LiveBlocks.Wire((function() {
+    var wire = ((function() {
 
       // Grab the default equalTo function
       var defaultEqualTo = new LiveBlocks.Wire().equalTo;
@@ -952,11 +929,13 @@ describe('TimedBlock class', function() {
         }
       };
 
-      return {
-        equalTo: equalTo,
-        initialValue: 'a',
-      };
+      // Override equalTo function
+      var wire = new LiveBlocks.Wire();
+      wire.equalTo = equalTo;
+      return wire;
     }()));
+
+    wire.value('a');
 
     // Connect block to wire
     block.connect('a', wire);

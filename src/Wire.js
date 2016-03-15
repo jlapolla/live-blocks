@@ -6,37 +6,13 @@ this.Wire = (function(getUndefined,
   extendClass,
   ArrayIterator) {
 
-  function Wire(hash) {
+  function Wire() {
 
     EventEmitter.call(this);
 
     this._bindings = [];
     this._updating = false;
     this._valueQueue = new Queue();
-
-    // Process argument
-    if (arguments.length) {
-
-      // Add equalTo function if supplied
-      if (hasOwnProperty(hash, 'equalTo')) {
-
-        this.equalTo = hash.equalTo;
-      }
-
-      // Add initial value if supplied
-      if (hasOwnProperty(hash, 'initialValue')) {
-
-        this._initialValue = hash.initialValue;
-        this._value = hash.initialValue;
-      }
-
-      // Add initial value function if supplied
-      if (hasOwnProperty(hash, 'initialValueFunction')) {
-
-        this._initialValueFunction = hash.initialValueFunction;
-        this._value = hash.initialValueFunction();
-      }
-    }
   }
 
   var maxIterations = 1000;
@@ -47,28 +23,6 @@ this.Wire = (function(getUndefined,
 
   extendClass(EventEmitter, Wire);
   var P = Wire.prototype;
-  P.duplicate = function() {
-
-    var hash = {};
-
-    if (hasOwnProperty(this, 'equalTo')) {
-
-      hash.equalTo = this.equalTo;
-    }
-
-    if (hasOwnProperty(this, '_initialValue')) {
-
-      hash.initialValue = this._initialValue;
-    }
-
-    if (hasOwnProperty(this, '_initialValueFunction')) {
-
-      hash.initialValueFunction = this._initialValueFunction;
-    }
-
-    return new Wire(hash);
-  };
-
   P.equalTo = function(value) {
 
     // Compare with ===, but let NaN === NaN be true

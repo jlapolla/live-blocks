@@ -34,11 +34,6 @@ this.AsyncTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
 
   AsyncTimer.prototype = {};
   var P = AsyncTimer.prototype;
-  P.duplicate = function() {
-
-    return new AsyncTimer();
-  };
-
   P.schedule = function(block) {
 
     this._set.add(block);

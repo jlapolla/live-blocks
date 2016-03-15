@@ -10,16 +10,21 @@ describe('Clock class', function() {
     return;
   }
 
-  it('duplicates itself', function() {
+  var dummyBlockFactory;
+  beforeEach(function() {
 
-    // Make a clock
-    var original = new LiveBlocks.Clock();
-    expect(original instanceof LiveBlocks.Clock).toBe(true);
+    dummyBlockFactory = (function() {
 
-    // Duplicate
-    var duplicate = original.duplicate();
-    expect(duplicate).not.toBe(original);
-    expect(duplicate instanceof LiveBlocks.Clock).toBe(true);
+      var doFunc = function() {};
+
+      return function() {
+
+        return new LiveBlocks.ClockedBlock({
+          do: doFunc,
+          pins: ['output'],
+        });
+      };
+    }());
   });
 
   it('tickTock() calls tick() on all bound blocks, then calls tock()',
@@ -30,14 +35,8 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.ClockedBlock({
-      do: function() {},
-
-      pins: {
-        output: true
-      },
-    });
-    blocks[1] = blocks[0].duplicate();
+    blocks[0] = dummyBlockFactory();
+    blocks[1] = dummyBlockFactory();
 
     // Create logging event listeners
     var log = [];
@@ -124,16 +123,9 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.ClockedBlock({
-      do: function() {},
+    for (var i = 0; i < 3; i++) {
 
-      pins: {
-        output: true
-      },
-    });
-    for (var i = 1; i < 3; i++) {
-
-      blocks.push(blocks[0].duplicate());
+      blocks.push(dummyBlockFactory());
     }
 
     // Create logging event listeners
@@ -282,16 +274,9 @@ describe('Clock class', function() {
 
     // Make some synchronous blocks
     var blocks = [];
-    blocks[0] = new LiveBlocks.ClockedBlock({
-      do: function() {},
+    for (var i = 0; i < 2; i++) {
 
-      pins: {
-        output: true
-      },
-    });
-    for (var i = 1; i < 2; i++) {
-
-      blocks.push(blocks[0].duplicate());
+      blocks.push(dummyBlockFactory());
     }
 
     // Create logging event listeners

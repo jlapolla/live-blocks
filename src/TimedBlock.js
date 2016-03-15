@@ -36,20 +36,6 @@ this.TimedBlock = (function(EventEmitter,
 
   extendClass(EventEmitter, TimedBlock);
   var P = TimedBlock.prototype;
-  P.duplicate = function() {
-
-    var pinsArray = [];
-    for (var name in this._pins) {
-
-      pinsArray.push(name);
-    }
-
-    return new TimedBlock({
-      do: this._do,
-      pins: pinsArray,
-    });
-  };
-
   P.error = function() {
 
     return this._lastError;

@@ -7,11 +7,6 @@ this.ManualTimer = (function(Set) {
 
   ManualTimer.prototype = {};
   var P = ManualTimer.prototype;
-  P.duplicate = function() {
-
-    return new ManualTimer();
-  };
-
   P.tickTock = function() {
 
     // Get iterator over scheduled items
