@@ -387,7 +387,7 @@ describe('Wire class', function() {
         };
 
         return new LiveBlocks.ImmediateBlock({pins: pins});
-      }
+      };
     }()));
 
     // Create blocks
