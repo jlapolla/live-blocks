@@ -148,11 +148,11 @@ this.Wire = (function(getUndefined,
           // Set new value
           this._value = newValue;
 
-          // Fire event
-          this.fire('value', newValue);
-
           // Notify bound blocks
           _notify.call(this);
+
+          // Fire event
+          this.fire('value', newValue);
         }
 
         // Process value queue
