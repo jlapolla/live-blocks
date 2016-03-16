@@ -8,6 +8,52 @@ this.BlackBox = (function(EventEmitter,
   Error,
   ArrayIterator) {
 
+    var _internalErrorListener = function(arg) {
+
+      if (!this._updating) {
+
+        this.fire('error', arg);
+      }
+    };
+
+    var _internalUpdateListener = function() {
+
+      if (!this._updating) {
+
+        // Defensive copy internal and external wires
+        var internalWires = {};
+        var externalWires = {};
+        for (var name in this._internalWires) {
+
+          // Copy internal wire
+          internalWires[name] = this._internalWires[name];
+
+          // Copy external wire, if exists
+          if (this._externalWires[name]) {
+
+            externalWires[name] = this._externalWires[name];
+          }
+        }
+
+        // Handle successful run
+        if (!this.error()) {
+
+          // Copy values from internal wires to external wires
+          for (var name in internalWires) {
+
+            if (externalWires[name]) {
+
+              externalWires[name].value(internalWires[name].value());
+            }
+          }
+        }
+        else {
+
+          this.fire('error', this.error()); // Fire event
+        }
+      }
+    };
+
   var _disconnect = function(pin) {
 
     // Disconnect from wire, if any
@@ -40,7 +86,7 @@ this.BlackBox = (function(EventEmitter,
         var it = wire.connections();
         while (!it.peek().done) {
 
-          processBlock(it.next().value.block, wireSet, blockSet);
+          processBlock.call(this, it.next().value.block, wireSet, blockSet);
         }
       }
     };
@@ -54,16 +100,25 @@ this.BlackBox = (function(EventEmitter,
         // Add block to block set
         blockSet.add(block);
 
+        // Attach internal error listener
+        block.on('error', this._internalErrorListener);
+
         // Process all wires connected to the block
         var it = block.pins();
         while (!it.peek().done) {
 
-          processWire(it.next().value.wire, wireSet, blockSet);
+          processWire.call(this, it.next().value.wire, wireSet, blockSet);
         }
       }
     };
 
     return function(pins) {
+
+      // Create internal update listener
+      this._internalUpdateListener = _internalUpdateListener.bind(this);
+
+      // Create internal error listener
+      this._internalErrorListener = _internalErrorListener.bind(this);
 
       // Create wire set and block set
       // These collect all wires and blocks in the network
@@ -76,8 +131,11 @@ this.BlackBox = (function(EventEmitter,
         // Add pin to internal wire hash
         this._internalWires[pin] = pins[pin];
 
+        // Listen for value changes on the internal wire
+        pins[pin].on('value', this._internalUpdateListener);
+
         // Process the wire and all connected blocks
-        processWire(pins[pin], wireSet, blockSet);
+        processWire.call(this, pins[pin], wireSet, blockSet);
       }
 
       // All blocks are in the block set now

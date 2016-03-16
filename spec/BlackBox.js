@@ -745,6 +745,266 @@ describe('BlackBox class', function() {
     expect(notQ.value()).toBe(true);
   });
 
+  it('reacts to internal updates (e.g., from ClockedBlock\'s)', function() {
+
+    // Make immediate adder block
+    var adderBlock = (function(assertFiniteNumber) {
+
+      var addFunc = function(input, output) {
+
+        assertFiniteNumber(input.a);
+        assertFiniteNumber(input.b);
+
+        output.sum = input.a + input.b;
+      };
+
+      var pins = {
+        a: addFunc,
+        b: addFunc,
+        sum: addFunc,
+      };
+
+      return new LiveBlocks.ImmediateBlock({pins: pins});
+    }(assertFiniteNumber));
+
+    // Make clocked ramp block
+    var rampBlock = (function(assertFiniteNumber) {
+
+      var doFunc = function(input, output) {
+
+        assertFiniteNumber(input.output);
+
+        output.output = input.output + 1;
+      };
+
+      return new LiveBlocks.ClockedBlock({
+        do: doFunc,
+        pins: ['output'],
+      });
+    }(assertFiniteNumber));
+
+    // Make a clock
+    var clock = new LiveBlocks.Clock();
+    rampBlock.clock(clock);
+
+    // Make circuit and black box
+    var blackBox = (function() {
+
+      var wires = {
+        a: new LiveBlocks.Wire(),
+        b: new LiveBlocks.Wire(),
+        sum: new LiveBlocks.Wire(),
+      };
+
+      adderBlock.connect('a', wires.a);
+      adderBlock.connect('b', wires.b);
+      adderBlock.connect('sum', wires.sum);
+      rampBlock.connect('output', wires.b);
+
+      var pins = {
+        a: wires.a,
+        b: wires.b,
+        sum: wires.sum,
+      };
+
+      return new LiveBlocks.BlackBox({pins: pins});
+    }());
+
+    // Make wires
+    var wires = {
+      a: new LiveBlocks.Wire(),
+      b: new LiveBlocks.Wire(),
+      sum: new LiveBlocks.Wire(),
+    };
+
+    // Connect wires
+    blackBox.connect('a', wires.a);
+    blackBox.connect('b', wires.b);
+    blackBox.connect('sum', wires.sum);
+
+    // Create logging event listeners
+    var log = [];
+    (function(list) {
+
+      for (var i = 0; i < list.length; i++) {
+
+        var listener = (function(eventName) {
+
+          return function(arg) {
+
+            // Create log object
+            var obj = {event: eventName};
+            if (arguments.length) {
+
+              obj.arg = arg;
+            }
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+
+        // Register listener on black box
+        blackBox.on(list[i], listener);
+      }
+    }(['update', 'success', 'error']));
+
+    // Set initial wire values
+    wires.a.value(0);
+    wires.b.value(0);
+    log.length = 0;
+
+    // Check initial conditions
+    expect(log.length).toBe(0);
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(0);
+    expect(wires.b.value()).toBe(0);
+    expect(wires.sum.value()).toBe(0);
+
+    // Tick the clock
+    clock.tickTock();
+    expect(log.length).toBe(4);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(0);
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(1);
+    log.length = 0;
+
+    // Change an input manually
+    wires.a.value(2);
+    expect(log.length).toBe(4);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Produce an error manually
+    wires.b.value('b');
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe('b');
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Produce an error internally
+    clock.tickTock();
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe('b');
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Clear the error
+    wires.b.value(0);
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(0);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Produce an error manually
+    wires.a.value('a');
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe('a');
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Produce an error internally
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('error');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe('a');
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Clear the error. Note that b has still incremented since we ticked it.
+    // The internal wire updated, but the value was not copied to the external
+    // wire because the black box was in error state.
+    wires.a.value(2);
+    expect(log.length).toBe(6);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(log[4].event).toBe('update');
+    expect(log[5].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(2);
+    expect(wires.sum.value()).toBe(4);
+    log.length = 0;
+
+    // Disconnect an external pin
+    blackBox.disconnect('sum');
+    wires.sum.value(false);
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(2);
+    expect(wires.sum.value()).toBe(false);
+    log.length = 0;
+
+    // Tick the clock
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(3);
+    expect(wires.sum.value()).toBe(false);
+    log.length = 0;
+
+    // Reconnect the 'sum' pin
+    blackBox.connect('sum', wires.sum);
+    expect(log.length).toBe(4);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(3);
+    expect(wires.sum.value()).toBe(5);
+    log.length = 0;
+  });
+
   it('disconnects pin from wire before connecting to a new wire', function() {
 
     // Create a black box
