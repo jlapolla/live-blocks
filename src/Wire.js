@@ -107,72 +107,80 @@ this.Wire = (function(getUndefined,
 
   P.value = function(newValue) {
 
-    if (arguments.length) {
+    try {
 
-      // We are setting a new value
+      if (arguments.length) {
 
-      // Check updating flag
-      if (this._updating) {
+        // We are setting a new value
 
-        // Add new value to queue and return
+        // Check updating flag
+        if (this._updating) {
 
-        // Don't add the same value to the queue
-        if (!this.equalTo(newValue)) {
+          // Add new value to queue and return
 
-          this._valueQueue.push(newValue);
-        }
+          // Don't add the same value to the queue
+          if (!this.equalTo(newValue)) {
 
-        // Return
-        return;
-      }
-      else {
+            this._valueQueue.push(newValue);
+          }
 
-        this._updating = true; // Set updating flag
-      }
-
-      // Main loop
-      var iterations = 1;
-      while (true) {
-
-        // Check iteration count
-        if (iterations++ > maxIterations) {
-
-          this._updating = false;
-          throw new Error('Infinite loop detected: reached '
-            + maxIterations + ' iterations');
-        }
-
-        // Compare new value to current value
-        if (!this.equalTo(newValue)) {
-
-          // Set new value
-          this._value = newValue;
-
-          // Notify bound blocks
-          _notify.call(this);
-
-          // Fire event
-          this.fire('value', newValue);
-        }
-
-        // Process value queue
-        if (this._valueQueue.isEmpty()) {
-
-          // Unset updating flag and return
-          this._updating = false;
+          // Return
           return;
         }
         else {
 
-          newValue = this._valueQueue.next(); // Get next value from queue
+          this._updating = true; // Set updating flag
         }
 
-        // Restart loop
+        // Main loop
+        var iterations = 1;
+        while (true) {
+
+          // Check iteration count
+          if (iterations++ > maxIterations) {
+
+            throw new Error('Infinite loop detected: reached '
+              + maxIterations + ' iterations');
+          }
+
+          // Compare new value to current value
+          if (!this.equalTo(newValue)) {
+
+            // Set new value
+            this._value = newValue;
+
+            // Notify bound blocks
+            _notify.call(this);
+
+            // Fire event
+            this.fire('value', newValue);
+          }
+
+          // Process value queue
+          if (this._valueQueue.isEmpty()) {
+
+            // Unset updating flag and return
+            this._updating = false;
+            return;
+          }
+          else {
+
+            newValue = this._valueQueue.next(); // Get next value from queue
+          }
+
+          // Restart loop
+        }
+      }
+      else {
+
+        return this._value; // We are getting the value
       }
     }
-    else {
+    catch (err) {
 
-      return this._value; // We are getting the value
+      // Unset updating flag
+      this._updating = false;
+      throw err;
     }
   };
 

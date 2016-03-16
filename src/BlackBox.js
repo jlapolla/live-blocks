@@ -156,6 +156,21 @@ this.BlackBox = (function(EventEmitter,
     init.call(this, hash.pins);
   }
 
+  var maxIterations = 1000;
+  BlackBox.maxIterations = function(iterations) {
+
+    if (arguments.length) {
+
+      // We are setting max iterations
+      maxIterations = iterations;
+    }
+    else {
+
+      // We are getting max iterations
+      return maxIterations;
+    }
+  };
+
   extendClass(EventEmitter, BlackBox);
   var P = BlackBox.prototype;
   P.error = function() {
@@ -232,7 +247,16 @@ this.BlackBox = (function(EventEmitter,
     }
 
     // Main loop
+    var iterations = 1;
     while (true) {
+
+      // Check iteration count
+      if (iterations++ > maxIterations) {
+
+        this._updating = false;
+        throw new Error('Infinite loop detected: reached '
+          + maxIterations + ' iterations');
+      }
 
       // Defensive copy internal and external wires
       var internalWires = {};

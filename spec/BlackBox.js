@@ -1590,5 +1590,82 @@ describe('BlackBox class', function() {
     expect(it.peek().done).toBe(true);
     expect(it.next().done).toBe(true);
   });
+
+  it('detects infinite loops', function() {
+
+    // Create a BlackBox with one-way pass-through
+    var block = (function() {
+
+      var func = function(input, output) {
+
+        output.output = input.input;
+      };
+
+      var block = new LiveBlocks.ImmediateBlock({
+        pins: {
+          input: func,
+          output: func,
+        },
+      });
+
+      var input = new LiveBlocks.Wire();
+      var output = new LiveBlocks.Wire();
+
+      block.connect('input', input);
+      block.connect('output', output);
+
+      return new LiveBlocks.BlackBox({
+        pins: {
+          input: input,
+          output: output,
+        }
+      });
+    }());
+
+    var alwaysFalse = (function() {
+
+      var func = function(input, output) {
+
+        output.output = false;
+      };
+
+      return new LiveBlocks.ImmediateBlock({
+        pins: {
+          output: func,
+        },
+      });
+    }());
+
+    // Create wires
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+
+    // Connect wires to pins
+    block.connect('input', input);
+    block.connect('output', output);
+
+    // Set initial value
+    input.value(false);
+    expect(output.value()).toBe(false);
+
+    // Connect alwaysFalse block
+    alwaysFalse.connect('output', output);
+
+    // Create infinite loop
+    var triggerLoop = function() {
+
+      input.value(false);
+      input.value(true);
+    };
+
+    expect(triggerLoop)
+        .toThrowError('Infinite loop detected: reached 1000 iterations');
+
+    // Set new maxIterations
+    LiveBlocks.BlackBox.maxIterations(100);
+    expect(LiveBlocks.BlackBox.maxIterations()).toBe(100);
+    expect(triggerLoop)
+        .toThrowError('Infinite loop detected: reached 100 iterations');
+  });
 });
 
