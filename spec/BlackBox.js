@@ -928,6 +928,81 @@ describe('BlackBox class', function() {
     expect(wires.b.value()).toBe(1);
     expect(wires.sum.value()).toBe(3);
     log.length = 0;
+
+    // Produce an error manually
+    wires.a.value('a');
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe('a');
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Produce an error internally
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('error');
+    expect(log[1].event).toBe('error');
+    expect(blackBox.error()).not.toBeUndefined();
+    expect(wires.a.value()).toBe('a');
+    expect(wires.b.value()).toBe(1);
+    expect(wires.sum.value()).toBe(3);
+    log.length = 0;
+
+    // Clear the error. Note that b has still incremented since we ticked it.
+    // The internal wire updated, but the value was not copied to the external
+    // wire because the black box was in error state.
+    wires.a.value(2);
+    expect(log.length).toBe(6);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(log[4].event).toBe('update');
+    expect(log[5].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(2);
+    expect(wires.sum.value()).toBe(4);
+    log.length = 0;
+
+    // Disconnect an external pin
+    blackBox.disconnect('sum');
+    wires.sum.value(false);
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(2);
+    expect(wires.sum.value()).toBe(false);
+    log.length = 0;
+
+    // Tick the clock
+    clock.tickTock();
+    expect(log.length).toBe(2);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(3);
+    expect(wires.sum.value()).toBe(false);
+    log.length = 0;
+
+    // Reconnect the 'sum' pin
+    blackBox.connect('sum', wires.sum);
+    expect(log.length).toBe(4);
+    expect(log[0].event).toBe('update');
+    expect(log[1].event).toBe('success');
+    expect(log[2].event).toBe('update');
+    expect(log[3].event).toBe('success');
+    expect(blackBox.error()).toBeUndefined();
+    expect(wires.a.value()).toBe(2);
+    expect(wires.b.value()).toBe(3);
+    expect(wires.sum.value()).toBe(5);
+    log.length = 0;
   });
 
   it('disconnects pin from wire before connecting to a new wire', function() {

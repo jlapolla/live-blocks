@@ -12,14 +12,7 @@ this.BlackBox = (function(EventEmitter,
 
       if (!this._updating) {
 
-        if (arguments.length) {
-
-          this.fire('error', arg);
-        }
-        else {
-
-          this.fire('error');
-        }
+        this.fire('error', arg);
       }
     };
 
