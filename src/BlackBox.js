@@ -8,51 +8,51 @@ this.BlackBox = (function(EventEmitter,
   Error,
   ArrayIterator) {
 
-    var _internalErrorListener = function(arg) {
+  var _internalErrorListener = function(arg) {
 
-      if (!this._updating) {
+    if (!this._updating) {
 
-        this.fire('error', arg);
-      }
-    };
+      this.fire('error', arg);
+    }
+  };
 
-    var _internalUpdateListener = function() {
+  var _internalUpdateListener = function() {
 
-      if (!this._updating) {
+    if (!this._updating) {
 
-        // Defensive copy internal and external wires
-        var internalWires = {};
-        var externalWires = {};
-        for (var name in this._internalWires) {
+      // Defensive copy internal and external wires
+      var internalWires = {};
+      var externalWires = {};
+      for (var name in this._internalWires) {
 
-          // Copy internal wire
-          internalWires[name] = this._internalWires[name];
+        // Copy internal wire
+        internalWires[name] = this._internalWires[name];
 
-          // Copy external wire, if exists
-          if (this._externalWires[name]) {
+        // Copy external wire, if exists
+        if (this._externalWires[name]) {
 
-            externalWires[name] = this._externalWires[name];
-          }
-        }
-
-        // Handle successful run
-        if (!this.error()) {
-
-          // Copy values from internal wires to external wires
-          for (var name in internalWires) {
-
-            if (externalWires[name]) {
-
-              externalWires[name].value(internalWires[name].value());
-            }
-          }
-        }
-        else {
-
-          this.fire('error', this.error()); // Fire event
+          externalWires[name] = this._externalWires[name];
         }
       }
-    };
+
+      // Handle successful run
+      if (!this.error()) {
+
+        // Copy values from internal wires to external wires
+        for (var name in internalWires) {
+
+          if (externalWires[name]) {
+
+            externalWires[name].value(internalWires[name].value());
+          }
+        }
+      }
+      else {
+
+        this.fire('error', this.error()); // Fire event
+      }
+    }
+  };
 
   var _disconnect = function(pin) {
 
@@ -156,6 +156,21 @@ this.BlackBox = (function(EventEmitter,
     init.call(this, hash.pins);
   }
 
+  var maxIterations = 100;
+  BlackBox.maxIterations = function(iterations) {
+
+    if (arguments.length) {
+
+      // We are setting max iterations
+      maxIterations = iterations;
+    }
+    else {
+
+      // We are getting max iterations
+      return maxIterations;
+    }
+  };
+
   extendClass(EventEmitter, BlackBox);
   var P = BlackBox.prototype;
   P.error = function() {
@@ -217,95 +232,112 @@ this.BlackBox = (function(EventEmitter,
 
   P.update = function(pin) {
 
-    // A connected wire value changed
+    try {
 
-    // Check updating flag
-    if (this._updating) {
+      // A connected wire value changed
 
-      // Add update to queue and return
-      this._updateQueue.push(pin);
-      return;
-    }
-    else {
+      // Check updating flag
+      if (this._updating) {
 
-      this._updating = true; // Set updating flag
-    }
-
-    // Main loop
-    while (true) {
-
-      // Defensive copy internal and external wires
-      var internalWires = {};
-      var externalWires = {};
-      for (var name in this._internalWires) {
-
-        // Copy internal wire
-        internalWires[name] = this._internalWires[name];
-
-        // Copy external wire, if exists
-        if (this._externalWires[name]) {
-
-          externalWires[name] = this._externalWires[name];
-        }
-      }
-
-      // Get updated pin value
-      var value;
-      if (externalWires[pin]) {
-
-        value = externalWires[pin].value();
-      }
-      else {
-
-        value = getUndefined();
-      }
-
-      // Fire update event
-      this.fire('update', {pin: pin, value: value});
-
-      // Copy updated pin value to internal wire
-      if (externalWires[pin]) {
-
-        internalWires[pin].value(externalWires[pin].value());
-      }
-      else {
-
-        internalWires[pin].value(getUndefined());
-      }
-
-      // Handle successful run
-      if (!this.error()) {
-
-        // Fire event
-        this.fire('success');
-
-        // Copy values from internal wires to external wires
-        for (var name in internalWires) {
-
-          if (externalWires[name]) {
-
-            externalWires[name].value(internalWires[name].value());
-          }
-        }
-      }
-      else {
-
-        this.fire('error', this.error()); // Fire event
-      }
-
-      // Proces update queue
-      if (this._updateQueue.isEmpty()) {
-
-        // Unset updating flag and return
-        this._updating = false;
+        // Add update to queue and return
+        this._updateQueue.push(pin);
         return;
       }
       else {
 
-        pin = this._updateQueue.next(); // Get next updated pin from queue
+        this._updating = true; // Set updating flag
       }
 
-      // Restart loop
+      // Main loop
+      var iterations = 1;
+      while (true) {
+
+        // Check iteration count
+        if (iterations++ > maxIterations) {
+
+          throw new Error('Infinite loop detected: reached '
+            + maxIterations + ' iterations');
+        }
+
+        // Defensive copy internal and external wires
+        var internalWires = {};
+        var externalWires = {};
+        for (var name in this._internalWires) {
+
+          // Copy internal wire
+          internalWires[name] = this._internalWires[name];
+
+          // Copy external wire, if exists
+          if (this._externalWires[name]) {
+
+            externalWires[name] = this._externalWires[name];
+          }
+        }
+
+        // Get updated pin value
+        var value;
+        if (externalWires[pin]) {
+
+          value = externalWires[pin].value();
+        }
+        else {
+
+          value = getUndefined();
+        }
+
+        // Fire update event
+        this.fire('update', {pin: pin, value: value});
+
+        // Copy updated pin value to internal wire
+        if (externalWires[pin]) {
+
+          internalWires[pin].value(externalWires[pin].value());
+        }
+        else {
+
+          internalWires[pin].value(getUndefined());
+        }
+
+        // Handle successful run
+        if (!this.error()) {
+
+          // Fire event
+          this.fire('success');
+
+          // Copy values from internal wires to external wires
+          for (var name in internalWires) {
+
+            if (externalWires[name]) {
+
+              externalWires[name].value(internalWires[name].value());
+            }
+          }
+        }
+        else {
+
+          this.fire('error', this.error()); // Fire event
+        }
+
+        // Proces update queue
+        if (this._updateQueue.isEmpty()) {
+
+          // Unset updating flag and return
+          this._updating = false;
+          return;
+        }
+        else {
+
+          pin = this._updateQueue.next(); // Get next updated pin from queue
+        }
+
+        // Restart loop
+      }
+    }
+    catch (err) {
+
+      // Unset updating flag
+      this._updating = false;
+      throw err;
     }
   };
 

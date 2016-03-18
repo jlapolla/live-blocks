@@ -234,13 +234,20 @@ describe('Wire class', function() {
       wire.value(!wire.value());
     };
 
+    // Check initial max iterations
+    expect(LiveBlocks.Wire.maxIterations()).toBe(100);
+
+    // Set low max iterations, so the test runs quickly
+    LiveBlocks.Wire.maxIterations(10);
+    expect(LiveBlocks.Wire.maxIterations()).toBe(10);
     expect(triggerLoop)
-        .toThrowError('Infinite loop detected: reached 1000 iterations');
+        .toThrowError('Infinite loop detected: reached 10 iterations');
 
     // Set new maxIterations
-    LiveBlocks.Wire.setMaxIterations(100);
+    LiveBlocks.Wire.maxIterations(20);
+    expect(LiveBlocks.Wire.maxIterations()).toBe(20);
     expect(triggerLoop)
-        .toThrowError('Infinite loop detected: reached 100 iterations');
+        .toThrowError('Infinite loop detected: reached 20 iterations');
   });
 
   it('can take undefined as a value', function() {
