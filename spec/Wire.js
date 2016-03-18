@@ -235,7 +235,7 @@ describe('Wire class', function() {
     };
 
     // Check initial max iterations
-    expect(LiveBlocks.Wire.maxIterations()).toBe(1000);
+    expect(LiveBlocks.Wire.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
     LiveBlocks.Wire.maxIterations(10);

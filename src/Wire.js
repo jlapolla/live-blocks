@@ -27,7 +27,7 @@ this.Wire = (function(getUndefined,
     this._valueQueue = new Queue();
   }
 
-  var maxIterations = 1000;
+  var maxIterations = 100;
   Wire.maxIterations = function(iterations) {
 
     if (arguments.length) {

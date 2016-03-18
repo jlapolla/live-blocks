@@ -884,7 +884,7 @@ describe('ImmediateBlock class', function() {
 
 
     // Check initial max iterations
-    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(1000);
+    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
     LiveBlocks.ImmediateBlock.maxIterations(10);

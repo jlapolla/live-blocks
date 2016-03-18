@@ -156,7 +156,7 @@ this.BlackBox = (function(EventEmitter,
     init.call(this, hash.pins);
   }
 
-  var maxIterations = 1000;
+  var maxIterations = 100;
   BlackBox.maxIterations = function(iterations) {
 
     if (arguments.length) {

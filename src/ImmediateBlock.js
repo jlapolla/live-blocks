@@ -34,7 +34,7 @@ this.ImmediateBlock = (function(hasOwnProperty,
     }
   }
 
-  var maxIterations = 1000;
+  var maxIterations = 100;
   ImmediateBlock.maxIterations = function(iterations) {
 
     if (arguments.length) {

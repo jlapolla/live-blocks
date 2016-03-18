@@ -1659,7 +1659,7 @@ describe('BlackBox class', function() {
     };
 
     // Check initial max iterations
-    expect(LiveBlocks.BlackBox.maxIterations()).toBe(1000);
+    expect(LiveBlocks.BlackBox.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
     LiveBlocks.BlackBox.maxIterations(10);
