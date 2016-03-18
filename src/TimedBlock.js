@@ -164,11 +164,11 @@ this.TimedBlock = (function(EventEmitter,
     // Run tick event if change or tick was explicitly requested
     if (change || this._tickRequested || this._lastError) {
 
-      // Fire tick event
-      this.fire('tick');
-
       // Clear tick requested flag
       delete this._tickRequested;
+
+      // Fire tick event
+      this.fire('tick');
 
       // Execute do function in a try block
       try {
@@ -226,9 +226,6 @@ this.TimedBlock = (function(EventEmitter,
 
     if (this._nextValues) {
 
-      // Fire tock event
-      this.fire('tock');
-
       // Defensive copy hash of wires
       var wires = {};
       for (var name in this._wires) {
@@ -247,6 +244,9 @@ this.TimedBlock = (function(EventEmitter,
 
       // Clear this._nextValues
       delete this._nextValues;
+
+      // Fire tock event
+      this.fire('tock');
     }
   };
 

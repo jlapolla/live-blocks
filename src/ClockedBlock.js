@@ -152,9 +152,6 @@ this.ClockedBlock = (function(EventEmitter,
 
     if (this._nextValues) {
 
-      // Fire tock event
-      this.fire('tock');
-
       // Defensive copy hash of wires
       var wires = {};
       for (var name in this._wires) {
@@ -173,6 +170,9 @@ this.ClockedBlock = (function(EventEmitter,
 
       // Clear this._nextValues
       delete this._nextValues;
+
+      // Fire tock event
+      this.fire('tock');
     }
   };
 

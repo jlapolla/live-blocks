@@ -79,13 +79,16 @@ this.Wire = (function(getUndefined,
 
       // Add binding
       newBindings.push({block: block, pin: pin});
-
-      // Fire event
-      this.fire('connect', {block: block, pin: pin});
     }
 
     // Replace existing bindings
     this._bindings = newBindings;
+
+    if (!bindingExists) {
+
+      // Fire event
+      this.fire('connect', {block: block, pin: pin});
+    }
   };
 
   P.unbind = function(block, pin) {
@@ -101,17 +104,16 @@ this.Wire = (function(getUndefined,
 
         newBindings.push(bindings[i]);
       }
-      else {
-
-        // Fire event
-        this.fire('disconnect', {
-          block: bindings[i].block, pin: bindings[i].pin
-        });
-      }
     }
 
     // Replace existing bindings
     this._bindings = newBindings;
+
+    if (bindings.length !== newBindings.length) {
+
+      // Fire event
+      this.fire('disconnect', {block: block, pin: pin});
+    }
   };
 
   P.value = function(newValue) {

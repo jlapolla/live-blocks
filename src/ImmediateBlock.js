@@ -144,7 +144,6 @@ this.ImmediateBlock = (function(hasOwnProperty,
           var fn = this._pins[pin];
           fn(wireValues, outputs);
           delete this._lastError;
-          this.fire('success');
 
           // Send new wire values to wires
           for (var name in wires) {
@@ -154,6 +153,9 @@ this.ImmediateBlock = (function(hasOwnProperty,
               wires[name].value(outputs[name]);
             }
           }
+
+          // Fire event
+          this.fire('success');
         }
         catch (e) {
 

@@ -301,9 +301,6 @@ this.BlackBox = (function(EventEmitter,
         // Handle successful run
         if (!this.error()) {
 
-          // Fire event
-          this.fire('success');
-
           // Copy values from internal wires to external wires
           for (var name in internalWires) {
 
@@ -312,6 +309,9 @@ this.BlackBox = (function(EventEmitter,
               externalWires[name].value(internalWires[name].value());
             }
           }
+
+          // Fire event
+          this.fire('success');
         }
         else {
 
