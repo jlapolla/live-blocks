@@ -827,5 +827,76 @@ describe('ImmediateBlock class', function() {
     expect(it.peek().value.pin).toBe('a');
     expect(it.peek().value.wire).toBeUndefined();
   });
+
+  it('detects infinite loops', function() {
+
+    // Create a circuit that will make an infinite loop
+    var passThrough = (function() {
+
+      var toOutput = function(input, output) {
+
+        output.output = input.input;
+      };
+
+      return new LiveBlocks.ImmediateBlock({
+        pins: {
+          input: toOutput,
+          output: toOutput,
+        },
+      });
+    }());
+
+    var alwaysFalse = (function() {
+
+      var toOutput = function(input, output) {
+
+        output.output = false;
+      };
+
+      return new LiveBlocks.ImmediateBlock({
+        pins: {
+          output: toOutput,
+        },
+      });
+    }());
+
+    // Create wires
+    var input = new LiveBlocks.Wire();
+    var output = new LiveBlocks.Wire();
+
+    // Connect wires to passThrough block
+    passThrough.connect('input', input);
+    passThrough.connect('output', output);
+
+    // Set initial value
+    input.value(false);
+    expect(output.value()).toBe(false);
+
+    // Connect alwaysFalse block
+    alwaysFalse.connect('output', output);
+
+    // Create infinite loop
+    var triggerLoop = function() {
+
+      input.value(false);
+      input.value(true);
+    };
+
+
+    // Check initial max iterations
+    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(1000);
+
+    // Set low max iterations, so the test runs quickly
+    LiveBlocks.ImmediateBlock.maxIterations(10);
+    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(10);
+    expect(triggerLoop)
+        .toThrowError('Infinite loop detected: reached 10 iterations');
+
+    // Set new maxIterations
+    LiveBlocks.ImmediateBlock.maxIterations(20);
+    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(20);
+    expect(triggerLoop)
+        .toThrowError('Infinite loop detected: reached 20 iterations');
+  });
 });
 

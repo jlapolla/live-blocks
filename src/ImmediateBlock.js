@@ -34,6 +34,21 @@ this.ImmediateBlock = (function(hasOwnProperty,
     }
   }
 
+  var maxIterations = 1000;
+  ImmediateBlock.maxIterations = function(iterations) {
+
+    if (arguments.length) {
+
+      // We are setting max iterations
+      maxIterations = iterations;
+    }
+    else {
+
+      // We are getting max iterations
+      return maxIterations;
+    }
+  };
+
   extendClass(EventEmitter, ImmediateBlock);
   var P = ImmediateBlock.prototype;
   P.error = function() {
@@ -82,73 +97,90 @@ this.ImmediateBlock = (function(hasOwnProperty,
 
   P.update = function(pin) {
 
-    // A connected wire value changed
+    try {
 
-    // Check updating flag
-    if (this._updating) {
+      // A connected wire value changed
 
-      // Add update to queue and return
-      this._updateQueue.push(pin);
-      return;
-    }
-    else {
+      // Check updating flag
+      if (this._updating) {
 
-      this._updating = true; // Set updating flag
-    }
-
-    // Main loop
-    while (true) {
-
-      // Construct hash of wires and wire values
-      var wires = {};
-      var wireValues = {};
-      for (var name in this._wires) {
-
-        wires[name] = this._wires[name];
-        wireValues[name] = wires[name].value();
-      }
-
-      // Fire update event
-      this.fire('update', {pin: pin, value: wireValues[pin]});
-
-      // Execute pin function in a try block
-      try {
-
-        // Call pin function on wireValues and outputs hash
-        var outputs = {};
-        var fn = this._pins[pin];
-        fn(wireValues, outputs);
-        delete this._lastError;
-        this.fire('success');
-
-        // Send new wire values to wires
-        for (var name in wires) {
-
-          if (hasOwnProperty(outputs, name)) {
-
-            wires[name].value(outputs[name]);
-          }
-        }
-      }
-      catch (e) {
-
-        this._lastError = e;
-        this.fire('error', e);
-      }
-
-      // Proces update queue
-      if (this._updateQueue.isEmpty()) {
-
-        // Unset updating flag and return
-        this._updating = false;
+        // Add update to queue and return
+        this._updateQueue.push(pin);
         return;
       }
       else {
 
-        pin = this._updateQueue.next(); // Get next updated pin from queue
+        this._updating = true; // Set updating flag
       }
 
-      // Restart loop
+      // Main loop
+      var iterations = 1;
+      while (true) {
+
+        // Check iteration count
+        if (iterations++ > maxIterations) {
+
+          throw new Error('Infinite loop detected: reached '
+            + maxIterations + ' iterations');
+        }
+
+        // Construct hash of wires and wire values
+        var wires = {};
+        var wireValues = {};
+        for (var name in this._wires) {
+
+          wires[name] = this._wires[name];
+          wireValues[name] = wires[name].value();
+        }
+
+        // Fire update event
+        this.fire('update', {pin: pin, value: wireValues[pin]});
+
+        // Execute pin function in a try block
+        try {
+
+          // Call pin function on wireValues and outputs hash
+          var outputs = {};
+          var fn = this._pins[pin];
+          fn(wireValues, outputs);
+          delete this._lastError;
+          this.fire('success');
+
+          // Send new wire values to wires
+          for (var name in wires) {
+
+            if (hasOwnProperty(outputs, name)) {
+
+              wires[name].value(outputs[name]);
+            }
+          }
+        }
+        catch (e) {
+
+          this._lastError = e;
+          this.fire('error', e);
+        }
+
+        // Proces update queue
+        if (this._updateQueue.isEmpty()) {
+
+          // Unset updating flag and return
+          this._updating = false;
+          return;
+        }
+        else {
+
+          pin = this._updateQueue.next(); // Get next updated pin from queue
+        }
+
+        // Restart loop
+      }
+    }
+    catch (err) {
+
+      // Unset updating flag
+      this._updating = false;
+      throw err;
     }
   };
 

@@ -28,9 +28,18 @@ this.Wire = (function(getUndefined,
   }
 
   var maxIterations = 1000;
-  Wire.setMaxIterations = function(iterations) {
+  Wire.maxIterations = function(iterations) {
 
-    maxIterations = iterations;
+    if (arguments.length) {
+
+      // We are setting max iterations
+      maxIterations = iterations;
+    }
+    else {
+
+      // We are getting max iterations
+      return maxIterations;
+    }
   };
 
   extendClass(EventEmitter, Wire);

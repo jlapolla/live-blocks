@@ -1658,14 +1658,20 @@ describe('BlackBox class', function() {
       input.value(true);
     };
 
+    // Check initial max iterations
+    expect(LiveBlocks.BlackBox.maxIterations()).toBe(1000);
+
+    // Set low max iterations, so the test runs quickly
+    LiveBlocks.BlackBox.maxIterations(10);
+    expect(LiveBlocks.BlackBox.maxIterations()).toBe(10);
     expect(triggerLoop)
-        .toThrowError('Infinite loop detected: reached 1000 iterations');
+        .toThrowError('Infinite loop detected: reached 10 iterations');
 
     // Set new maxIterations
-    LiveBlocks.BlackBox.maxIterations(100);
-    expect(LiveBlocks.BlackBox.maxIterations()).toBe(100);
+    LiveBlocks.BlackBox.maxIterations(20);
+    expect(LiveBlocks.BlackBox.maxIterations()).toBe(20);
     expect(triggerLoop)
-        .toThrowError('Infinite loop detected: reached 100 iterations');
+        .toThrowError('Infinite loop detected: reached 20 iterations');
   });
 });
 
