@@ -882,7 +882,6 @@ describe('ImmediateBlock class', function() {
       input.value(true);
     };
 
-
     // Check initial max iterations
     expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(100);
 

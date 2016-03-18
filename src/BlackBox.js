@@ -8,51 +8,51 @@ this.BlackBox = (function(EventEmitter,
   Error,
   ArrayIterator) {
 
-    var _internalErrorListener = function(arg) {
+  var _internalErrorListener = function(arg) {
 
-      if (!this._updating) {
+    if (!this._updating) {
 
-        this.fire('error', arg);
-      }
-    };
+      this.fire('error', arg);
+    }
+  };
 
-    var _internalUpdateListener = function() {
+  var _internalUpdateListener = function() {
 
-      if (!this._updating) {
+    if (!this._updating) {
 
-        // Defensive copy internal and external wires
-        var internalWires = {};
-        var externalWires = {};
-        for (var name in this._internalWires) {
+      // Defensive copy internal and external wires
+      var internalWires = {};
+      var externalWires = {};
+      for (var name in this._internalWires) {
 
-          // Copy internal wire
-          internalWires[name] = this._internalWires[name];
+        // Copy internal wire
+        internalWires[name] = this._internalWires[name];
 
-          // Copy external wire, if exists
-          if (this._externalWires[name]) {
+        // Copy external wire, if exists
+        if (this._externalWires[name]) {
 
-            externalWires[name] = this._externalWires[name];
-          }
-        }
-
-        // Handle successful run
-        if (!this.error()) {
-
-          // Copy values from internal wires to external wires
-          for (var name in internalWires) {
-
-            if (externalWires[name]) {
-
-              externalWires[name].value(internalWires[name].value());
-            }
-          }
-        }
-        else {
-
-          this.fire('error', this.error()); // Fire event
+          externalWires[name] = this._externalWires[name];
         }
       }
-    };
+
+      // Handle successful run
+      if (!this.error()) {
+
+        // Copy values from internal wires to external wires
+        for (var name in internalWires) {
+
+          if (externalWires[name]) {
+
+            externalWires[name].value(internalWires[name].value());
+          }
+        }
+      }
+      else {
+
+        this.fire('error', this.error()); // Fire event
+      }
+    }
+  };
 
   var _disconnect = function(pin) {
 
