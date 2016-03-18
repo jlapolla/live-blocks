@@ -862,7 +862,7 @@ describe('BlackBox class', function() {
     expect(wires.sum.value()).toBe(0);
 
     // Tick the clock
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(4);
     expect(log[0].event).toBe('update');
     expect(log[1].event).toBe('success');
@@ -899,7 +899,7 @@ describe('BlackBox class', function() {
     log.length = 0;
 
     // Produce an error internally
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('error');
     expect(blackBox.error()).not.toBeUndefined();
@@ -919,7 +919,7 @@ describe('BlackBox class', function() {
     expect(wires.sum.value()).toBe(3);
     log.length = 0;
 
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('update');
     expect(log[1].event).toBe('success');
@@ -941,7 +941,7 @@ describe('BlackBox class', function() {
     log.length = 0;
 
     // Produce an error internally
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('error');
     expect(log[1].event).toBe('error');
@@ -981,7 +981,7 @@ describe('BlackBox class', function() {
     log.length = 0;
 
     // Tick the clock
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('update');
     expect(log[1].event).toBe('success');

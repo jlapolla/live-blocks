@@ -10,7 +10,7 @@ describe('ManualTimer class', function() {
     return;
   }
 
-  it('tickTock() calls tick() once on each scheduled block, then calls tock()',
+  it('tick() calls tick() once on each scheduled block, then calls tock()',
   function() {
 
     // Make a timer
@@ -47,14 +47,14 @@ describe('ManualTimer class', function() {
     }
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule one block
     block[0].schedule();
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block[0]);
@@ -63,7 +63,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule both blocks
@@ -71,7 +71,7 @@ describe('ManualTimer class', function() {
     block[1].schedule();
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(4);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block[0]);
@@ -84,7 +84,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
   });
 
-  it('ignores blocks scheduled during tickTock()', function() {
+  it('ignores blocks scheduled during tick()', function() {
 
     // Make a timer
     var timer = new LiveBlocks.ManualTimer();
@@ -120,14 +120,14 @@ describe('ManualTimer class', function() {
     };
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule block
     block.schedule();
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block);
@@ -136,7 +136,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Set up newSchedule to reschedule the block
@@ -146,7 +146,7 @@ describe('ManualTimer class', function() {
     block.schedule();
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block);
@@ -155,7 +155,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Block should be scheduled for another tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block);
@@ -167,7 +167,7 @@ describe('ManualTimer class', function() {
     newSchedule = noop;
 
     // Timer tick (block is still scheduled at this point)
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block);
@@ -176,7 +176,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Timer tick (block did not reschedule this time)
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
   });
 
@@ -212,7 +212,7 @@ describe('ManualTimer class', function() {
     };
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule the same block multiple times
@@ -221,7 +221,7 @@ describe('ManualTimer class', function() {
     block.schedule();
 
     // Timer ticks and block is called only once
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block);
@@ -230,7 +230,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
   });
 
@@ -270,7 +270,7 @@ describe('ManualTimer class', function() {
     }
 
     // Tick timer
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule both blocks
@@ -282,7 +282,7 @@ describe('ManualTimer class', function() {
     timer.cancel(); // Call twice for robustness
 
     // Tick timer
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Schedule both blocks
@@ -297,7 +297,7 @@ describe('ManualTimer class', function() {
     timer.cancel({});
 
     // Tick timer
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].object).toBe(block[1]);
@@ -306,7 +306,7 @@ describe('ManualTimer class', function() {
     log.length = 0;
 
     // Tick timer
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
   });
 
@@ -364,13 +364,13 @@ describe('ManualTimer class', function() {
     block.schedule();
 
     // Timer emits one tick event
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('tick');
     log.length = 0;
 
     // Timer does not tick this time because there's nothing scheduled
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
   });
 });

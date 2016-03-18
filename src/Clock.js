@@ -11,7 +11,7 @@ this.Clock = (function(Set,
 
   extendClass(EventEmitter, Clock);
   var P = Clock.prototype;
-  P.tickTock = function() {
+  P.tick = function() {
 
     // Get iterator over blocks
     var it = this._bindings.values();

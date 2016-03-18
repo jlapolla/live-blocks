@@ -27,7 +27,7 @@ describe('Clock class', function() {
     }());
   });
 
-  it('tickTock() calls tick() on all bound blocks, then calls tock()',
+  it('tick() calls tick() on all bound blocks, then calls tock()',
   function() {
 
     // Make a clock
@@ -82,7 +82,7 @@ describe('Clock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(4);
     expect(log).toEqual([
       {event: 'tick'},
@@ -98,7 +98,7 @@ describe('Clock class', function() {
     blocks[1].unsetClock();
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log).toEqual([
       {event: 'tick'},
@@ -112,11 +112,11 @@ describe('Clock class', function() {
     blocks[0].unsetClock();
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(0);
   });
 
-  it('ignores blocks bound or unbound during tickTock()', function() {
+  it('ignores blocks bound or unbound during tick()', function() {
 
     // Make a clock
     var clock = new LiveBlocks.Clock();
@@ -181,7 +181,7 @@ describe('Clock class', function() {
     expect(blocks[2].clock()).toBeUndefined();
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(4);
     expect(log).toEqual([
       {event: 'tick', block: 0},
@@ -197,7 +197,7 @@ describe('Clock class', function() {
     log.length = 0;
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(4);
     expect(log).toEqual([
       {event: 'tick', block: 0},
@@ -263,7 +263,7 @@ describe('Clock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
   });
 
@@ -326,7 +326,7 @@ describe('Clock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log).toEqual([
       {event: 'tick', block: 1},
@@ -419,13 +419,13 @@ describe('Clock class', function() {
     expect(log.length).toBe(0);
 
     // Add a tick to the log
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('tick');
     log.length = 0;
 
     // Add a tick to the log
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('tick');
     log.length = 0;

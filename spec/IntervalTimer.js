@@ -16,12 +16,12 @@ describe('IntervalTimer class', function() {
     setTimeout = window.setTimeout;
   });
 
-  it('tickTock() calls tick() once on each scheduled block, then calls tock()',
+  it('tick() calls tick() once on each scheduled block, then calls tock()',
   function(done) {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -72,7 +72,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(0);
+        expect(timer._tick.calls.count()).toBe(0);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval() * 3 / 4);
@@ -89,7 +89,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval());
@@ -101,7 +101,7 @@ describe('IntervalTimer class', function() {
 
         // Check tick count. Note that the timer runs a final tick to check
         // that no other blocks scheduled during the interval.
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Schedule first block
         block[0].schedule();
@@ -116,7 +116,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Schedule second block
         block[1].schedule();
@@ -139,7 +139,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(3);
+        expect(timer._tick.calls.count()).toBe(3);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval());
@@ -148,7 +148,7 @@ describe('IntervalTimer class', function() {
       function() {
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval());
@@ -157,7 +157,7 @@ describe('IntervalTimer class', function() {
       function() {
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // End test
         done();
@@ -172,7 +172,7 @@ describe('IntervalTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -229,7 +229,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval());
@@ -240,7 +240,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Set up newSchedule to reschedule the block
         newSchedule = schedule;
@@ -262,7 +262,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(3);
+        expect(timer._tick.calls.count()).toBe(3);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval());
@@ -279,7 +279,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // Set newSchedule to noop so we stop scheduling the block
         newSchedule = noop;
@@ -299,7 +299,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(5);
+        expect(timer._tick.calls.count()).toBe(5);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval() * 2);
@@ -311,7 +311,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(6);
+        expect(timer._tick.calls.count()).toBe(6);
 
         // End test
         done();
@@ -326,7 +326,7 @@ describe('IntervalTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -393,7 +393,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval() * 2);
@@ -404,7 +404,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // End test
         done();
@@ -419,7 +419,7 @@ describe('IntervalTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -478,7 +478,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(0);
+        expect(timer._tick.calls.count()).toBe(0);
 
         // Cancel block 0
         setTimeout(function() {
@@ -507,7 +507,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], timer.interval() * 2);
@@ -518,7 +518,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // End test
         done();
@@ -533,7 +533,7 @@ describe('IntervalTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -588,7 +588,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(0);
+        expect(timer._tick.calls.count()).toBe(0);
 
         // Schedule block 1 while timer is disabled
         block[1].schedule();
@@ -603,7 +603,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(0);
+        expect(timer._tick.calls.count()).toBe(0);
 
         // Enable the timer
         timer.enabled(true);
@@ -628,7 +628,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Disable the timer (nothing is scheduled)
         timer.enabled(false);
@@ -644,7 +644,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Enable the timer
         timer.enabled(true);
@@ -660,7 +660,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // End test
         done();
@@ -675,7 +675,7 @@ describe('IntervalTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.IntervalTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -728,7 +728,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], defaultInterval);
@@ -739,7 +739,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Change interval
         timer.interval(defaultInterval * 2);
@@ -756,7 +756,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], defaultInterval * 5 / 4);
@@ -773,7 +773,7 @@ describe('IntervalTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(3);
+        expect(timer._tick.calls.count()).toBe(3);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], defaultInterval);
@@ -784,7 +784,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(3);
+        expect(timer._tick.calls.count()).toBe(3);
 
         // Next expectation
         setTimeout(expectations[expectationCount++], defaultInterval);
@@ -795,7 +795,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // Next expectation
         setTimeout(expectations[expectationCount++],
@@ -807,7 +807,7 @@ describe('IntervalTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // End test
         done();

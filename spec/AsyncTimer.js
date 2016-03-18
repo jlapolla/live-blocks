@@ -16,12 +16,12 @@ describe('AsyncTimer class', function() {
     setTimeout = window.setTimeout;
   });
 
-  it('tickTock() calls tick() once on each scheduled block, then calls tock()',
+  it('tick() calls tick() once on each scheduled block, then calls tock()',
   function(done) {
 
     // Make a timer
     var timer = new LiveBlocks.AsyncTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -105,7 +105,7 @@ describe('AsyncTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(2);
+        expect(timer._tick.calls.count()).toBe(2);
 
         // End test
         done();
@@ -120,7 +120,7 @@ describe('AsyncTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.AsyncTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -244,7 +244,7 @@ describe('AsyncTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(4);
+        expect(timer._tick.calls.count()).toBe(4);
 
         // End test
         done();
@@ -259,7 +259,7 @@ describe('AsyncTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.AsyncTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -321,7 +321,7 @@ describe('AsyncTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // End test
         done();
@@ -336,7 +336,7 @@ describe('AsyncTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.AsyncTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -421,7 +421,7 @@ describe('AsyncTimer class', function() {
         log.length = 0;
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // End test
         done();
@@ -436,7 +436,7 @@ describe('AsyncTimer class', function() {
 
     // Make a timer
     var timer = new LiveBlocks.AsyncTimer();
-    spyOn(timer, '_tickTock').and.callThrough();
+    spyOn(timer, '_tick').and.callThrough();
 
     // Make a log
     var log = [];
@@ -551,7 +551,7 @@ describe('AsyncTimer class', function() {
         expect(log.length).toBe(0);
 
         // Check tick count
-        expect(timer._tickTock.calls.count()).toBe(1);
+        expect(timer._tick.calls.count()).toBe(1);
 
         // End test
         done();

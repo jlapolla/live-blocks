@@ -5,7 +5,7 @@ this.AsyncTimer = (function(Set,
   extendClass,
   EventEmitter) {
 
-  var _tickTock = function() {
+  var _tick = function() {
 
     // Remove old _timeoutId
     delete this._timeoutId;
@@ -38,7 +38,7 @@ this.AsyncTimer = (function(Set,
     EventEmitter.call(this);
 
     this._set = new Set();
-    this._tickTock = _tickTock.bind(this);
+    this._tick = _tick.bind(this);
     this._enabled = true;
   }
 
@@ -51,7 +51,7 @@ this.AsyncTimer = (function(Set,
     // Set timeout, if no timeout exists
     if (this._enabled && !hasOwnProperty(this, '_timeoutId')) {
 
-      this._timeoutId = setTimeout(this._tickTock);
+      this._timeoutId = setTimeout(this._tick);
     }
   };
 
@@ -93,7 +93,7 @@ this.AsyncTimer = (function(Set,
         if (!(hasOwnProperty(this, '_timeoutId')
           || this._set.values().peek().done)) {
 
-          this._timeoutId = setTimeout(this._tickTock);
+          this._timeoutId = setTimeout(this._tick);
         }
       }
       else {

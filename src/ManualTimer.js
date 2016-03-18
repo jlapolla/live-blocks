@@ -11,7 +11,7 @@ this.ManualTimer = (function(Set,
 
   extendClass(EventEmitter, ManualTimer);
   var P = ManualTimer.prototype;
-  P.tickTock = function() {
+  P.tick = function() {
 
     // Get iterator over scheduled items
     var it = this._set.values();

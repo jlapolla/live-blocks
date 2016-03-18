@@ -103,22 +103,22 @@ describe('ClockedBlock class', function() {
     expect(wires.integral.value()).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(1);
     expect(wires.integral.value()).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(2);
     expect(wires.integral.value()).toBe(1);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(3);
     expect(wires.integral.value()).toBe(3);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(4);
     expect(wires.integral.value()).toBe(6);
 
@@ -126,17 +126,17 @@ describe('ClockedBlock class', function() {
     wires.ramp.value(-3);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(-2);
     expect(wires.integral.value()).toBe(3);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(-1);
     expect(wires.integral.value()).toBe(1);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wires.ramp.value()).toBe(0);
     expect(wires.integral.value()).toBe(0);
 
@@ -180,20 +180,20 @@ describe('ClockedBlock class', function() {
     expect(block.error()).toBeUndefined();
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBeUndefined();
     expect(block.error().message).toBe('undefined must be a number');
 
     // Test stimulus
     wire.value(1);
     expect(block.error().message).toBe('undefined must be a number');
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBe(2);
     expect(block.error()).toBeUndefined();
 
     // Test stimulus
     wire.value('a');
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBe('a');
     expect(block.error().message).toBe('a must be a number');
   });
@@ -353,7 +353,7 @@ describe('ClockedBlock class', function() {
     expect(wire.value()).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBe(1);
 
     // Test stimulus
@@ -465,9 +465,9 @@ describe('ClockedBlock class', function() {
     block.clock(clocks[0]);
 
     // Block should only respond to clock 0
-    clocks[0].tickTock();
+    clocks[0].tick();
     expect(wire.value()).toBe(1);
-    clocks[1].tickTock();
+    clocks[1].tick();
     expect(wire.value()).toBe(1);
 
     // Test stimulus
@@ -475,9 +475,9 @@ describe('ClockedBlock class', function() {
     expect(block.clock()).toBe(clocks[1]);
 
     // Block should only respond to clock 1
-    clocks[0].tickTock();
+    clocks[0].tick();
     expect(wire.value()).toBe(1);
-    clocks[1].tickTock();
+    clocks[1].tick();
     expect(wire.value()).toBe(2);
 
     // Test stimulus
@@ -485,9 +485,9 @@ describe('ClockedBlock class', function() {
     expect(block.clock()).toBeUndefined();
 
     // Block should not respond to either clock
-    clocks[0].tickTock();
+    clocks[0].tick();
     expect(wire.value()).toBe(2);
-    clocks[1].tickTock();
+    clocks[1].tick();
     expect(wire.value()).toBe(2);
   });
 
@@ -558,7 +558,7 @@ describe('ClockedBlock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBe(1);
     expect(log.length).toBe(2);
     expect(log[0]).toEqual({event: 'tick'});
@@ -572,7 +572,7 @@ describe('ClockedBlock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(log.length).toBe(2);
     expect(log[0]).toEqual({event: 'tick'});
     expect(log[1].event).toBe('error');
@@ -586,7 +586,7 @@ describe('ClockedBlock class', function() {
     expect(log.length).toBe(0);
 
     // Test stimulus
-    clock.tickTock();
+    clock.tick();
     expect(wire.value()).toBe(4);
     expect(log.length).toBe(2);
     expect(log[0]).toEqual({event: 'tick'});

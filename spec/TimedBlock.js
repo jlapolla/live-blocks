@@ -139,7 +139,7 @@ describe('TimedBlock class', function() {
 
     // Test stimulus
     steps.value(4);
-    timer.tickTock();
+    timer.tick();
     expect(input.value()).toBe(0);
     expect(output.value()).toBe(0);
     expect(steps.value()).toBe(4);
@@ -149,7 +149,7 @@ describe('TimedBlock class', function() {
     input.value(4);
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(4);
       expect(output.value()).toBe(i + 1);
       expect(steps.value()).toBe(4);
@@ -157,7 +157,7 @@ describe('TimedBlock class', function() {
     }
 
     // Test stimulus
-    timer.tickTock();
+    timer.tick();
     expect(input.value()).toBe(4);
     expect(output.value()).toBe(4);
     expect(steps.value()).toBe(4);
@@ -167,7 +167,7 @@ describe('TimedBlock class', function() {
     input.value(-2);
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(-2);
       expect(output.value()).toBe(4 - (i + 1) * 6 / 4);
       expect(steps.value()).toBe(4);
@@ -175,7 +175,7 @@ describe('TimedBlock class', function() {
     }
 
     // Test stimulus
-    timer.tickTock();
+    timer.tick();
     expect(input.value()).toBe(-2);
     expect(output.value()).toBe(-2);
     expect(steps.value()).toBe(4);
@@ -185,7 +185,7 @@ describe('TimedBlock class', function() {
     input.value(2);
     for (var i = 0; i < 2; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(2);
       expect(output.value()).toBe(-2 + (i + 1) * 4 / 4);
       expect(steps.value()).toBe(4);
@@ -200,14 +200,14 @@ describe('TimedBlock class', function() {
     input.value(-2);
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(-2);
       expect(output.value()).toBe(0 - (i + 1) * 2 / 4);
       expect(steps.value()).toBe(4);
       expect(stepsLeft.value()).toBe(4 - (i + 1));
     }
 
-    timer.tickTock();
+    timer.tick();
     expect(input.value()).toBe(-2);
     expect(output.value()).toBe(-2);
     expect(steps.value()).toBe(4);
@@ -217,7 +217,7 @@ describe('TimedBlock class', function() {
     input.value(2);
     for (var i = 0; i < 2; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(2);
       expect(output.value()).toBe(-2 + (i + 1) * 4 / 4);
       expect(steps.value()).toBe(4);
@@ -232,7 +232,7 @@ describe('TimedBlock class', function() {
     output.value(1);
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(1);
       expect(output.value()).toBe(1);
       expect(steps.value()).toBe(4);
@@ -243,7 +243,7 @@ describe('TimedBlock class', function() {
     output.value(2);
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(input.value()).toBe(2);
       expect(output.value()).toBe(2);
       expect(steps.value()).toBe(4);
@@ -362,7 +362,7 @@ describe('TimedBlock class', function() {
     block.connect('stepsLeft', stepsLeft);
 
     // Check initial state
-    timer.tickTock();
+    timer.tick();
     expect(block.error()).toBeUndefined();
     expect(input.value()).toBe(0);
     expect(output.value()).toBe(0);
@@ -372,7 +372,7 @@ describe('TimedBlock class', function() {
     // Test stimulus
     input.value('a');
     expect(block.error()).toBeUndefined();
-    timer.tickTock();
+    timer.tick();
     expect(block.error()).not.toBeUndefined();
     expect(input.value()).toBe('a');
     expect(output.value()).toBe(0);
@@ -382,7 +382,7 @@ describe('TimedBlock class', function() {
     // Test stimulus
     input.value(0);
     expect(block.error()).not.toBeUndefined();
-    timer.tickTock();
+    timer.tick();
     expect(block.error()).toBeUndefined();
     expect(input.value()).toBe(0);
     expect(output.value()).toBe(0);
@@ -392,7 +392,7 @@ describe('TimedBlock class', function() {
     // Test stimulus
     input.value('a');
     expect(block.error()).toBeUndefined();
-    timer.tickTock();
+    timer.tick();
     expect(block.error()).not.toBeUndefined();
     expect(input.value()).toBe('a');
     expect(output.value()).toBe(0);
@@ -404,7 +404,7 @@ describe('TimedBlock class', function() {
     expect(block.error()).not.toBeUndefined();
     for (var i = 0; i < 4; i++) {
 
-      timer.tickTock();
+      timer.tick();
       expect(block.error()).toBeUndefined();
       expect(input.value()).toBe(4);
       expect(output.value()).toBe(i + 1);
@@ -412,7 +412,7 @@ describe('TimedBlock class', function() {
       expect(stepsLeft.value()).toBe(3 - i);
     }
 
-    timer.tickTock();
+    timer.tick();
     expect(input.value()).toBe(4);
     expect(output.value()).toBe(4);
     expect(steps.value()).toBe(4);
@@ -822,7 +822,7 @@ describe('TimedBlock class', function() {
 
     // Tick the timer. Should produce tick and tock events, since we've just
     // connected wires to the block
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].arg).toBeUndefined();
@@ -834,13 +834,13 @@ describe('TimedBlock class', function() {
 
     // Tick the timer. Should NOT produce any events, since nothing has changed
     // since the last tick tock
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Set input to "a". This should cause an error. We will see 'tick' event,
     // followed by 'error' event
     input.value('a');
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].arg).toBeUndefined();
@@ -852,13 +852,13 @@ describe('TimedBlock class', function() {
 
     // Tick the timer. Should NOT produce any events, since nothing has changed
     // since the last tick tock
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(0);
 
     // Set input back to 0. This clears the error state. We should see 'tick'
     // followed by 'tock' events.
     input.value(0);
-    timer.tickTock();
+    timer.tick();
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('tick');
     expect(log[0].arg).toBeUndefined();
@@ -946,7 +946,7 @@ describe('TimedBlock class', function() {
     // When the timer ticks, the block will try to set the wire's value to
     // capital 'A', but the wire will not change it's value since it considers
     // 'a' and 'A' to be equal.
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([
       {
@@ -959,7 +959,7 @@ describe('TimedBlock class', function() {
     log.length = 0;
 
     // When timer ticks, nothing will happen.
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([]);
 
@@ -977,7 +977,7 @@ describe('TimedBlock class', function() {
     // set last was sent to the wire for evaluation, and that the wire hasn't
     // been changed since we last sent it a value for evaluation.
     wire.value('b');
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('b');
     expect(log).toEqual([
       {
@@ -1038,8 +1038,8 @@ describe('TimedBlock class', function() {
     // When timer ticks, "do" function is called. Notice that previous.a ===
     // undefined and input.a === undefined, yet the "do" function is still
     // called because now input.a exists.
-    timer.tickTock();
-    timer.tickTock(); // Call it again just for robustness testing
+    timer.tick();
+    timer.tick(); // Call it again just for robustness testing
     expect(wire.value()).toBeUndefined();
     expect(log).toEqual([
       {
@@ -1055,8 +1055,8 @@ describe('TimedBlock class', function() {
     // When timer ticks, "do" function is called. Again, the "do" function is
     // called because input.b exists now, where it previously did not exist,
     // even though input.b === previous.b === undefined.
-    timer.tickTock();
-    timer.tickTock(); // Call it again just for robustness testing
+    timer.tick();
+    timer.tick(); // Call it again just for robustness testing
     expect(wire.value()).toBeUndefined();
     expect(log).toEqual([
       {
@@ -1070,8 +1070,8 @@ describe('TimedBlock class', function() {
     block.disconnect('a');
 
     // Tick timer
-    timer.tickTock();
-    timer.tickTock(); // Call it again just for robustness testing
+    timer.tick();
+    timer.tick(); // Call it again just for robustness testing
     expect(wire.value()).toBeUndefined();
     expect(log).toEqual([
       {
@@ -1085,8 +1085,8 @@ describe('TimedBlock class', function() {
     block.disconnect('b');
 
     // Tick timer
-    timer.tickTock();
-    timer.tickTock(); // Call it again just for robustness testing
+    timer.tick();
+    timer.tick(); // Call it again just for robustness testing
     expect(wire.value()).toBeUndefined();
     expect(log).toEqual([
       {
@@ -1172,8 +1172,8 @@ describe('TimedBlock class', function() {
     block.connect('a', wire.a);
 
     // Timer tick
-    timer.tickTock();
-    timer.tickTock();
+    timer.tick();
+    timer.tick();
     expect(log).toEqual([
       {
         input: {a: undefined},
@@ -1188,8 +1188,8 @@ describe('TimedBlock class', function() {
     // Timer tick. Notice that "previous" does not have 'b' or 'c', even though
     // we set 'b' and 'c' on output. This is because the 'b' and 'c' pins were
     // disconnected when we tried to set them.
-    timer.tickTock();
-    timer.tickTock();
+    timer.tick();
+    timer.tick();
     expect(log).toEqual([
       {
         input: {a: 'a', b: undefined},
@@ -1202,8 +1202,8 @@ describe('TimedBlock class', function() {
     block.disconnect('b');
 
     // Timer tick
-    timer.tickTock();
-    timer.tickTock();
+    timer.tick();
+    timer.tick();
     expect(log).toEqual([
       {
         input: {a: 'a'},
@@ -1264,8 +1264,8 @@ describe('TimedBlock class', function() {
     block.connect('a', wire);
 
     // Timer tick
-    timer.tickTock();
-    timer.tickTock();
+    timer.tick();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([
       {
@@ -1280,7 +1280,7 @@ describe('TimedBlock class', function() {
     wire.value('a');
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([]);
   });
@@ -1339,7 +1339,7 @@ describe('TimedBlock class', function() {
     block.connect('a', wire);
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([
       {
@@ -1351,8 +1351,8 @@ describe('TimedBlock class', function() {
 
     // Timer tick calls "do" function even though no wire values changed since
     // last call
-    timer.tickTock();
-    timer.tickTock();
+    timer.tick();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log).toEqual([
       {
@@ -1403,7 +1403,7 @@ describe('TimedBlock class', function() {
     block.connect('a', wire);
 
     // Timer tick
-    timer.tickTock();
+    timer.tick();
     expect(wire.value()).toBe('a');
     expect(log.length).toBe(1);
     expect(log[0]).toBeUndefined();

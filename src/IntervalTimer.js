@@ -5,7 +5,7 @@ this.IntervalTimer = (function(Set,
   extendClass,
   EventEmitter) {
 
-  var _tickTock = function() {
+  var _tick = function() {
 
     // Get iterator over scheduled items
     var it = this._set.values();
@@ -22,7 +22,7 @@ this.IntervalTimer = (function(Set,
       // There are blocks scheduled
 
       // Start a new timeout
-      this._timeoutId = setTimeout(this._tickTock, this._interval);
+      this._timeoutId = setTimeout(this._tick, this._interval);
 
       // Get a new set
       this._set = new Set();
@@ -50,7 +50,7 @@ this.IntervalTimer = (function(Set,
     EventEmitter.call(this);
 
     this._set = new Set();
-    this._tickTock = _tickTock.bind(this);
+    this._tick = _tick.bind(this);
     this._enabled = true;
     this._interval = 40;
   }
@@ -64,7 +64,7 @@ this.IntervalTimer = (function(Set,
     // Set timeout, if no timeout exists
     if (this._enabled && !hasOwnProperty(this, '_timeoutId')) {
 
-      this._timeoutId = setTimeout(this._tickTock, this._interval);
+      this._timeoutId = setTimeout(this._tick, this._interval);
     }
   };
 
@@ -106,7 +106,7 @@ this.IntervalTimer = (function(Set,
         if (!(hasOwnProperty(this, '_timeoutId')
           || this._set.values().peek().done)) {
 
-          this._timeoutId = setTimeout(this._tickTock, this._interval);
+          this._timeoutId = setTimeout(this._tick, this._interval);
         }
       }
       else {
