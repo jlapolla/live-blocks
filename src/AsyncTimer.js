@@ -1,4 +1,9 @@
-this.AsyncTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
+this.AsyncTimer = (function(Set,
+  hasOwnProperty,
+  setTimeout,
+  clearTimeout,
+  extendClass,
+  EventEmitter) {
 
   var _tickTock = function() {
 
@@ -23,16 +28,21 @@ this.AsyncTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
 
       it.next().value.tock();
     }
+
+    // Fire event
+    this.fire('tick');
   };
 
   function AsyncTimer() {
+
+    EventEmitter.call(this);
 
     this._set = new Set();
     this._tickTock = _tickTock.bind(this);
     this._enabled = true;
   }
 
-  AsyncTimer.prototype = {};
+  extendClass(EventEmitter, AsyncTimer);
   var P = AsyncTimer.prototype;
   P.schedule = function(block) {
 
@@ -109,5 +119,10 @@ this.AsyncTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
   };
 
   return AsyncTimer;
-}(this.Set, this.hasOwnProperty, host.setTimeout, host.clearTimeout));
+}(this.Set,
+  this.hasOwnProperty,
+  host.setTimeout,
+  host.clearTimeout,
+  this.extendClass,
+  this.EventEmitter));
 

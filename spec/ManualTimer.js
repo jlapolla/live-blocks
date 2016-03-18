@@ -309,5 +309,69 @@ describe('ManualTimer class', function() {
     timer.tickTock();
     expect(log.length).toBe(0);
   });
+
+  it('fires tick events', function() {
+
+    // Make a timer
+    var timer = new LiveBlocks.ManualTimer();
+
+    // Create logging event listeners
+    var log = [];
+    (function(list) {
+
+      for (var i = 0; i < list.length; i++) {
+
+        var listener = (function(eventName) {
+
+          return function(arg) {
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== 'undefined') {
+
+              obj.arg = arg;
+            }
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+
+        timer.on(list[i], listener);
+      }
+    }(['tick']));
+
+    // Make fake block functions
+    var schedule = function() {
+
+      timer.schedule(this);
+    };
+
+    var tick = function() {};
+
+    var tock = tick;
+
+    // Make a fake block
+    var block = {
+      schedule: schedule,
+      tick: tick,
+      tock: tock,
+    };
+
+    expect(log.length).toBe(0);
+
+    // Schedule a block
+    block.schedule();
+
+    // Timer emits one tick event
+    timer.tickTock();
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe('tick');
+    log.length = 0;
+
+    // Timer does not tick this time because there's nothing scheduled
+    timer.tickTock();
+    expect(log.length).toBe(0);
+  });
 });
 

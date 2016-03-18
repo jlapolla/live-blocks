@@ -383,5 +383,52 @@ describe('Clock class', function() {
     expect(it.peek().value).toBeUndefined();
     expect(it.next().value).toBeUndefined();
   });
+
+  it('fires tick events', function() {
+
+    // Make a clock
+    var clock = new LiveBlocks.Clock();
+
+    // Create logging event listeners
+    var log = [];
+    (function(list) {
+
+      for (var i = 0; i < list.length; i++) {
+
+        var listener = (function(eventName) {
+
+          return function(arg) {
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== 'undefined') {
+
+              obj.arg = arg;
+            }
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+
+        clock.on(list[i], listener);
+      }
+    }(['tick']));
+
+    // Log should be empty initially
+    expect(log.length).toBe(0);
+
+    // Add a tick to the log
+    clock.tickTock();
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe('tick');
+    log.length = 0;
+
+    // Add a tick to the log
+    clock.tickTock();
+    expect(log.length).toBe(1);
+    expect(log[0].event).toBe('tick');
+    log.length = 0;
+  });
 });
 

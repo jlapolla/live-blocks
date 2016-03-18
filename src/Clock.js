@@ -1,11 +1,15 @@
-this.Clock = (function(Set) {
+this.Clock = (function(Set,
+  EventEmitter,
+  extendClass) {
 
   function Clock() {
+
+    EventEmitter.call(this);
 
     this._bindings = new Set();
   }
 
-  Clock.prototype = {};
+  extendClass(EventEmitter, Clock);
   var P = Clock.prototype;
   P.tickTock = function() {
 
@@ -24,6 +28,9 @@ this.Clock = (function(Set) {
 
       it.next().value.tock();
     }
+
+    // Fire event
+    this.fire('tick');
   };
 
   P.bind = function(block) {
@@ -43,5 +50,7 @@ this.Clock = (function(Set) {
   };
 
   return Clock;
-}(this.Set));
+}(this.Set,
+ this.EventEmitter,
+ this.extendClass));
 

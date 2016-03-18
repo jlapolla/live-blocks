@@ -561,5 +561,90 @@ describe('AsyncTimer class', function() {
     // Start tests
     setTimeout(expectations[expectationCount++]);
   }, 1000);
+
+  it('fires tick events', function(done) {
+
+    // Make a timer
+    var timer = new LiveBlocks.AsyncTimer();
+
+    // Create logging event listeners
+    var log = [];
+    (function(list) {
+
+      for (var i = 0; i < list.length; i++) {
+
+        var listener = (function(eventName) {
+
+          return function(arg) {
+
+            // Create log object
+            var obj = {event: eventName};
+            if (typeof arg !== 'undefined') {
+
+              obj.arg = arg;
+            }
+
+            // Add log object to log
+            log.push(obj);
+          };
+        }(list[i]));
+
+        timer.on(list[i], listener);
+      }
+    }(['tick']));
+
+    // Make fake block functions
+    var schedule = function() {
+
+      timer.schedule(this);
+    };
+
+    var tick = function() {};
+
+    var tock = tick;
+
+    // Make a fake block
+    var block = {
+      schedule: schedule,
+      tick: tick,
+      tock: tock,
+    };
+
+    var expectationCount = 0;
+    var expectations = [
+      function() {
+
+        expect(log.length).toBe(0);
+
+        // Schedule a block
+        block.schedule();
+
+        // Next expectation
+        setTimeout(expectations[expectationCount++]);
+      },
+
+      function() {
+
+        // Timer emits one tick event
+        expect(log.length).toBe(1);
+        expect(log[0].event).toBe('tick');
+        log.length = 0;
+
+        // Next expectation
+        setTimeout(expectations[expectationCount++]);
+      },
+
+      function() {
+
+        expect(log.length).toBe(0);
+
+        // End test
+        done();
+      },
+    ];
+
+    // Start tests
+    setTimeout(expectations[expectationCount++]);
+  }, 1000);
 });
 

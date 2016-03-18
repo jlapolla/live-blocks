@@ -1,31 +1,41 @@
-this.ManualTimer = (function(Set) {
+this.ManualTimer = (function(Set,
+  EventEmitter,
+  extendClass) {
 
   function ManualTimer() {
+
+    EventEmitter.call(this);
 
     this._set = new Set();
   };
 
-  ManualTimer.prototype = {};
+  extendClass(EventEmitter, ManualTimer);
   var P = ManualTimer.prototype;
   P.tickTock = function() {
 
     // Get iterator over scheduled items
     var it = this._set.values();
 
-    // Get a new set
-    this._set = new Set();
+    if (!it.peek().done) {
 
-    // Call tick() on all blocks
-    while (!it.peek().done) {
+      // Get a new set
+      this._set = new Set();
 
-      it.next().value.tick();
-    }
+      // Call tick() on all blocks
+      while (!it.peek().done) {
 
-    // Call tock() on all blocks
-    it.reset();
-    while (!it.peek().done) {
+        it.next().value.tick();
+      }
 
-      it.next().value.tock();
+      // Call tock() on all blocks
+      it.reset();
+      while (!it.peek().done) {
+
+        it.next().value.tock();
+      }
+
+      // Fire event
+      this.fire('tick');
     }
   };
 
@@ -49,5 +59,7 @@ this.ManualTimer = (function(Set) {
   };
 
   return ManualTimer;
-}(this.Set));
+}(this.Set,
+  this.EventEmitter,
+  this.extendClass));
 

@@ -1,4 +1,9 @@
-this.IntervalTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
+this.IntervalTimer = (function(Set,
+  hasOwnProperty,
+  setTimeout,
+  clearTimeout,
+  extendClass,
+  EventEmitter) {
 
   var _tickTock = function() {
 
@@ -34,10 +39,15 @@ this.IntervalTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
 
         it.next().value.tock();
       }
+
+      // Fire event
+      this.fire('tick');
     }
   };
 
   function IntervalTimer() {
+
+    EventEmitter.call(this);
 
     this._set = new Set();
     this._tickTock = _tickTock.bind(this);
@@ -45,7 +55,7 @@ this.IntervalTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
     this._interval = 40;
   }
 
-  IntervalTimer.prototype = {};
+  extendClass(EventEmitter, IntervalTimer);
   var P = IntervalTimer.prototype;
   P.schedule = function(block) {
 
@@ -136,5 +146,10 @@ this.IntervalTimer = (function(Set, hasOwnProperty, setTimeout, clearTimeout) {
   };
 
   return IntervalTimer;
-}(this.Set, this.hasOwnProperty, host.setTimeout, host.clearTimeout));
+}(this.Set,
+  this.hasOwnProperty,
+  host.setTimeout,
+  host.clearTimeout,
+  this.extendClass,
+  this.EventEmitter));
 
