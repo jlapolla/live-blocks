@@ -18,6 +18,7 @@ $(eval $(d)order += $(d)src/ManualTimer.js)
 $(eval $(d)order += $(d)src/AsyncTimer.js)
 $(eval $(d)order += $(d)src/IntervalTimer.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
+$(eval $(d)order += $(d)src/ArrayRepeatBox.js)
 
 # Source files wrapped in "test" IIFE
 define $(d)template

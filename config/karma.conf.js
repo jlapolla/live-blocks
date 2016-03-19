@@ -35,6 +35,7 @@ module.exports = function(config) {
       'test/AsyncTimer.js',
       'test/IntervalTimer.js',
       'test/BlackBox.js',
+      'test/ArrayRepeatBox.js',
       'spec/*.js'
     ],
 
