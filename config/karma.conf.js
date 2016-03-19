@@ -20,6 +20,7 @@ module.exports = function(config) {
       'test/extendClass.js',
       'test/hasOwnProperty.js',
       'test/multiInheritClass.js',
+      'test/isArray.js',
       'test/ArrayIterator.js',
       'test/Queue.js',
       'test/Set.js',
