@@ -15,6 +15,7 @@ describe('ArrayRepeatBox class', function() {
   var assertFiniteNumber;
   var plusOneFactory;
   var timesTwoFactory;
+  var plusOneCircuitFactory;
   var arrayWireFactory;
   beforeEach(function() {
 
@@ -89,44 +90,55 @@ describe('ArrayRepeatBox class', function() {
 
     arrayWireFactory = (function(isArray, Wire) {
 
-      var same = function(objectA, objectB) {
+      var equals = (function(isArray) {
 
-        // Compare with ===, but let NaN === NaN be true
-        if (objectA !== objectA) {
+        var same = function(objectA, objectB) {
 
-          return objectB !== objectB;
-        }
-        else {
+          // Compare with ===, but let NaN === NaN be true
+          if (objectA !== objectA) {
 
-          return objectA === objectB;
-        }
-      };
-
-      var equalTo = function(value) {
-
-        if (isArray(value) && isArray(this._value)) {
-
-          if (value.length === this._value.length) {
-
-            for (var i = 0; i < value.length; i++) {
-
-              if (!same(value[i], this._value[i])) {
-
-                return false;
-              }
-            }
-
-            return true;
+            return objectB !== objectB;
           }
           else {
 
-            return false;
+            return objectA === objectB;
           }
-        }
-        else {
+        };
 
-          return same(this._value, value);
-        }
+        var equals;
+        equals = function(objectA, objectB) {
+
+          if (isArray(objectA) && isArray(objectB)) {
+
+            if (objectA.length === objectB.length) {
+
+              for (var i = 0; i < objectA.length; i++) {
+
+                if (!equals(objectA[i], objectB[i])) {
+
+                  return false;
+                }
+              }
+
+              return true;
+            }
+            else {
+
+              return false;
+            }
+          }
+          else {
+
+            return same(objectB, objectA);
+          }
+        };
+
+        return equals;
+      }(isArray));
+
+      var equalTo = function(value) {
+
+        return equals(this._value, value);
       };
 
       return function() {
@@ -137,13 +149,10 @@ describe('ArrayRepeatBox class', function() {
         return wire;
       };
     }(host.Array.isArray, LiveBlocks.Wire));
-  });
 
-  it('integration test', function() {
+    plusOneCircuitFactory = (function(Wire, plusOneFactory) {
 
-    // Create circuit factory
-    var factory = (function(Wire, plusOneFactory) {
-
+      // Create circuit factory
       return function() {
 
         var input = new Wire();
@@ -160,10 +169,13 @@ describe('ArrayRepeatBox class', function() {
         };
       };
     }(LiveBlocks.Wire, plusOneFactory));
+  });
 
-    // Create array repeat box
+  it('integration test', function() {
+
+    // Create block
     var block = new LiveBlocks.ArrayRepeatBox({
-      factory: factory,
+      factory: plusOneCircuitFactory,
     });
 
     // Create wires
@@ -250,6 +262,109 @@ describe('ArrayRepeatBox class', function() {
     expect(input.value()).toEqual([]);
     expect(output.value()).toEqual([]);
     expect(innerWire.value()).toBe(7);
+  });
+
+  it('integration test with nested ArrayRepeatBox', function() {
+
+    // Create circuit factory
+    var repeatCircuitFactory = (function(plusOneCircuitFactory,
+      arrayWireFactory,
+      ArrayRepeatBox) {
+
+      return function() {
+
+        var block = new ArrayRepeatBox({
+          factory: plusOneCircuitFactory,
+        });
+
+        var input = arrayWireFactory();
+        var output = arrayWireFactory();
+
+        block.connect('input', input);
+        block.connect('output', output);
+
+        var pins = {
+          input: input,
+          output: output,
+        };
+        return pins;
+      };
+    }(plusOneCircuitFactory,
+      arrayWireFactory,
+      LiveBlocks.ArrayRepeatBox));
+
+    // Create block
+    var block = new LiveBlocks.ArrayRepeatBox({
+      factory: repeatCircuitFactory,
+    });
+
+    // Create wires
+    var input = arrayWireFactory();
+    var output = arrayWireFactory();
+    var innerWire = new LiveBlocks.Wire();
+
+    // Set initial wire values
+    input.value([[]]);
+    output.value([[]]);
+
+    // Connect wires to pins
+    block.connect('input', input);
+    block.connect('output', output);
+
+    // Check initial conditions
+    expect(block.error()).toBeUndefined();
+    expect(input.value()).toEqual([[]]);
+    expect(output.value()).toEqual([[]]);
+
+    // Provide some input
+    input.value([
+      [1, 3, 2],
+      [6, 2, 4],
+    ]);
+    expect(block.error()).toBeUndefined();
+    expect(input.value()).toEqual([
+      [1, 3, 2],
+      [6, 2, 4],
+    ]);
+    expect(output.value()).toEqual([
+      [2, 4, 3],
+      [7, 3, 5],
+    ]);
+
+    // Connect directly to a block. Change wire value from internal block
+    // connection.
+    var innerBlock = block.block(0);
+    innerWire.value([8, 4, 5, 3]);
+    innerBlock.connect('input', innerWire);
+    expect(block.error()).toBeUndefined();
+    expect(input.value()).toEqual([
+      [8, 4, 5, 3],
+      [6, 2, 4],
+    ]);
+    expect(output.value()).toEqual([
+      [9, 5, 6, 4],
+      [7, 3, 5],
+    ]);
+    expect(innerWire.value()).toEqual([8, 4, 5, 3]);
+
+    // Change value externally
+    input.value([
+      [3, 4, 5, 6],
+      [5],
+      [2, 8, 3],
+    ]);
+    expect(block.error()).toBeUndefined();
+    expect(input.value()).toEqual([
+      [3, 4, 5, 6],
+      [5],
+      [2, 8, 3],
+    ]);
+    expect(output.value()).toEqual([
+      [4, 5, 6, 7],
+      [6],
+      [3, 9, 4],
+    ]);
+    expect(innerWire.value()).toEqual([3, 4, 5, 6]);
   });
 });
 

@@ -226,7 +226,7 @@ this.ArrayRepeatBox = (function(EventEmitter,
 
         // Get updated pin value
         var value;
-        if (externalWires[pin]) {
+        if (hasOwnProperty(externalWires, pin)) {
 
           value = externalWires[pin].value();
         }
@@ -289,13 +289,13 @@ this.ArrayRepeatBox = (function(EventEmitter,
             var pins = this._internalWires[i];
             var block = this._internalBlocks[i];
 
+            // Remove _internalErrorListener from block
+            block.off('error', this._internalErrorListener);
+
             for (var name in pins) {
 
               // Remove _internalUpdateListener from pins
               pins[name].off('value', this._internalUpdateListener);
-
-              // Remove _internalErrorListener from block
-              block.off('error', this._internalErrorListener);
 
               // Disconnect wires from block
               block.disconnect(name);
