@@ -366,5 +366,23 @@ describe('ArrayRepeatBox class', function() {
     ]);
     expect(innerWire.value()).toEqual([3, 4, 5, 6]);
   });
+
+  it('throws error when connecting to a non-existent pin');
+
+  it('fires connect and disconnect events');
+
+  it('fires update, success, and error events');
+
+  it('indicates error when a pin value is not an array');
+
+  it('reacts to internal wire updates');
+
+  it('pins() iterator iterates over block pins');
+
+  it('blocks() iterator iterates over internal blocks');
+
+  it('block() selector retrieves the desired block');
+
+  it('detects infinite loops');
 });
 
