@@ -47,13 +47,6 @@ this.ArrayRepeatBox = (function(EventEmitter,
             externalWires[pin].value(arr);
           }
         }
-
-        // Fire event
-        this.fire('success');
-      }
-      else {
-
-        this.fire('error', this.error()); // Fire event
       }
     }
   };
