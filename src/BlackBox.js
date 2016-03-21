@@ -47,10 +47,6 @@ this.BlackBox = (function(EventEmitter,
           }
         }
       }
-      else {
-
-        this.fire('error', this.error()); // Fire event
-      }
     }
   };
 
