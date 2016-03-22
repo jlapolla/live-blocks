@@ -37,6 +37,7 @@ module.exports = function(config) {
       'test/IntervalTimer.js',
       'test/BlackBox.js',
       'test/ArrayRepeatBox.js',
+      'test/ObjectRepeatBox.js',
       'spec/*.js'
     ],
 
