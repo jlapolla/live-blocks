@@ -20,6 +20,8 @@ module.exports = function(config) {
       'test/extendClass.js',
       'test/hasOwnProperty.js',
       'test/multiInheritClass.js',
+      'test/isArray.js',
+      'test/isObject.js',
       'test/ArrayIterator.js',
       'test/Queue.js',
       'test/Set.js',
@@ -34,6 +36,8 @@ module.exports = function(config) {
       'test/AsyncTimer.js',
       'test/IntervalTimer.js',
       'test/BlackBox.js',
+      'test/ArrayRepeatBox.js',
+      'test/ObjectRepeatBox.js',
       'spec/*.js'
     ],
 

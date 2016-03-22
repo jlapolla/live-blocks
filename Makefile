@@ -3,6 +3,8 @@ $(eval $(d)order := $(d)src/getUndefined.js)
 $(eval $(d)order += $(d)src/extendClass.js)
 $(eval $(d)order += $(d)src/hasOwnProperty.js)
 $(eval $(d)order += $(d)src/multiInheritClass.js)
+$(eval $(d)order += $(d)src/isArray.js)
+$(eval $(d)order += $(d)src/isObject.js)
 $(eval $(d)order += $(d)src/ArrayIterator.js)
 $(eval $(d)order += $(d)src/Queue.js)
 $(eval $(d)order += $(d)src/Set.js)
@@ -17,6 +19,8 @@ $(eval $(d)order += $(d)src/ManualTimer.js)
 $(eval $(d)order += $(d)src/AsyncTimer.js)
 $(eval $(d)order += $(d)src/IntervalTimer.js)
 $(eval $(d)order += $(d)src/BlackBox.js)
+$(eval $(d)order += $(d)src/ArrayRepeatBox.js)
+$(eval $(d)order += $(d)src/ObjectRepeatBox.js)
 
 # Source files wrapped in "test" IIFE
 define $(d)template
