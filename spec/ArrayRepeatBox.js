@@ -900,14 +900,16 @@ describe('ArrayRepeatBox class', function() {
     wires[0].value([1, 2]);
 
     // Run through iterator
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.index).toBe(0);
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);
 
     // Reset and run through iterator again
     it.reset();
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.index).toBe(0);
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);
@@ -916,9 +918,11 @@ describe('ArrayRepeatBox class', function() {
     it = block.blocks();
 
     // Run through iterator
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.index).toBe(0);
     it.next();
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.index).toBe(1);
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);

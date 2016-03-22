@@ -368,8 +368,14 @@ this.ArrayRepeatBox = (function(EventEmitter,
 
   P.blocks = function() {
 
+    var arr = [];
+    for (var i = 0; i < this._internalBlocks.length; i++) {
+
+      arr.push({block: this._internalBlocks[i], index: i});
+    }
+
     // Return array iterator
-    return new ArrayIterator(this._internalBlocks);
+    return new ArrayIterator(arr);
   };
 
   P.block = function(index) {
