@@ -14,7 +14,6 @@ describe('ArrayRepeatBox class', function() {
 
   var assertFiniteNumber;
   var plusOneFactory;
-  var timesTwoFactory;
   var plusOneCircuitFactory;
   var arrayWireFactory;
   beforeEach(function() {
@@ -45,35 +44,6 @@ describe('ArrayRepeatBox class', function() {
         assertFiniteNumber(input.output);
 
         output.input = input.output - 1;
-      };
-
-      return function() {
-
-        return new ImmediateBlock({
-          pins: {
-            input: toOutput,
-            output: toInput,
-          },
-        });
-      };
-    }(LiveBlocks.ImmediateBlock,
-      assertFiniteNumber));
-
-    timesTwoFactory = (function(ImmediateBlock,
-      assertFiniteNumber) {
-
-      var toOutput = function(input, output) {
-
-        assertFiniteNumber(input.input);
-
-        output.output = input.input * 2;
-      };
-
-      var toInput = function(input, outpu) {
-
-        assertFiniteNumber(input.output);
-
-        output.input = input.output / 2;
       };
 
       return function() {
