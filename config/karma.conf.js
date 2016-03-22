@@ -21,6 +21,7 @@ module.exports = function(config) {
       'test/hasOwnProperty.js',
       'test/multiInheritClass.js',
       'test/isArray.js',
+      'test/isObject.js',
       'test/ArrayIterator.js',
       'test/Queue.js',
       'test/Set.js',
