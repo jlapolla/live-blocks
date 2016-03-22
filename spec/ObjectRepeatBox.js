@@ -108,7 +108,7 @@ describe('ObjectRepeatBox class', function() {
               if (!(hasOwnProperty(objectB, prop)
                 && equals(objectA[prop], objectB[prop]))) {
 
-                return false
+                return false;
               }
             }
 
@@ -285,6 +285,7 @@ describe('ObjectRepeatBox class', function() {
         return pins;
       };
     }(plusOneCircuitFactory,
+
       objectWireFactory,
       LiveBlocks.ObjectRepeatBox));
 

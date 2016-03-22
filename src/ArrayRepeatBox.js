@@ -351,7 +351,7 @@ this.ArrayRepeatBox = (function(EventEmitter,
       this._updating = false;
       throw err;
     }
-  }
+  };
 
   P.pins = function() {
 

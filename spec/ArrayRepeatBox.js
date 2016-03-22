@@ -260,6 +260,7 @@ describe('ArrayRepeatBox class', function() {
         return pins;
       };
     }(plusOneCircuitFactory,
+
       arrayWireFactory,
       LiveBlocks.ArrayRepeatBox));
 
