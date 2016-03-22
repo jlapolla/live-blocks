@@ -2,6 +2,7 @@
 
   // Expose only public classes and functions on LiveBlocks module
   var expose = [
+    'ArrayRepeatBox',
     'AsyncTimer',
     'BlackBox',
     'Clock',
@@ -9,6 +10,7 @@
     'ImmediateBlock',
     'IntervalTimer',
     'ManualTimer',
+    'ObjectRepeatBox',
     'TimedBlock',
     'Wire',
   ];

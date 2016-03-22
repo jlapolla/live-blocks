@@ -18,6 +18,29 @@ describe('ObjectRepeatBox class', function() {
   var objectWireFactory;
   beforeEach(function() {
 
+    var isArray = (function() {
+
+      var fn = {}.toString;
+      return function(object) {
+
+        return fn.call(object) === '[object Array]';
+      };
+    }());
+
+    var isObject = function(object) {
+
+      return typeof object === 'object' && !isArray(object);
+    };
+
+    var hasOwnProperty = (function() {
+
+      var fn = {}.hasOwnProperty;
+      return function(object, property) {
+
+        return fn.call(object, property);
+      };
+    }());
+
     assertFiniteNumber = (function(isFinite, Error) {
 
       return function(num) {
@@ -58,7 +81,7 @@ describe('ObjectRepeatBox class', function() {
     }(LiveBlocks.ImmediateBlock,
       assertFiniteNumber));
 
-    objectWireFactory = (function(isObject, Wire) {
+    objectWireFactory = (function(Wire) {
 
       var equals = (function(isObject, hasOwnProperty) {
 
@@ -106,7 +129,7 @@ describe('ObjectRepeatBox class', function() {
         };
 
         return equals;
-      }(isObject, LiveBlocks.hasOwnProperty));
+      }(isObject, hasOwnProperty));
 
       var equalTo = function(value) {
 
@@ -120,7 +143,7 @@ describe('ObjectRepeatBox class', function() {
         wire.value({});
         return wire;
       };
-    }(LiveBlocks.isObject, LiveBlocks.Wire));
+    }(LiveBlocks.Wire));
 
     plusOneCircuitFactory = (function(Wire, plusOneFactory) {
 
