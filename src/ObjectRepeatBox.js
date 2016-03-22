@@ -374,7 +374,7 @@ this.ObjectRepeatBox = (function(EventEmitter,
     var arr = [];
     for (var name in this._internalBlocks) {
 
-      arr.push(this._internalBlocks[name]);
+      arr.push({block: this._internalBlocks[name], key: name});
     }
 
     // Return array iterator

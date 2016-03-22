@@ -872,14 +872,16 @@ describe('ObjectRepeatBox class', function() {
     wires[0].value({a: 1, b: 2});
 
     // Run through iterator
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.key).toBe('a');
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);
 
     // Reset and run through iterator again
     it.reset();
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.key).toBe('a');
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);
@@ -888,9 +890,11 @@ describe('ObjectRepeatBox class', function() {
     it = block.blocks();
 
     // Run through iterator
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.key).toBe('a');
     it.next();
-    expect(it.peek().value).not.toBeUndefined();
+    expect(it.peek().value.block).not.toBeUndefined();
+    expect(it.peek().value.key).toBe('b');
     it.next();
     expect(it.peek().value).toBeUndefined();
     expect(it.peek().done).toBe(true);
