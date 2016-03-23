@@ -20,13 +20,10 @@ this.BlackBox = (function(EventEmitter,
 
     if (!this._updating) {
 
-      // Defensive copy internal and external wires
-      var internalWires = {};
+      // Defensive copy external wires
+      var internalWires = this._internalWires;
       var externalWires = {};
-      for (var name in this._internalWires) {
-
-        // Copy internal wire
-        internalWires[name] = this._internalWires[name];
+      for (var name in internalWires) {
 
         // Copy external wire, if exists
         if (this._externalWires[name]) {
@@ -255,16 +252,13 @@ this.BlackBox = (function(EventEmitter,
             + maxIterations + ' iterations');
         }
 
-        // Defensive copy internal and external wires
-        var internalWires = {};
+        // Defensive copy external wires
+        var internalWires = this._internalWires
         var externalWires = {};
-        for (var name in this._internalWires) {
-
-          // Copy internal wire
-          internalWires[name] = this._internalWires[name];
+        for (var name in internalWires) {
 
           // Copy external wire, if exists
-          if (this._externalWires[name]) {
+          if (hasOwnProperty(this._externalWires, name)) {
 
             externalWires[name] = this._externalWires[name];
           }
@@ -300,7 +294,7 @@ this.BlackBox = (function(EventEmitter,
           // Copy values from internal wires to external wires
           for (var name in internalWires) {
 
-            if (externalWires[name]) {
+            if (hasOwnProperty(externalWires, name)) {
 
               externalWires[name].value(internalWires[name].value());
             }
