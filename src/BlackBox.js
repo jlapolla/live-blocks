@@ -217,10 +217,18 @@ this.BlackBox = (function(EventEmitter,
   P.disconnect = function(pin) {
 
     // Disconnect from wire, if any
-    _disconnect.call(this, pin);
+    if (hasOwnProperty(this._externalWires, pin)) {
 
-    // Process wire value
-    this.update(pin);
+      var wire = this._externalWires[pin];
+      wire.unbind(this, pin);
+      delete this._externalWires[pin];
+
+      // Process wire value
+      this.update(pin);
+
+      // Fire disconnect event
+      this.fire('disconnect', {pin: pin, wire: wire});
+    }
   };
 
   P.update = function(pin) {

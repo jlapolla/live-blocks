@@ -74,10 +74,18 @@ this.TimedBlock = (function(EventEmitter,
   P.disconnect = function(pin) {
 
     // Disconnect from wire, if any
-    _disconnect.call(this, pin);
+    if (hasOwnProperty(this._wires, pin)) {
 
-    // Process wire value
-    this.update(pin);
+      var wire = this._wires[pin];
+      wire.unbind(this, pin);
+      delete this._wires[pin];
+
+      // Process wire value
+      this.update(pin);
+
+      // Fire disconnect event
+      this.fire('disconnect', {pin: pin, wire: wire});
+    }
   };
 
   P.update = function() {
