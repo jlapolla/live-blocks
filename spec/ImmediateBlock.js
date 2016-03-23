@@ -745,6 +745,7 @@ describe('ImmediateBlock class', function() {
 
     // Reconnect pin "a"
     block.connect('a', wires[1]);
+    block.connect('a', wires[1]); // Redundant call
     expect(log.length).toBe(2);
     expect(log[0].event).toBe('disconnect');
     expect(log[0].arg.pin).toBe('a');
@@ -758,6 +759,7 @@ describe('ImmediateBlock class', function() {
 
     // Disconnect pin "b"
     block.disconnect('b');
+    block.disconnect('b'); // Redundant call
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('disconnect');
     expect(log[0].arg.pin).toBe('b');

@@ -1469,6 +1469,7 @@ describe('BlackBox class', function() {
 
     // Disconnect pin "b"
     block.disconnect('b');
+    block.disconnect('b'); // Redundant call
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('disconnect');
     expect(log[0].arg.pin).toBe('b');

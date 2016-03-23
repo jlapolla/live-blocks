@@ -340,6 +340,7 @@ describe('Wire class', function() {
 
     // Disconnect pin "a"
     block.disconnect('a', wire);
+    block.disconnect('a', wire); // Redundant call
     expect(log.length).toBe(1);
     expect(log[0].event).toBe('disconnect');
     expect(log[0].arg.pin).toBe('a');
@@ -347,10 +348,6 @@ describe('Wire class', function() {
 
     // Clear log
     log.length = 0;
-
-    // Disconnect pin "a" again (redundant)
-    block.disconnect('a', wire);
-    expect(log.length).toBe(0);
 
     // Set value to undefined (redundant)
     wire.value(undefined);
