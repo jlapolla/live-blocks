@@ -289,7 +289,11 @@ this.BlackBox = (function(EventEmitter,
         }
 
         // Handle successful run
-        if (!this.error()) {
+        if (this.error()) {
+
+          this.fire('error', this.error()); // Fire event
+        }
+        else {
 
           // Copy values from internal wires to external wires
           for (var name in internalWires) {
@@ -302,10 +306,6 @@ this.BlackBox = (function(EventEmitter,
 
           // Fire event
           this.fire('success');
-        }
-        else {
-
-          this.fire('error', this.error()); // Fire event
         }
 
         // Proces update queue

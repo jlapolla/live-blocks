@@ -301,7 +301,11 @@ this.ObjectRepeatBox = (function(EventEmitter,
           this._internalBlocks = newInternalBlocks;
 
           // Handle successful run
-          if (!this.error()) {
+          if (this.error()) {
+
+            this.fire('error', this.error()); // Fire event
+          }
+          else {
 
             // Copy values from internal wires to external wires
             for (var pinName in this._pinNames) {
@@ -320,10 +324,6 @@ this.ObjectRepeatBox = (function(EventEmitter,
 
             // Fire event
             this.fire('success');
-          }
-          else {
-
-            this.fire('error', this.error()); // Fire event
           }
         }
         else {
