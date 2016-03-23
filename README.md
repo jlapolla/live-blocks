@@ -1,8 +1,20 @@
 # LiveBlocks
 
-LiveBlocks is a JavaScript library that helps you create smart models (the *M*
-in *MVC*). The declarative nature of LiveBlocks lets you focus on *what* your
-model should do, instead of worrying about *how* your model should do it.
+LiveBlocks is a new way to handle data relationships and data flow in
+JavaScript. Use LiveBlocks to:
+
+- Update computed values in your user interface when input data changes
+- Create configurable, reusable operation pipelines that update their outputs
+  when their inputs change
+- Create bi-directional operation pipelines (that is, output updates when input
+  changes, and vice versa)
+- Wire together equations in a block diagram to perform scientific simulations
+  (including differential equations)
+- Simulate digital logic circuits (combinatorial and synchronous)
+- Animate data changes
+- Create parametric animations governed by equations (for example, particle
+  acceleration, gravity effects, et cetera)
+- Other uses that have not been added to this list
 
 ## Overview
 
