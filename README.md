@@ -3,18 +3,157 @@
 LiveBlocks is a new way to handle data relationships and data flow in
 JavaScript. Use LiveBlocks to:
 
-- Update computed values in your user interface when input data changes
-- Create configurable, reusable operation pipelines that update their outputs
-  when their inputs change
-- Create bi-directional operation pipelines (that is, output updates when input
-  changes, and vice versa)
-- Wire together equations in a block diagram to perform scientific simulations
-  (including differential equations)
-- Simulate digital logic circuits (combinatorial and synchronous)
-- Animate data changes
-- Create parametric animations governed by equations (for example, particle
-  acceleration, gravity effects, et cetera)
-- Other uses that have not been added to this list
+- Manage model updates in your MVC application.
+- Create configurable, reusable processing pipelines that update their outputs
+  whenever their inputs change.
+- Create bi-directional processing pipelines that update their outputs whenever
+  their inputs change, and vice versa.
+- Create animations governed by equations (for example, animate particle motion
+  with gravity effects and drag forces).
+- Wire together equations in a block diagram to perform scientific simulations,
+  including differential equations.
+- Simulate digital logic circuits, including combinatorial and synchronous
+  logic.
+- Animate changes to data.
+- Other uses that have not been added to this list.
+
+## Introduction
+
+The best way to introduce LiveBlocks is to compare it to a spreadsheet program
+like Microsoft Excel.
+
+Consider the following spreadsheet equations:
+
+<table style="margin:auto">
+  <tr style="text-align:center">
+    <td></td>
+    <td>A</td>
+    <td>B</td>
+    <td>C</td>
+    <td>D</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>= 2</td>
+    <td>= A1 + 1</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td></td>
+    <td>= A1 * B1</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+When cell A1 = 2, the values in each cell will be:
+
+<table style="margin:auto">
+  <tr style="text-align:center">
+    <td></td>
+    <td>A</td>
+    <td>B</td>
+    <td>C</td>
+    <td>D</td>
+  </tr>
+  <tr style="text-align:right">
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>2</td>
+    <td></td>
+    <td>6</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>3</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>4</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+If we set cell A1 = 3, the values in each cell will update to be:
+
+<table style="margin:auto">
+  <tr style="text-align:center">
+    <td></td>
+    <td>A</td>
+    <td>B</td>
+    <td>C</td>
+    <td>D</td>
+  </tr>
+  <tr style="text-align:right">
+    <td>1</td>
+    <td>3</td>
+    <td>4</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>2</td>
+    <td></td>
+    <td>12</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>3</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr style="text-align:right">
+    <td>4</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+We can translate these spreadsheet equations into the following LiveBlocks circuit:
+
+```
+         x┌───────────┐y
+A1─┬──□───┤ y = x + 1 ├───□──┬─B1
+   │      └───────────┘      │
+   │                         │     s┌───────────┐
+   │                         └──□───┤           │r
+   │                               t│ r = s * t ├───□──B2
+   └────────────────────────────□───┤           │
+                                    └───────────┘
+```
 
 ## Overview
 
