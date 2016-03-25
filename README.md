@@ -24,160 +24,98 @@ like Microsoft Excel.
 
 Consider the following spreadsheet equations:
 
-<table style="margin:auto">
-  <tr style="text-align:center">
-    <td></td>
-    <td>A</td>
-    <td>B</td>
-    <td>C</td>
-    <td>D</td>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>= 2</td>
-    <td>= A1 + 1</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td></td>
-    <td>= A1 * B1</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
+|     |  A  |     B     |
+| ---:| --- | --------- |
+|   1 | = 2 | = A1 + 1  |
+|   2 |     | = A1 * B1 |
 
 When cell A1 = 2, the values in each cell will be:
 
-<table style="margin:auto">
-  <tr style="text-align:center">
-    <td></td>
-    <td>A</td>
-    <td>B</td>
-    <td>C</td>
-    <td>D</td>
-  </tr>
-  <tr style="text-align:right">
-    <td>1</td>
-    <td>2</td>
-    <td>3</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>2</td>
-    <td></td>
-    <td>6</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>3</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>4</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
+|     |  A  |     B     |
+| ---:|:---:|:---------:|
+|   1 |   2 |         3 |
+|   2 |     |         6 |
 
 If we set cell A1 = 3, the values in each cell will update to be:
 
-<table style="margin:auto">
-  <tr style="text-align:center">
-    <td></td>
-    <td>A</td>
-    <td>B</td>
-    <td>C</td>
-    <td>D</td>
-  </tr>
-  <tr style="text-align:right">
-    <td>1</td>
-    <td>3</td>
-    <td>4</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>2</td>
-    <td></td>
-    <td>12</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>3</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="text-align:right">
-    <td>4</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
+|     |  A  |     B     |
+| ---:|:---:|:---------:|
+|   1 |   3 |         4 |
+|   2 |     |        12 |
 
 We can translate these spreadsheet equations into the following LiveBlocks circuit:
 
 ```
+             Block A
          x┌───────────┐y
-A1─┬──□───┤ y = x + 1 ├───□──┬─B1
-   │      └───────────┘      │
-   │                         │     s┌───────────┐
+   ┌──□───┤ y = x + 1 ├───□──┐   
+   │      └───────────┘      ├─B1      Block B
+A1─┤                         │     s┌───────────┐
    │                         └──□───┤           │r
-   │                               t│ r = s * t ├───□──B2
+   │                               t│ r = t * s ├───□──B2
    └────────────────────────────□───┤           │
                                     └───────────┘
 ```
 
-## Overview
+The cells in the spreadsheet are represented by **wires** in the LiveBlocks
+circuit. In the diagram, we've labeled the wires with their corresponding cell
+names: *A1*, *B1*, and *B2*.
 
-### Introduction
+The equations in the spreadsheet are represented by **blocks** in the
+LiveBlocks circuit. In the diagram, we've arbitrarily labeled the blocks *Block
+A* and *Block B*.
 
-A LiveBlocks model is an interconnected network of **blocks** and **wires**.
-Each block has **pins** that act as inputs and outputs to the block. Wires
-connect the pins on different blocks to form a network. This is analogous to an
-electric circuit, where wires connect the pins of circuit components to form a
-mesh.
+The blocks in the diagram have arbitrarily named **pins**. In this diagram,
+*Block A* has two pins: *x* and *y*. *Block B* has three pins: *r*, *s*, and
+*t*. The diagram shows the wires that are connected to each pin. For example:
+pin *x* on *Block A* is connected to wire *A1*, and pin *y* on *Block A* is
+connected to wire *B1*.
 
-A block's job is to enforce a **constraint** between its pins. For example, we
-could define an *uppercase-to-lowercase* block that has two pins: *upper* and
-*lower*. When we change the value on the *upper* pin to "FOO", we expect the
-value on the *lower* pin to be "foo". When we change the value on the *lower*
-pin to "bar", we expect the value on the *upper* pin to be "BAR".
+In JavaScript code, we would create this circuit as follows:
 
-A wire's job is to connect pins, and store a value. Multiple pins can connect
-to the same wire, and all of the pins connected to a wire share the same common
-value. In contrast, a pin *cannot* be connected to multiple wires, because each
-pin must get its value from one and only one wire. A pin that is not connected
-to any wire is called a **floating** pin. Floating pins can cause unpredictable
-results, so we recommend that you connect each pin to a wire, even if you don't
-do anything else with that wire.
+```javascript
+// Create wires
+var wireA1 = /* code to create wire */ ;
+var wireB1 = /* code to create wire */ ;
+var wireB2 = /* code to create wire */ ;
+
+// Create blocks
+var blockA = /* code to create block */ ;
+var blockB = /* code to create block */ ;
+
+// Connect blockA pins to wires
+blockA.connect('x', wireA1); // Connect pin 'x' to 'wireA1'
+blockA.connect('y', wireB1); // Connect pin 'y' to 'wireB1'
+
+// Connect blockB pins to wires
+blockB.connect('r', wireB2); // Connect pin 'r' to 'wireB2'
+blockB.connect('s', wireB1); // Connect pin 's' to 'wireB1'
+blockB.connect('t', wireA1); // Connect pin 't' to 'wireA1'
+```
+
+After we create the circuit, we can set *wireA1 = 2*, and check the values on
+*wireB1* and *wireB2*:
+
+```javascript
+// Set 'wireA1 = 2'
+wireA1.value(2);
+
+// Observe values on 'wireB1' and 'wireB2'
+console.log(wireB1.value()); // Logs '3'
+console.log(wireB2.value()); // Logs '6'
+
+// Let's try another value
+
+// Set 'wireA1 = 3'
+wireA1.value(3);
+
+// Observe values on 'wireB1' and 'wireB2'
+console.log(wireB1.value()); // Logs '4'
+console.log(wireB2.value()); // Logs '12'
+```
+
+When we set a value on *wireA1*, *wireB1* and *wireB2* automatically update,
+just like the cells in the spreadsheet.
 
 ### Defining Blocks, Pins, and Constraints
 
