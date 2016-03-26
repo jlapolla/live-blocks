@@ -29,21 +29,22 @@ Consider the following spreadsheet equations:
 |   1 | = 2 | = A1 + 1  |
 |   2 |     | = A1 * B1 |
 
-When cell A1 = 2, the values in each cell will be:
+When cell *A1 = 2*, the values in each cell will be:
 
 |     |  A  |     B     |
 | ---:|:---:|:---------:|
 |   1 |   2 |         3 |
 |   2 |     |         6 |
 
-If we set cell A1 = 3, the values in each cell will update to be:
+If we set cell *A1 = 3*, the values in each cell will update to be:
 
 |     |  A  |     B     |
 | ---:|:---:|:---------:|
 |   1 |   3 |         4 |
 |   2 |     |        12 |
 
-We can translate these spreadsheet equations into the following LiveBlocks circuit:
+We can translate these spreadsheet equations into the following LiveBlocks
+circuit:
 
 ```
              Block A
@@ -67,9 +68,9 @@ A* and *Block B*.
 
 The blocks in the diagram have arbitrarily named **pins**. In this diagram,
 *Block A* has two pins: *x* and *y*. *Block B* has three pins: *r*, *s*, and
-*t*. The diagram shows the wires that are connected to each pin. For example:
-pin *x* on *Block A* is connected to wire *A1*, and pin *y* on *Block A* is
-connected to wire *B1*.
+*t*. The diagram shows wires connected to each pin. For example: pin *x* on
+*Block A* is connected to wire *A1*, and pin *y* on *Block A* is connected to
+wire *B1*.
 
 In JavaScript code, we would create this circuit as follows:
 
@@ -84,38 +85,154 @@ var blockA = /* code to create block */ ;
 var blockB = /* code to create block */ ;
 
 // Connect blockA pins to wires
-blockA.connect('x', wireA1); // Connect pin 'x' to 'wireA1'
-blockA.connect('y', wireB1); // Connect pin 'y' to 'wireB1'
+blockA.connect('x', wireA1); // Connect pin 'x' to wireA1
+blockA.connect('y', wireB1); // Connect pin 'y' to wireB1
 
 // Connect blockB pins to wires
-blockB.connect('r', wireB2); // Connect pin 'r' to 'wireB2'
-blockB.connect('s', wireB1); // Connect pin 's' to 'wireB1'
-blockB.connect('t', wireA1); // Connect pin 't' to 'wireA1'
+blockB.connect('r', wireB2); // Connect pin 'r' to wireB2
+blockB.connect('s', wireB1); // Connect pin 's' to wireB1
+blockB.connect('t', wireA1); // Connect pin 't' to wireA1
 ```
 
 After we create the circuit, we can set *wireA1 = 2*, and check the values on
 *wireB1* and *wireB2*:
 
 ```javascript
-// Set 'wireA1 = 2'
+// Set wireA1 = 2
 wireA1.value(2);
 
-// Observe values on 'wireB1' and 'wireB2'
-console.log(wireB1.value()); // Logs '3'
-console.log(wireB2.value()); // Logs '6'
+// wireB1 and wireB2 automatically update
+wireB1.value(); // 3
+wireB2.value(); // 6
 
 // Let's try another value
 
-// Set 'wireA1 = 3'
+// Set wireA1 = 3
 wireA1.value(3);
 
-// Observe values on 'wireB1' and 'wireB2'
-console.log(wireB1.value()); // Logs '4'
-console.log(wireB2.value()); // Logs '12'
+// wireB1 and wireB2 automatically update
+wireB1.value(); //  4
+wireB2.value(); // 12
 ```
 
-When we set a value on *wireA1*, *wireB1* and *wireB2* automatically update,
+*wireB1* and *wireB2* automatically update when we set a value on *wireA1*,
 just like the cells in the spreadsheet.
+
+## Basic Blocks
+
+While there is more than one type of block, we'll start by looking at the
+ImmediateBlock since it is the simplest block type, and it is also the block
+type you'll use most often.
+
+### Operating Principles
+
+In an ImmediateBlock each pin has an update function assigned to it. When the
+value on a pin changes, the ImmediateBlock calls the associated update function
+to compute updated pin values.
+
+#### Example 1 - Uppercase to Lowercase
+
+Let's make a block that converts uppercase strings to lowercase strings:
+
+```javascript
+// Create uppercase to lowercase update function
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase();
+};
+
+// Create block
+var upperToLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: toLower,
+  },
+});
+
+/* We can't set a value on a pin directly. We can only set a value on a WIRE
+that is connected to a pin. So, let's make some wires and connect them to our
+upperToLowerBlock pins.*/
+
+// Create wires
+var wireUpper = new LiveBlocks.Wire();
+var wireLower = new LiveBlocks.Wire();
+
+// Connect pins to wires
+upperToLowerBlock.connect('upper', wireUpper);
+upperToLowerBlock.connect('lower', wireLower);
+
+/*Now we can set a value on wireUpper, and wireLower will automatically
+update.*/
+
+// Set wireUpper = 'FOO'
+wireUpper.value('FOO');
+
+// wireLower automatically updates
+wireLower.value(); // 'foo'
+```
+
+Let's walk through this code.
+
+First we create an update function called *toLower*. This is a plain old
+JavaScript function. (We'll talk more about the update function signature
+below.)
+
+Next, we create an ImmediateBlock by calling the ImmediateBlock constructor
+function. We pass an object to the ImmediateBlock constructor to tell it what
+pins to create on the block, and what function to assign to each pin. In this
+case, we create two pins: pin *upper* with the *toLower* function assigned to
+it, and pin *lower* with the *toLower* function assigned to it.
+
+After that, we hook up some wires to our block pins to create a circuit. Then
+we test our circuit.
+
+Notice that the update function, *toLower*, has the signature `function(input,
+output) {...}`. All ImmediateBlock update functions must have this signature.
+
+The update function's *input* argument is an object with keys that are pin
+names, and values that are pin values (technically, pins do not have values,
+and the 'pin value' is the value of the wire connected to the pin). Pins that
+are not connected to any wire do not appear on the *input* argument at all,
+since they effectively do not have a value. In our *toLower* function, we
+access the value on the *upper* pin with `input.upper`.
+
+The update function's *output* argument is an empty object. To output a value
+on a pin, the update function creates a key on the *output* argument, with the
+value equal to whatever value the update function wants to set on the pin
+(technically, pins do not have values, and the value is not set on the pin, it
+is set on the wire that is connected to the pin). In our *toLower* function, we
+output a value on pin *lower* by assigning a value to `output.lower`.
+
+When the value on pin *upper* changes, the block calls the associated update
+function, *toLower*. *toLower* reads the value on pin *upper* by accessing
+`input.upper`, and sets the value on pin *lower* by assigning to
+`output.lower`. This is how automatic updates happen in LiveBlocks.
+
+> **What happens when a pin isn't connected to a wire?**
+>
+> When a pin is not connected to any wire, that pin does not appear on the
+> update function's *input* argument. Attempting to set the pin value on the
+> update function's *output* argument has no effect.
+
+### Input / Output Patterns
+
+#### Uni-directional Output
+
+#### Bi-directional Input / Output
+
+#### N-directional Input / Output
+
+#### Enforced Output
+
+#### Relaxed Output
+
+#### Validated Input
+
+### Error Handling
+
+### Caveats
+
+#### Do not Mutate Update Function's *input* Argument
 
 ### Defining Blocks, Pins, and Constraints
 
