@@ -118,7 +118,7 @@ wireB2.value(); // 12
 *wireB1* and *wireB2* automatically update when we set a value on *wireA1*,
 just like the cells in the spreadsheet.
 
-## Basic Blocks
+## Block Basics
 
 While there is more than one type of block, we'll start by looking at the
 ImmediateBlock since it is the simplest block type, and it is also the block
@@ -130,7 +130,7 @@ In an ImmediateBlock each pin has an update function assigned to it. When the
 value on a pin changes, the ImmediateBlock calls the associated update function
 to compute updated pin values.
 
-#### Example 1 - Uppercase to Lowercase
+#### Example: Uppercase to Lowercase
 
 Let's make a block that converts uppercase strings to lowercase strings:
 
@@ -161,8 +161,8 @@ var wireLower = new LiveBlocks.Wire();
 upperToLowerBlock.connect('upper', wireUpper);
 upperToLowerBlock.connect('lower', wireLower);
 
-/*Now we can set a value on wireUpper, and wireLower will automatically
-update.*/
+/* Now we can set a value on wireUpper, and wireLower will automatically
+update. */
 
 // Set wireUpper = 'FOO'
 wireUpper.value('FOO');
@@ -216,17 +216,70 @@ function, *toLower*. *toLower* reads the value on pin *upper* by accessing
 
 ### Input / Output Patterns
 
-#### Uni-directional Output
+There are several ways to achieve update functionality in a block. This section
+illustrates alternatives for the uppercase to lowercase block introduced in the
+previous section. Each alternative introduces an important variation in block
+behavior.
+
+Throughout this section we'll consider the *upper* pin to be an input, and the
+*lower* pin to be an output.
+
+#### Enforced Output
+
+"Enforced output" is when we prevent direct changes to an output pin. Only
+changes on the input pin can affect the value on the output pin. Our uppercase
+to lowercase block from above exhibits enforced output.
+
+The following demonstration illustrates enforced output:
+
+```javascript
+// Create uppercase to lowercase update function
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase();
+};
+
+/* Create block. The same update function is used for both input and output
+pins. Any time the output (lower) pin changes, the toLower function runs and
+overwrites the value we just set on the output (lower) pin. */
+var upperToLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: toLower,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* The output (lower) pin updates when we set a value on the input (upper)
+pin. */
+wireUpper.value('FOO'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'FOO' (input updates)
+wireLower.value(); // 'foo' (output updates)
+
+/* If we set a value on the output (lower) pin, the toLower function runs and
+immediately overwrites the value we set. */
+wireLower.value('bar'); // Set a value on the output pin (has no effect)
+wireUpper.value(); // 'FOO' (no change)
+wireLower.value(); // 'foo' (no change)
+
+/* We can only change the value by setting the input (upper) pin. */
+wireUpper.value('BAR'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'BAR' (input updates)
+wireLower.value(); // 'bar' (output updates)
+```
+
+#### Relaxed Output
+
+#### Validated Input
 
 #### Bi-directional Input / Output
 
 #### N-directional Input / Output
 
-#### Enforced Output
-
-#### Relaxed Output
-
-#### Validated Input
+### Block Reuse
 
 ### Error Handling
 
