@@ -1,4 +1,6 @@
-# LiveBlocks
+<a id="liveblocks"></a>
+
+# [LiveBlocks](#liveblocks)
 
 LiveBlocks is a new way to handle data relationships and data flow in
 JavaScript. Use LiveBlocks to:
@@ -17,7 +19,25 @@ JavaScript. Use LiveBlocks to:
 - Animate changes to data.
 - Other uses that have not been added to this list.
 
-## Introduction
+<a id="contents"></a>
+
+## [Contents](#contents)
+
+- [Introduction](#introduction)
+- [Circuit Basics](#circuit-basics)
+  - [Operating Principles](#operating-principles)
+    - [Example: Uppercase to Lowercase](#example-uppercase-to-lowercase)
+  - [Input / Output Patterns](#input-output-patterns)
+    - [Strict Output](#strict-output)
+    - [Relaxed Output](#relaxed-output)
+    - [Strict Input](#strict-input)
+    - [Relaxed Input](#relaxed-input)
+
+<a id="introduction"></a>
+
+## [Introduction](#introduction)
+
+[Back to top](#contents)
 
 The best way to introduce LiveBlocks is to compare it to a spreadsheet program
 like Microsoft Excel.
@@ -118,19 +138,31 @@ wireB2.value(); // 12
 *wireB1* and *wireB2* automatically update when we set a value on *wireA1*,
 just like the cells in the spreadsheet.
 
-## Block Basics
+<a id="circuit-basics"></a>
+
+## [Circuit Basics](#circuit-basics)
+
+[Back to top](#contents)
 
 While there is more than one type of block, we'll start by looking at the
 ImmediateBlock since it is the simplest block type, and it is also the block
 type you'll use most often.
 
-### Operating Principles
+<a id="operating-principles"></a>
+
+### [Operating Principles](#operating-principles)
+
+[Back to top](#contents)
 
 In an ImmediateBlock each pin has an update function assigned to it. When the
 value on a pin changes, the ImmediateBlock calls the associated update function
 to compute updated pin values.
 
-#### Example: Uppercase to Lowercase
+<a id="example-uppercase-to-lowercase"></a>
+
+#### [Example: Uppercase to Lowercase](#example-uppercase-to-lowercase)
+
+[Back to top](#contents)
 
 Let's make a block that converts uppercase strings to lowercase strings:
 
@@ -214,7 +246,11 @@ function, *toLower*. *toLower* reads the value on pin *upper* by accessing
 > update function's *input* argument. Attempting to set the pin value on the
 > update function's *output* argument has no effect.
 
-### Input / Output Patterns
+<a id="input-output-patterns"></a>
+
+### [Input / Output Patterns](#input-output-patterns)
+
+[Back to top](#contents)
 
 There are several ways to achieve update functionality in a block. This section
 illustrates alternatives for the uppercase to lowercase block introduced in the
@@ -224,19 +260,23 @@ behavior.
 Throughout this section we'll consider the *upper* pin to be an input, and the
 *lower* pin to be an output.
 
-#### Enforced Output
+<a id="strict-output"></a>
 
-"Enforced output" is when we prevent direct changes to an output pin. Only
+#### [Strict Output](#strict-output)
+
+[Back to top](#contents)
+
+"Strict output" is when we prevent direct changes to an output pin. Only
 changes on the input pin can affect the value on the output pin. Our uppercase
-to lowercase block from above exhibits enforced output.
+to lowercase block from the previous section exhibits strict output.
 
-The following demonstration illustrates enforced output:
+The following demonstration illustrates strict output:
 
 ```javascript
 // Create uppercase to lowercase update function
 var toLower = function(input, output) {
 
-  output.lower = input.upper.toLowerCase();
+  output.lower = input.upper.toLowerCase(); // Set output value
 };
 
 /* Create block. The same update function is used for both input and output
@@ -271,9 +311,173 @@ wireUpper.value(); // 'BAR' (input updates)
 wireLower.value(); // 'bar' (output updates)
 ```
 
-#### Relaxed Output
+In most cases, you'll want to use strict output to ensure that your pins remain
+synced. We'll see in the next section how pins can get out of sync when we do
+not use strict output.
 
-#### Validated Input
+<a id="relaxed-output"></a>
+
+#### [Relaxed Output](#relaxed-output)
+
+[Back to top](#contents)
+
+"Relaxed output" is when we allow direct changes on the output pin, and take no
+action. Changes on the input pin still update the output pin.
+
+The following demonstration illustrates relaxed output:
+
+```javascript
+// Create uppercase to lowercase update function
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase(); // Set output value
+};
+
+// Create 'noop' function (does nothing)
+var noop = function() {}; // Do nothing
+
+/* Create block. We use the toLower function to update the output (lower) pin
+when the input (upper) pin changes. When the output (lower) pin changes, we do
+nothing (we run the noop function). Since we do not overwrite the new output
+pin value, the new value set on the output pin remains. */
+var upperToLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: noop,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* The output (lower) pin updates when we set a value on the input (upper) pin,
+just like it did in the previous section. */
+wireUpper.value('FOO'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'FOO' (input updates)
+wireLower.value(); // 'foo' (output updates)
+
+/* If we set a value on the output (lower) pin, the noop function runs, and
+nothing happens. The value we set is not overwritten, and the input (upper) and
+output (lower) pin are out of sync. */
+wireLower.value('bar'); // Set a value on the output pin
+wireUpper.value(); // 'FOO' (no change)
+wireLower.value(); // 'bar' (output changes, and is now out of sync)
+
+/* We can sync the pins again by setting the input (upper) pin. This runs the
+toLower function and updates the output (lower) pin. */
+wireUpper.value('BAZ'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'BAZ' (input updates)
+wireLower.value(); // 'baz' (output updates, and is now in sync)
+```
+
+In most cases, relaxed output is undesirable, and strict output is preferred.
+However, you may encounter circuits that require relaxed output for behavioral
+logic reasons. Also, relaxed output will result in faster circuit update
+speeds, and is a viable option when you are sure nothing is going to directly
+set a value on the output, or when out-of-sync pins are acceptable.
+
+<a id="strict-input"></a>
+
+#### [Strict Input](#strict-input)
+
+[Back to top](#contents)
+
+"Strict input" is when we change or correct the value on the input pin in
+response to a change on the input pin. In our uppercase to lowercase block,
+this means that when we set "Foo" (not all caps) on the input (upper) pin, the
+input (upper) pin is immediately overwritten to "FOO" (all caps). Changes on
+the input pin still update the output pin.
+
+The following demonstration illustrates strict input:
+
+```javascript
+// Create uppercase to lowercase update function with strict input
+var toLower = function(input, output) {
+
+  output.upper = input.upper.toUpperCase(); // Correct input value
+  output.lower = input.upper.toLowerCase(); // Set output value
+};
+
+/* Create block. We use the toLower function for both input (upper) and output
+(lower) pins. The block exhibits both strict input and strict output. */
+var upperToLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: toLower,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* The output (lower) pin updates when we set a value on the input (upper) pin,
+just like it did in the previous section. */
+wireUpper.value('FOO'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'FOO' (input updates)
+wireLower.value(); // 'foo' (output updates)
+
+/* When we set a value on the input (upper) pin, the toLower function ensures
+that the input (upper) pin is in uppercase. This is strict input. */
+wireUpper.value('Bar'); // Set a value on the input pin (not all caps)
+wireUpper.value(); // 'BAR' (changes to all caps)
+wireLower.value(); // 'bar' (output updates)
+```
+
+In most cases, you'll want to use strict input to ensure that input values are
+"clean".
+
+<a id="relaxed-input"></a>
+
+#### [Relaxed Input](#relaxed-input)
+
+[Back to top](#contents)
+
+"Relaxed input" is when we do not change or correct the value on the input pin.
+In our uppercase to lowercase block, this means that when we set "Foo" (not all
+caps) on the input (upper) pin, the input (upper) pin is **not** corrected to
+"FOO" (all caps). Changes on the input pin still update the output pin.
+
+The following demonstration illustrates relaxed input:
+
+```javascript
+// Create uppercase to lowercase update function with relaxed input
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase(); // Set output value
+};
+
+/* Create block. We use the toLower function for both input (upper) and output
+(lower) pins. The block exhibits relaxed input and strict output. */
+var upperToLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: toLower,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* The output (lower) pin updates when we set a value on the input (upper) pin,
+just like it did in the previous section. */
+wireUpper.value('FOO'); // Set a value on the input pin (works as expected)
+wireUpper.value(); // 'FOO' (input updates)
+wireLower.value(); // 'foo' (output updates)
+
+/* When we set a value that is not all caps on the input (upper) pin, the
+output (lower) pin updates, but the input (upper) pin is not corrected to all
+caps. */
+wireUpper.value('Bar'); // Set a value on the input pin (not all caps)
+wireUpper.value(); // 'Bar' (does not change to all caps)
+wireLower.value(); // 'bar' (output updates)
+```
+
+In most cases, relaxed input is undesirable, and strict input is preferred.
+However, you may encounter circuits that require relaxed input for behavioral
+logic reasons.
 
 #### Bi-directional Input / Output
 
@@ -281,7 +485,13 @@ wireLower.value(); // 'bar' (output updates)
 
 ### Block Reuse
 
+### Custom Wires
+
 ### Error Handling
+
+#### Errors Thrown in Update Functions
+
+#### Infinite Loops
 
 ### Caveats
 
