@@ -32,6 +32,8 @@ JavaScript. Use LiveBlocks to:
     - [Relaxed Output](#relaxed-output)
     - [Strict Input](#strict-input)
     - [Relaxed Input](#relaxed-input)
+    - [Bi-directional Input / Output](#bi-directional-input-output)
+    - [N-directional Input / Output](#n-directional-input-output)
 
 <a id="introduction"></a>
 
@@ -276,7 +278,7 @@ The following demonstration illustrates strict output:
 // Create uppercase to lowercase update function
 var toLower = function(input, output) {
 
-  output.lower = input.upper.toLowerCase(); // Set output value
+  output.lower = input.upper.toLowerCase(); // Set output (lower) pin
 };
 
 /* Create block. The same update function is used for both input and output
@@ -330,7 +332,7 @@ The following demonstration illustrates relaxed output:
 // Create uppercase to lowercase update function
 var toLower = function(input, output) {
 
-  output.lower = input.upper.toLowerCase(); // Set output value
+  output.lower = input.upper.toLowerCase(); // Set output (lower) pin
 };
 
 // Create 'noop' function (does nothing)
@@ -395,8 +397,8 @@ The following demonstration illustrates strict input:
 // Create uppercase to lowercase update function with strict input
 var toLower = function(input, output) {
 
-  output.upper = input.upper.toUpperCase(); // Correct input value
-  output.lower = input.upper.toLowerCase(); // Set output value
+  output.upper = input.upper.toUpperCase(); // Correct input (upper) pin
+  output.lower = input.upper.toLowerCase(); // Set output (lower) pin
 };
 
 /* Create block. We use the toLower function for both input (upper) and output
@@ -445,7 +447,7 @@ The following demonstration illustrates relaxed input:
 // Create uppercase to lowercase update function with relaxed input
 var toLower = function(input, output) {
 
-  output.lower = input.upper.toLowerCase(); // Set output value
+  output.lower = input.upper.toLowerCase(); // Set output (lower) pin
 };
 
 /* Create block. We use the toLower function for both input (upper) and output
@@ -479,9 +481,136 @@ In most cases, relaxed input is undesirable, and strict input is preferred.
 However, you may encounter circuits that require relaxed input for behavioral
 logic reasons.
 
-#### Bi-directional Input / Output
+<a id="bi-directional-input-output"></a>
 
-#### N-directional Input / Output
+#### [Bi-directional Input / Output](#bi-directional-input-output)
+
+[Back to top](#contents)
+
+"Bi-directional I/O" is when changes to the input pin update the output pin,
+and vice versa. In this case, it's better to think of each pin as a combined
+input / output (I/O) pin. In our uppercase to lowercase block, this means that
+when we set "FOO" on the *upper* pin, the *lower* pin updates to "foo", and
+when we set "bar" on the *lower* pin, the *upper* pin updates to "BAR".
+
+The following demonstration illustrates bi-dirctional I/O:
+
+```javascript
+// Create uppercase to lowercase update function
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase(); // Set 'lower' pin
+};
+
+// Create lowercase to uppercase update function
+var toUpper = function(input, output) {
+
+  output.upper = input.lower.toUpperCase(); // Set 'upper' pin
+}
+
+/* Create block. We use different functions on each pin so that a change on one
+pin updates the other pin. */
+var upperLowerBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    upper: toLower,
+    lower: toUpper,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* When we set the 'upper' pin, the toLower function runs and updates the
+'lower' pin. */
+wireUpper.value('FOO'); // Set a value on the 'upper' pin
+wireUpper.value(); // 'FOO' ('upper' pin updates)
+wireLower.value(); // 'foo' ('lower' pin updates)
+
+/* When we set the 'lower' pin, the toUpper function runs and updates the
+'upper' pin. */
+wireLower.value('bar'); // Set a value on the 'lower' pin
+wireUpper.value(); // 'BAR' ('upper' pin updates)
+wireLower.value(); // 'bar' ('lower' pin updates)
+```
+
+Bi-directional I/O is preferable in most circuits. However, one-directional I/O
+is needed in some circuits for behavioral logic reasons. Ultimately, the choice
+depends on how you want your circuit to behave.
+
+<a id="n-directional-input-output"></a>
+
+#### [N-directional Input / Output](#n-directional-input-output)
+
+[Back to top](#contents)
+
+So far, we've examined blocks that have only two pins. However, a block may
+have any number of pins, with any number of pure inputs, pure outputs, and
+I/O's.
+
+The following demonstration illustrates a block with three I/O pins:
+
+```javascript
+// Create update function for pin 'a'
+var fromA = function(input, output) {
+
+  output.b = input.a + 1; // Set 'b' pin
+  output.c = input.a + 2; // Set 'c' pin
+};
+
+// Create update function for pin 'b'
+var fromB = function(input, output) {
+
+  output.a = input.b - 1; // Set 'a' pin
+  output.c = input.b + 1; // set 'c' pin
+}
+
+// Create update function for pin 'c'
+var fromC = function(input, output) {
+
+  output.a = input.c - 2; // Set 'a' pin
+  output.b = input.c - 1; // Set 'b' pin
+}
+
+/* Create block. We use different functions on each pin so that a change on one
+pin updates the other two pins. */
+var threePinsBlock = new LiveBlocks.ImmediateBlock({
+  pins: {
+    a: fromA,
+    b: fromB,
+    c: fromC,
+  },
+});
+
+// Create wires (code omitted)
+
+// Connect pins to wires (code omitted)
+
+/* When we set the 'a' pin, the fromA function runs and updates the 'b' and 'c'
+pins. */
+wireA.value(1); // Set a value on the 'a' pin
+wireA.value(); // 1 ('a' pin updates)
+wireB.value(); // 2 ('b' pin updates)
+wireC.value(); // 3 ('c' pin updates)
+
+/* When we set the 'b' pin, the fromB function runs and updates the 'a' and 'c'
+pins. */
+wireB.value(5); // Set a value on the 'b' pin
+wireA.value(); // 4 ('a' pin updates)
+wireB.value(); // 5 ('b' pin updates)
+wireC.value(); // 6 ('c' pin updates)
+
+/* When we set the 'c' pin, the fromC function runs and updates the 'a' and 'b'
+pins. */
+wireC.value(9); // Set a value on the 'c' pin
+wireA.value(); // 7 ('a' pin updates)
+wireB.value(); // 8 ('b' pin updates)
+wireC.value(); // 9 ('c' pin updates)
+```
+
+In applications using LiveBlocks, it is not uncommon to see blocks with five or
+more pins, with some pins acting as pure inputs, some pins acting as pure
+outputs, and some pins acting as I/O's.
 
 ### Block Reuse
 
