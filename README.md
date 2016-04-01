@@ -24,7 +24,7 @@ JavaScript. Use LiveBlocks to:
 ## [Contents](#contents)
 
 - [Introduction](#introduction)
-- [Circuit Basics](#circuit-basics)
+- [Basic Circuits](#basic-circuits)
   - [Operating Principles](#operating-principles)
     - [Example: Uppercase to Lowercase](#example-uppercase-to-lowercase)
   - [Input / Output Patterns](#input-output-patterns)
@@ -34,6 +34,9 @@ JavaScript. Use LiveBlocks to:
     - [Relaxed Input](#relaxed-input)
     - [Bi-directional Input / Output](#bi-directional-input-output)
     - [N-directional Input / Output](#n-directional-input-output)
+  - [Wires](#wires)
+    - [Default "equalTo" Function](#default-equalto-function)
+    - [Custom "equalTo" Functions](#custom-equalto-functions)
 
 <a id="introduction"></a>
 
@@ -140,9 +143,9 @@ wireB2.value(); // 12
 *wireB1* and *wireB2* automatically update when we set a value on *wireA1*,
 just like the cells in the spreadsheet.
 
-<a id="circuit-basics"></a>
+<a id="basic-circuits"></a>
 
-## [Circuit Basics](#circuit-basics)
+## [Basic Circuits](#basic-circuits)
 
 [Back to top](#contents)
 
@@ -562,7 +565,7 @@ var fromA = function(input, output) {
 var fromB = function(input, output) {
 
   output.a = input.b - 1; // Set 'a' pin
-  output.c = input.b + 1; // set 'c' pin
+  output.c = input.b + 1; // Set 'c' pin
 }
 
 // Create update function for pin 'c'
@@ -612,9 +615,71 @@ In applications using LiveBlocks, it is not uncommon to see blocks with five or
 more pins, with some pins acting as pure inputs, some pins acting as pure
 outputs, and some pins acting as I/O's.
 
-### Block Reuse
+<a id="wires"></a>
 
-### Custom Wires
+### [Wires](#wires)
+
+[Back to top](#contents)
+
+Wires play a critical role in a LiveBlocks circuit: they decide when a value
+has changed, and update connected block pins. This brings up some important
+questions:
+
+- How does a wire decide when it's value has changed?
+- How does a wire determine if two values are equal to each other?
+- How can you customize this behavior to suite your needs?
+
+The following sections answer these questions.
+
+<a id="default-equalto-function">
+
+#### [Default "equalTo" Function](#default-equalto-function)
+
+[Back to top](#contents)
+
+Every wire has an *equalTo* function. Internally, the wire uses it's equalTo
+function to decide if it's value has changed. You can also directly call the
+equalTo function to see if a wire considers itself to be equal to some value.
+
+The following demonstration illustrates the equalTo function:
+
+```javascript
+// Create a wire using the default equalTo function
+var wire = new LiveBlocks.Wire();
+
+/* When you set a new value on a wire, it calls it's equalTo function to see if
+it is already equal to the new value. If the wire is already equal to the new
+value, the wire does not change it's value, and it does not update any
+connected pins. */
+wire.value('hello'); // Wire internally checks this.equalTo('hello')
+
+/* We can also query the equalTo function directly. */
+wire.equalTo('hello'); // true
+wire.equalTo(32);      // false
+
+/* Setting the same value on the wire does not update connected pins. Setting a
+new value on the wire updates connected pins. */
+wire.value('hello');     // Same value (does not update connected pins)
+wire.value('new value'); // New value (updates connected pins)
+```
+
+The default equalTo function compares values with ===. The only exception is
+NaN values, which are considered equal to each other (normally `NaN === NaN`
+evaluates to false).
+
+Because the default equalTo function compares values with ===, it does not work
+with objects or arrays, it only works with primitives. Most LiveBlocks
+applications require wires with objects and arrays as values. To use objects
+and arrays as wire values, you must override the default equalTo function, as
+shown in the next section.
+
+<a id="custom-equalto-functions"></a>
+
+#### [Custom "equalTo" Functions](#custom-equalto-functions)
+
+[Back to top](#contents)
+
+### Reuse Patterns
 
 ### Error Handling
 
@@ -622,9 +687,13 @@ outputs, and some pins acting as I/O's.
 
 #### Infinite Loops
 
+### Memory Management
+
 ### Caveats
 
 #### Do not Mutate Update Function's *input* Argument
+
+#### Do not Mutate Wire Values
 
 ### Defining Blocks, Pins, and Constraints
 
