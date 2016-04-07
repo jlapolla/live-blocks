@@ -37,6 +37,7 @@ JavaScript. Use LiveBlocks to:
   - [Wires](#wires)
     - [Default "equalTo" Function](#default-equalto-function)
     - [Custom "equalTo" Functions](#custom-equalto-functions)
+  - [Reuse Patterns](#reuse-patterns)
 
 <a id="introduction"></a>
 
@@ -670,8 +671,8 @@ evaluates to false).
 Because the default equalTo function compares values with ===, it does not work
 with objects or arrays, it only works with primitives. Most LiveBlocks
 applications require wires with objects and arrays as values. To use objects
-and arrays as wire values, you must override the default equalTo function, as
-shown in the next section.
+and arrays as wire values, you must override the default equalTo function with
+a custom equalTo function, as shown in the next section.
 
 <a id="custom-equalto-functions"></a>
 
@@ -679,7 +680,61 @@ shown in the next section.
 
 [Back to top](#contents)
 
-### Reuse Patterns
+To use a custom *equalTo* function, create a wire and overwrite the wire's
+*equalTo* property with your custom *equalTo* function.
+
+The following demonstration illustrates using a custom *equalTo* function:
+
+```javascript
+// Create a wire using the default equalTo function
+var wire = new LiveBlocks.Wire();
+
+// Set wire value to an empty object
+wire.value({});
+
+/* Since the default equalTo function compares with ===, the following
+comparison returns false. */
+wire.equalTo({}); // false ({} === {} evaluates to false)
+
+// Now we'll create a custom equalTo function
+var customEqualTo = function(value) {
+
+  // We'll consider two objects equal if their 'name' properties match
+  return this.value().name === value.name;
+};
+
+// Overwrite the default equalTo function with our custom equalTo function
+wire.equalTo = customEqualTo;
+
+/* Set a value on the wire. Notice that our value has a 'name' property. */
+wire.value({name: 'Bob', age: 32});
+
+/* Now the wire considers itself equal to any value with the same 'name'
+property, even if other properties are different. */
+wire.equalTo({name: 'Bob', age: 100}); // true
+wire.equalTo({name: 'Jane', age: 32}); // false
+```
+
+Notice the signature of the custom *equalTo* function above: it takes a single
+`value` as an argument, and compares it to `this.value()` using some comparison
+criteria.
+
+Most LiveBlocks applications require wires with a custom *equalTo* function
+that performs deep object comparison. Typcially, you set up this custom
+*equalTo* function once, and then reuse it throughout the application (wire
+reuse is covered in the next section). Using the wrong *equalTo* function
+results in unneeded block updates and reduced performance. It may also cause
+infinite loops in the circuit.
+
+<a id="reuse-patterns"></a>
+
+### [Reuse Patterns](#reuse-patterns)
+
+[Back to top](#contents)
+
+#### Reusing Blocks
+
+#### Reusing Wires
 
 ### Error Handling
 
