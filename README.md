@@ -38,6 +38,8 @@ JavaScript. Use LiveBlocks to:
     - [Default "equalTo" Function](#default-equalto-function)
     - [Custom "equalTo" Functions](#custom-equalto-functions)
   - [Reuse Patterns](#reuse-patterns)
+    - [Reusing Blocks](#reusing-blocks)
+    - [Reusing Wires](#reusing-wires)
 
 <a id="introduction"></a>
 
@@ -732,9 +734,89 @@ infinite loops in the circuit.
 
 [Back to top](#contents)
 
-#### Reusing Blocks
+After you define a block, you may want to reuse that block throughout your
+code. In LiveBlocks, this is typically achieved by making a factory function
+that configures and returns a new block. The same technique can be applied to
+wires with custom *equalTo* functions. Once you've configured your factory
+functions, we recommend making them available to your application through a
+dependency injection framework.
 
-#### Reusing Wires
+The following sections give examples of block reuse and wire reuse.
+
+<a id="reusing-blocks"></a>
+
+#### [Reusing Blocks](#reusing-blocks)
+
+[Back to top](#contents)
+
+The following demonstration illustrates a factory function for creating
+uppercase to lowercase blocks:
+
+```javascript
+/* Create uppercase to lowercase update function. All blocks created by the
+factory function will share a single instance of this function. */
+var toLower = function(input, output) {
+
+  output.lower = input.upper.toLowerCase(); // Set 'lower' pin
+};
+
+// Create uppercase to lowercase block factory function
+var blockFactory = function() {
+
+  // Create and return a new uppercase to lowercase block
+  return new LiveBlocks.ImmediateBlock({
+    pins: {
+      upper: toLower,
+      lower: toLower,
+    },
+  });
+};
+
+/* Call the factory function to create some uppercase to lowercase block
+instances. */
+var upperToLowerBlock1 = blockFactory();
+var upperToLowerBlock2 = blockFactory();
+```
+
+<a id="reusing-wires"></a>
+
+#### [Reusing Wires](#reusing-wires)
+
+[Back to top](#contents)
+
+The following demonstration illustrates a factory function for creating wires.
+In this case, we're creating wires that compare numbers, and consider them
+equal if they are within a certain tolerance.
+
+```javascript
+// Define tolerance for our custom equalTo function
+var tolerance = 0.001;
+
+/* Create custom equalTo function. Numbers that are within the tolerance are
+considered equal. */
+var toleranceEqualTo = function(value) {
+
+  // Check that values are within the tolerance
+  return Math.abs(this.value() - value) < tolerance;
+};
+
+// Create wire factory function which uses our custom equalTo function
+var wireFactory = function() {
+
+  // Create a new wire
+  var wire = new LiveBlocks.Wire();
+
+  // Overwrite default equalTo function with custom equalTo function
+  wire.equalTo = toleranceEqualTo;
+
+  // Return the configured wire
+  return wire;
+};
+
+// Call the factory function to create some wire instances
+var tolWire1 = wireFactory();
+var tolWire2 = wireFactory();
+```
 
 ### Error Handling
 
