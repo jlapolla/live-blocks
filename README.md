@@ -832,3 +832,17 @@ var tolWire2 = wireFactory();
 
 #### Do not Mutate Wire Values
 
+## Intermediate Circuits
+
+### Black Boxing
+
+### Arrays and Hashes
+
+#### Arrays
+
+#### Hashes
+
+### Synchronous Blocks
+
+### Asynchronous Blocks
+
