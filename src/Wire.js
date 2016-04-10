@@ -4,7 +4,8 @@ this.Wire = (function(getUndefined,
   Error,
   EventEmitter,
   extendClass,
-  ArrayIterator) {
+  ArrayIterator,
+  maxIterations) {
 
   var _notify = function() {
 
@@ -26,21 +27,6 @@ this.Wire = (function(getUndefined,
     this._updating = false;
     this._valueQueue = new Queue();
   }
-
-  var maxIterations = 100;
-  Wire.maxIterations = function(iterations) {
-
-    if (arguments.length) {
-
-      // We are setting max iterations
-      maxIterations = iterations;
-    }
-    else {
-
-      // We are getting max iterations
-      return maxIterations;
-    }
-  };
 
   extendClass(EventEmitter, Wire);
   var P = Wire.prototype;
@@ -148,10 +134,10 @@ this.Wire = (function(getUndefined,
         while (true) {
 
           // Check iteration count
-          if (iterations++ > maxIterations) {
+          if (iterations++ > maxIterations()) {
 
             throw new Error('Infinite loop detected: reached '
-              + maxIterations + ' iterations');
+              + maxIterations() + ' iterations');
           }
 
           // Compare new value to current value
@@ -215,5 +201,6 @@ this.Wire = (function(getUndefined,
   host.Error,
   this.EventEmitter,
   this.extendClass,
-  this.ArrayIterator));
+  this.ArrayIterator,
+  this.maxIterations));
 

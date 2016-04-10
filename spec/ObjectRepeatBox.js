@@ -166,6 +166,15 @@ describe('ObjectRepeatBox class', function() {
     }(LiveBlocks.Wire, plusOneFactory));
   });
 
+  // Reset maxIterations to its default value
+  afterEach((function(defaultMaxIterations) {
+
+    return function() {
+
+      LiveBlocks.maxIterations(defaultMaxIterations);
+    };
+  }(LiveBlocks.maxIterations())));
+
   it('integration test', function() {
 
     // Create block
@@ -1100,16 +1109,16 @@ describe('ObjectRepeatBox class', function() {
     };
 
     // Check initial max iterations
-    expect(LiveBlocks.ObjectRepeatBox.maxIterations()).toBe(100);
+    expect(LiveBlocks.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
-    LiveBlocks.ObjectRepeatBox.maxIterations(10);
+    LiveBlocks.maxIterations(10);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 10 iterations');
 
     // Set new maxIterations
-    LiveBlocks.ObjectRepeatBox.maxIterations(20);
-    expect(LiveBlocks.ObjectRepeatBox.maxIterations()).toBe(20);
+    LiveBlocks.maxIterations(20);
+    expect(LiveBlocks.maxIterations()).toBe(20);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 20 iterations');
   });

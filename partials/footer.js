@@ -13,6 +13,7 @@
     'ObjectRepeatBox',
     'TimedBlock',
     'Wire',
+    'maxIterations',
   ];
   (function(inner, arr) {
 

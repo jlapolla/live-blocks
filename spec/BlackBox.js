@@ -63,6 +63,15 @@ describe('BlackBox class', function() {
     }(host.Math, host.isFinite)));
   });
 
+  // Reset maxIterations to its default value
+  afterEach((function(defaultMaxIterations) {
+
+    return function() {
+
+      LiveBlocks.maxIterations(defaultMaxIterations);
+    };
+  }(LiveBlocks.maxIterations())));
+
   it('integration test with multiple internal blocks', function() {
 
     // Create a prototype "plus one" block
@@ -842,7 +851,7 @@ describe('BlackBox class', function() {
     expect(wires.sum.value()).toBe(0);
 
     // Trigger update internally
-    innerWires.b.value(1)
+    innerWires.b.value(1);
     expect(log.length).toBe(4);
     expect(log[0].event).toBe('update');
     expect(log[1].event).toBe('success');
@@ -1691,17 +1700,17 @@ describe('BlackBox class', function() {
     };
 
     // Check initial max iterations
-    expect(LiveBlocks.BlackBox.maxIterations()).toBe(100);
+    expect(LiveBlocks.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
-    LiveBlocks.BlackBox.maxIterations(10);
-    expect(LiveBlocks.BlackBox.maxIterations()).toBe(10);
+    LiveBlocks.maxIterations(10);
+    expect(LiveBlocks.maxIterations()).toBe(10);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 10 iterations');
 
     // Set new maxIterations
-    LiveBlocks.BlackBox.maxIterations(20);
-    expect(LiveBlocks.BlackBox.maxIterations()).toBe(20);
+    LiveBlocks.maxIterations(20);
+    expect(LiveBlocks.maxIterations()).toBe(20);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 20 iterations');
   });

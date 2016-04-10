@@ -6,7 +6,8 @@ this.BlackBox = (function(EventEmitter,
   Map,
   Set,
   Error,
-  ArrayIterator) {
+  ArrayIterator,
+  maxIterations) {
 
   var _internalErrorListener = function(arg) {
 
@@ -149,21 +150,6 @@ this.BlackBox = (function(EventEmitter,
     init.call(this, hash.pins);
   }
 
-  var maxIterations = 100;
-  BlackBox.maxIterations = function(iterations) {
-
-    if (arguments.length) {
-
-      // We are setting max iterations
-      maxIterations = iterations;
-    }
-    else {
-
-      // We are getting max iterations
-      return maxIterations;
-    }
-  };
-
   extendClass(EventEmitter, BlackBox);
   var P = BlackBox.prototype;
   P.error = function() {
@@ -254,14 +240,14 @@ this.BlackBox = (function(EventEmitter,
       while (true) {
 
         // Check iteration count
-        if (iterations++ > maxIterations) {
+        if (iterations++ > maxIterations()) {
 
           throw new Error('Infinite loop detected: reached '
-            + maxIterations + ' iterations');
+            + maxIterations() + ' iterations');
         }
 
         // Defensive copy external wires
-        var internalWires = this._internalWires
+        var internalWires = this._internalWires;
         var externalWires = {};
         for (var name in internalWires) {
 
@@ -361,5 +347,6 @@ this.BlackBox = (function(EventEmitter,
   this.Map,
   this.Set,
   host.Error,
-  this.ArrayIterator));
+  this.ArrayIterator,
+  this.maxIterations));
 

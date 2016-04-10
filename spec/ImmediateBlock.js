@@ -63,6 +63,15 @@ describe('ImmediateBlock class', function() {
     }(host.Math, host.isFinite)));
   });
 
+  // Reset maxIterations to its default value
+  afterEach((function(defaultMaxIterations) {
+
+    return function() {
+
+      LiveBlocks.maxIterations(defaultMaxIterations);
+    };
+  }(LiveBlocks.maxIterations())));
+
   it('integration test with Wire class where a wire has multiple connections',
   function() {
 
@@ -885,17 +894,17 @@ describe('ImmediateBlock class', function() {
     };
 
     // Check initial max iterations
-    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(100);
+    expect(LiveBlocks.maxIterations()).toBe(100);
 
     // Set low max iterations, so the test runs quickly
-    LiveBlocks.ImmediateBlock.maxIterations(10);
-    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(10);
+    LiveBlocks.maxIterations(10);
+    expect(LiveBlocks.maxIterations()).toBe(10);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 10 iterations');
 
     // Set new maxIterations
-    LiveBlocks.ImmediateBlock.maxIterations(20);
-    expect(LiveBlocks.ImmediateBlock.maxIterations()).toBe(20);
+    LiveBlocks.maxIterations(20);
+    expect(LiveBlocks.maxIterations()).toBe(20);
     expect(triggerLoop)
         .toThrowError('Infinite loop detected: reached 20 iterations');
   });

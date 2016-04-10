@@ -5,7 +5,8 @@ this.ArrayRepeatBox = (function(EventEmitter,
   BlackBox,
   getUndefined,
   hasOwnProperty,
-  ArrayIterator) {
+  ArrayIterator,
+  maxIterations) {
 
   var internalErrorListener = function(arg) {
 
@@ -93,21 +94,6 @@ this.ArrayRepeatBox = (function(EventEmitter,
     this._updateQueue = new Queue();
 
     init.call(this);
-  };
-
-  var maxIterations = 100;
-  ArrayRepeatBox.maxIterations = function(iterations) {
-
-    if (arguments.length) {
-
-      // We are setting max iterations
-      maxIterations = iterations;
-    }
-    else {
-
-      // We are getting max iterations
-      return maxIterations;
-    }
   };
 
   extendClass(EventEmitter, ArrayRepeatBox);
@@ -200,10 +186,10 @@ this.ArrayRepeatBox = (function(EventEmitter,
       while (true) {
 
         // Check iteration count
-        if (iterations++ > maxIterations) {
+        if (iterations++ > maxIterations()) {
 
           throw new Error('Infinite loop detected: reached '
-            + maxIterations + ' iterations');
+            + maxIterations() + ' iterations');
         }
 
         // Defensive copy external wires
@@ -392,5 +378,6 @@ this.ArrayRepeatBox = (function(EventEmitter,
   this.BlackBox,
   this.getUndefined,
   this.hasOwnProperty,
-  this.ArrayIterator));
+  this.ArrayIterator,
+  this.maxIterations));
 

@@ -22,6 +22,7 @@ module.exports = function(config) {
       'test/multiInheritClass.js',
       'test/isArray.js',
       'test/isObject.js',
+      'test/maxIterations.js',
       'test/ArrayIterator.js',
       'test/Queue.js',
       'test/Set.js',

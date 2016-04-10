@@ -3,7 +3,8 @@ this.ImmediateBlock = (function(hasOwnProperty,
   Error,
   extendClass,
   EventEmitter,
-  ArrayIterator) {
+  ArrayIterator,
+  maxIterations) {
 
   var _disconnect = function(pin) {
 
@@ -33,21 +34,6 @@ this.ImmediateBlock = (function(hasOwnProperty,
       this._pins[name] = hash.pins[name];
     }
   }
-
-  var maxIterations = 100;
-  ImmediateBlock.maxIterations = function(iterations) {
-
-    if (arguments.length) {
-
-      // We are setting max iterations
-      maxIterations = iterations;
-    }
-    else {
-
-      // We are getting max iterations
-      return maxIterations;
-    }
-  };
 
   extendClass(EventEmitter, ImmediateBlock);
   var P = ImmediateBlock.prototype;
@@ -126,10 +112,10 @@ this.ImmediateBlock = (function(hasOwnProperty,
       while (true) {
 
         // Check iteration count
-        if (iterations++ > maxIterations) {
+        if (iterations++ > maxIterations()) {
 
           throw new Error('Infinite loop detected: reached '
-            + maxIterations + ' iterations');
+            + maxIterations() + ' iterations');
         }
 
         // Construct hash of wires and wire values
@@ -212,5 +198,6 @@ this.ImmediateBlock = (function(hasOwnProperty,
   host.Error,
   this.extendClass,
   this.EventEmitter,
-  this.ArrayIterator));
+  this.ArrayIterator,
+  this.maxIterations));
 
