@@ -40,6 +40,9 @@ JavaScript. Use LiveBlocks to:
   - [Reuse Patterns](#reuse-patterns)
     - [Reusing Blocks](#reusing-blocks)
     - [Reusing Wires](#reusing-wires)
+  - [Error Handling](#error-handling)
+    - [Errors Thrown in Update Functions](#errors-thrown-in-update-functions)
+    - [Infinite Loops](#infinite-loops)
 
 <a id="introduction"></a>
 
@@ -814,21 +817,74 @@ var wireFactory = function() {
 };
 
 // Call the factory function to create some wire instances
-var tolWire1 = wireFactory();
-var tolWire2 = wireFactory();
+var wire1 = wireFactory();
+var wire2 = wireFactory();
 ```
 
-### Error Handling
+<a id="error-handling"></a>
 
-#### Errors Thrown in Update Functions
+### [Error Handling](#error-handling)
 
-#### Infinite Loops
+[Back to top](#contents)
+
+<a id="errors-thrown-in-update-functions">
+
+#### [Errors Thrown in Block Update Functions](#errors-thrown-in-update-functions)
+
+[Back to top](#contents)
+
+You might expect errors thrown in block update functions to halt program
+execution entirely. This is not the case. Instead, LiveBlocks catches all
+errors thrown in update functions, and continues silently. Let's take a look at
+how this works, and why this feature is helpful.
+
+When a block update function throws an error, the block immediately enters an
+"error state" and does not write values to any of its pins. You can check if a
+block is in error state by calling the block's `error()` function. The
+`error()` function returns the last error thrown in the block, or `undefined`
+if the block is not in error state. A block will automatically clear its error
+state when it has a successful update.
+
+You might ask why LiveBlocks catches errors like this. There are two reasons.
+
+First, when a LiveBlocks circuit updates it's common for some blocks to enter
+an error state while the circuit is only partially updated, but by the time the
+circuit has finished updating all error states are cleared. In this case, the
+overall circuit logic is sound and error states only occur in the intermediate
+stages while updates are still propagating from block to block. LiveBlocks
+catches the error and continues propagating updates so that the circuit can
+reach its final, error-free state.
+
+Second, most blocks are in error state while they are being hooked up to the
+rest of the circuit. This is because when a pin is not connected to a wire,
+it's value is considered to be `undefined` within the update function. When the
+update function tries to access properties or functions on an undefined pin, an
+error is thrown. It would be impossible to hook up blocks like this in a
+circuit if the error was not caught.
+
+<a id="infinite-loops"></a>
+
+#### [Infinite Loops](#infinite-loops)
+
+[Back to top](#contents)
+
+It is possible to design circuits that create infinite update loops. Typically,
+this is due to a logic error in the design of the circuit that makes the
+circuit unsolvable. Instead of running forever, LiveBlocks detects the infinite
+loop and halts program execution by throwing an error.
+
+By default, the infinite loop detection mechanism throws an error after 100
+update iterations. You can change the number of iterations by calling
+`LiveBlocks.maxIterations(newMaxIterations)` and passing in the new maximum
+iterations threshold. Calling `LiveBlocks.maxIterations()` without any
+arguments returns the current maximum iterations threshold used for infinite
+loop detection.
 
 ### Memory Management
 
 ### Caveats
 
-#### Do not Mutate Update Function's *input* Argument
+#### Do not Mutate Update Function's "input" Argument
 
 #### Do not Mutate Wire Values
 
@@ -845,4 +901,14 @@ var tolWire2 = wireFactory();
 ### Synchronous Blocks
 
 ### Asynchronous Blocks
+
+### Events
+
+#### Block Events
+
+#### Wire Events
+
+#### Clock Events
+
+#### Timer Events
 
