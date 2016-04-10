@@ -24,7 +24,7 @@ JavaScript. Use LiveBlocks to:
 ## [Contents](#contents)
 
 - [Introduction](#introduction)
-- [Basic Circuits](#basic-circuits)
+- [Circuit Fundamentals](#circuit-fundamentals)
   - [Operating Principles](#operating-principles)
     - [Example: Uppercase to Lowercase](#example-uppercase-to-lowercase)
   - [Input / Output Patterns](#input-output-patterns)
@@ -149,9 +149,9 @@ wireB2.value(); // 12
 *wireB1* and *wireB2* automatically update when we set a value on *wireA1*,
 just like the cells in the spreadsheet.
 
-<a id="basic-circuits"></a>
+<a id="circuit-fundamentals"></a>
 
-## [Basic Circuits](#basic-circuits)
+## [Circuit Fundamentals](#circuit-fundamentals)
 
 [Back to top](#contents)
 
