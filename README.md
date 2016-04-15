@@ -833,19 +833,19 @@ var wire2 = wireFactory();
 
 [Back to top](#contents)
 
-You might expect errors thrown in block update functions to halt program
-execution entirely. This is not the case. Instead, LiveBlocks catches all
-errors thrown in update functions, and continues silently. Let's take a look at
-how this works, and why this feature is helpful.
+Three things happen when a block update function throws an error:
 
-When a block update function throws an error, the block immediately enters an
-"error state" and does not write values to any of its pins. You can check if a
-block is in error state by calling the block's `error()` function. The
-`error()` function returns the last error thrown in the block, or `undefined`
-if the block is not in error state. A block will automatically clear its error
-state when it has a successful update.
+1. LiveBlocks catches the error
+2. The block enters an "error state"
+3. Program execution continues
 
-You might ask why LiveBlocks catches errors like this. There are two reasons.
+While in error state a block will not write values to any of its pins. You can
+check if a block is in error state by calling the block's `error()` function.
+The `error()` function returns the last error thrown in the block, or
+`undefined` if the block is not in error state. A block will automatically
+clear its error state when it has a successful update.
+
+There are two reasons for this error handling behavior:
 
 First, when a LiveBlocks circuit updates it's common for some blocks to enter
 an error state while the circuit is only partially updated, but by the time the
