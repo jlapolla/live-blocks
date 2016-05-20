@@ -45,10 +45,7 @@ JavaScript. Use LiveBlocks to:
     - [Infinite Loops](#infinite-loops)
 - [API Reference](#api-reference)
   - [Block (Interface)](#block-interface)
-  - [ImmediateBlock (Class)](#immediateblock-class)
-- [Events Reference](#events-reference)
-- [Memory Management](#memory-management)
-- [Caveats](#caveats)
+- [README Status (Incomplete)](#readme-status-incomplete)
 
 <a id="introduction"></a>
 
@@ -970,78 +967,12 @@ if the last update cycle was successful.
 
 Returns `Error` or `undefined`.
 
-<a id="immediateblock-class"></a>
+<a id="readme-status-incomplete"></a>
 
-### [ImmediateBlock (Class)](#immediateblock-class)
-
-[Back to top](#contents)
-
-`ImmediateBlock` implements `Block`
-
-When a pin is updated, the `ImmediateBlock` immediately runs the callback
-function associated with the changed pin. This is used to create a block that
-immediately updates its outputs when its inputs change.
-
-#### Methods
-
-##### new ImmediateBlock(blockDefinition)
-
-Constructs a new ImmediateBlock from the given `blockDefinition` object.
-
-###### Arguments
-
-- `blockDefinition` [Object]
-  - An object with the following properties:
-    - `pins`: Hash where keys are pin names (string) and values are the callback
-      function associated with the pin name (function).
-
-###### Returns
-
-Returns newly constructed `ImmediateBlock`.
-
-### ClockedBlock (Class)
-
-### TimedBlock (Class)
-
-### BlackBox (Class)
-
-### ArrayRepeatBox (Class)
-
-### ObjectRepeatBox (Class)
-
-### Iterator (Interface)
-
-### EventEmitter (Interface)
-
-## Wire Reference
-
-<a id="events-reference"></a>
-
-## [Events Reference](#events-reference)
+### [README Status (Incomplete)](#readme-status-incomplete)
 
 [Back to top](#contents)
 
-### Block Events
-
-### Wire Events
-
-### Clock Events
-
-### Timer Events
-
-<a id="memory-management"></a>
-
-## [Memory Management](#memory-management)
-
-[Back to top](#contents)
-
-<a id="caveats"></a>
-
-## [Caveats](#caveats)
-
-[Back to top](#contents)
-
-### Do not Mutate Wire Values
-
-### Do not Mutate the "input" Argument
+This README file is incomplete, and there is no complete LiveBlocks reference
+at this time. Look for updates to this README in future 0.2.x releases.
 
