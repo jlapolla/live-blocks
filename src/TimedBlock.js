@@ -184,7 +184,7 @@ this.TimedBlock = (function(EventEmitter,
         // Call do function on input, output, and previous values
         var fn = this._do;
         var output = {};
-        this._tickRequested = !!fn(input, output, this._previousValues);
+        this._tickRequested = true === fn(input, output, this._previousValues);
         delete this._lastError;
         this._nextValues = output;
 
