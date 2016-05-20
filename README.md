@@ -43,6 +43,12 @@ JavaScript. Use LiveBlocks to:
   - [Error Handling](#error-handling)
     - [Errors Thrown in Update Functions](#errors-thrown-in-update-functions)
     - [Infinite Loops](#infinite-loops)
+- [API Reference](#api-reference)
+  - [Block (Interface)](#block-interface)
+  - [ImmediateBlock (Class)](#immediateblock-class)
+- [Events Reference](#events-reference)
+- [Memory Management](#memory-management)
+- [Caveats](#caveats)
 
 <a id="introduction"></a>
 
@@ -880,35 +886,162 @@ iterations threshold. Calling `LiveBlocks.maxIterations()` without any
 arguments returns the current maximum iterations threshold used for infinite
 loop detection.
 
-### Memory Management
+<a id="api-reference"></a>
 
-### Caveats
+## [API Reference](#api-reference)
 
-#### Do not Mutate Update Function's "input" Argument
+[Back to top](#contents)
 
-#### Do not Mutate Wire Values
+<a id="block-interface"></a>
 
-## Intermediate Circuits
+### [Block (Interface)](#block-interface)
 
-### Black Boxing
+[Back to top](#contents)
 
-### Arrays and Hashes
+`Block` extends `EventEmitter`.
 
-#### Arrays
+A `Block` has pins that connect to wires. A block reacts to stimulus and may
+change the values of wires connected to its pins. A block is analogous to a
+component in an electric circuit.
 
-#### Hashes
+#### Methods
 
-### Synchronous Blocks
+##### connect(pinName, wire)
 
-### Asynchronous Blocks
+Connects a pin on the block to an external wire. A pin may only be connected to
+one wire at a time. If the pin is already connected to a wire, the pin is
+disconnected from the existing wire, and connected to the new wire.
 
-### Events
+###### Arguments
 
-#### Block Events
+- `pinName` [string]
+  - Name of the pin to connect to.
+- `wire` [Wire]
+  - External wire to connect to the pin.
 
-#### Wire Events
+###### Returns
 
-#### Clock Events
+Returns `undefined`.
 
-#### Timer Events
+##### disconnect(pinName)
+
+Disconnects a pin on the block from any external wires connected to it. Does
+nothing if the pin is not connected to any external wires.
+
+###### Arguments
+
+- `pinName` [string]
+  - Name of the pin to disconnect.
+
+###### Returns
+
+Returns `undefined`.
+
+##### update(pinName)
+
+Signals to the block that the external wire connected to a pin has changed
+value. `update` is also called whenever an external wire is connected or
+disconnected from a pin.
+
+###### Arguments
+
+- `pinName` [string]
+  - Name of the pin whose connected wire changed value.
+
+###### Returns
+
+Returns `undefined`.
+
+##### pins()
+
+Returns an iterator over the block's pins. The iterator returns objects of the
+form: `{pin: string, wire: Wire}`
+
+###### Returns
+
+Returns `Iterator`.
+
+##### error()
+
+Returns the last error thrown in the block's last update cycle, or `undefined`
+if the last update cycle was successful.
+
+###### Returns
+
+Returns `Error` or `undefined`.
+
+<a id="immediateblock-class"></a>
+
+### [ImmediateBlock (Class)](#immediateblock-class)
+
+[Back to top](#contents)
+
+`ImmediateBlock` implements `Block`
+
+When a pin is updated, the `ImmediateBlock` immediately runs the callback
+function associated with the changed pin. This is used to create a block that
+immediately updates its outputs when its inputs change.
+
+#### Methods
+
+##### new ImmediateBlock(blockDefinition)
+
+Constructs a new ImmediateBlock from the given `blockDefinition` object.
+
+###### Arguments
+
+- `blockDefinition` [Object]
+  - An object with the following properties:
+    - `pins`: Hash where keys are pin names (string) and values are the callback
+      function associated with the pin name (function).
+
+###### Returns
+
+Returns newly constructed `ImmediateBlock`.
+
+### ClockedBlock (Class)
+
+### TimedBlock (Class)
+
+### BlackBox (Class)
+
+### ArrayRepeatBox (Class)
+
+### ObjectRepeatBox (Class)
+
+### Iterator (Interface)
+
+### EventEmitter (Interface)
+
+## Wire Reference
+
+<a id="events-reference"></a>
+
+## [Events Reference](#events-reference)
+
+[Back to top](#contents)
+
+### Block Events
+
+### Wire Events
+
+### Clock Events
+
+### Timer Events
+
+<a id="memory-management"></a>
+
+## [Memory Management](#memory-management)
+
+[Back to top](#contents)
+
+<a id="caveats"></a>
+
+## [Caveats](#caveats)
+
+[Back to top](#contents)
+
+### Do not Mutate Wire Values
+
+### Do not Mutate the "input" Argument
 
